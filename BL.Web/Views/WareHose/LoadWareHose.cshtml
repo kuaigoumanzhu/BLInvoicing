@@ -1,0 +1,87 @@
+﻿<div class="bjui-pageContent">
+    <table id="tabWareHose" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        console.log(this);
+       maingrid = $("#tabWareHose").datagrid({
+            gridTitle: '仓库维护',
+            showToolbar: true,
+            toolbarItem: 'all',
+            addLocation: 'first',
+            dataUrl: '/WareHose/GetAllWareHoseJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FID',
+                    label: '编号',
+                    align: 'center',
+                    width: 50,
+                    rule: 'required'
+                },
+                {
+                    name: 'FNAME',
+                    label: '名称',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FCATEGORY',
+                    label: '仓库类别',
+                    type: 'select',
+                    items: [{ '1': '总仓' }, { '2': '分仓' }],
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FPARENTID',
+                    label: '上级编码',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FPROVINCE',
+                    label: '省份',
+                    type: 'select',
+                    items: [{ '1': '河南' }, { '2': '北京' }, {'3':'上海'}],
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FSTATUS',
+                    label: '启用状态',
+                    type: 'select',
+                    items: [{ '1': '未启用' }, { '2': '已启用' }, { '3': '已禁' }],
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FSTARTTIME',
+                    label: '启用时间',
+                    type: 'date',
+                    width: 150,
+                    pattern: 'yyyy-MM-dd'
+                },
+                {
+                    name: 'FENDTIME',
+                    label: '禁用时间',
+                    type: 'date',
+                    pattern: 'yyyy-MM-dd'
+                }
+            ],
+            editUrl: '/WareHose/EditWareHoseJson',
+            delUrl: 'ajaxDone1.html',
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: false,
+            paging: false,
+            height: '100%',
+            showCheckboxcol: true
+        });
+    });
+</script>
