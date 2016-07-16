@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BL.MVC
+namespace BL.Models
 {
-    /// <summary>
-    /// hpf 前端框架ajax错误返回
-    /// </summary>
     public class UiResponse
     {
         public string statusCode

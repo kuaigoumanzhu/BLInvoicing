@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BL.Models
 {
-    public class T_WAREHOUSEModel
+    public class T_WAREHOUSEModel:UiResponse
     {
         /// <summary>
         /// 主键
@@ -46,10 +46,10 @@ namespace BL.Models
         /// <summary>
         /// 启用时间
         /// </summary>
-        public DateTime FSTARTTIME { get; set; }
+        public DateTime? FSTARTTIME { get; set; }
         /// <summary>
         /// 禁用时间
         /// </summary>
-        public DateTime FENDTIME { get; set; }
+        public DateTime? FENDTIME { get; set; }
     }
 }
