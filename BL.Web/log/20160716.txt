@@ -1,0 +1,20 @@
+2016-07-16 11:13:52,816 [20] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'BL.Models.T_GOODSModel' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+2016-07-16 11:15:13,986 [31] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JArray”的对象强制转换为类型“Newtonsoft.Json.Linq.JObject”。
+2016-07-16 11:17:24,974 [31] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'BL.Models.T_GOODSModel' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+2016-07-16 11:30:18,118 [67] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,122 [69] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,119 [70] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,124 [59] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,119 [31] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,191 [67] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,192 [70] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:30:18,191 [31] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:31:09,442 [63] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:32:26,861 [70] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:无法将类型为“Newtonsoft.Json.Linq.JValue”的对象强制转换为类型“System.IConvertible”。
+2016-07-16 11:33:10,647 [45] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:An enumerable sequence of parameters (arrays, lists, etc) is not allowed in this context
+2016-07-16 11:46:14,803 [63] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:未将对象引用设置到对象的实例。
+2016-07-16 22:17:57,007 [28] FATAL log4net [(null)] - ::1在执行controllerGoods的EditGoods时产生异常:该字符串未被识别为有效的 DateTime。
