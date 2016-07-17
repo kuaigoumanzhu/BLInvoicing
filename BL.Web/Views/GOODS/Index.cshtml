@@ -1,0 +1,195 @@
+﻿<div class="bjui-pageContent">
+    <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(document).on("click", "#qiyong,#jinyong", function () {
+            var selectedDatas = maingrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '未选中任何行');
+                return false;
+            }
+            var btn = $(this).attr("id");
+            var data = selectedDatas[0];
+            switch (btn) {
+                case "qiyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/Goods/SetGoodsStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "2" },
+                        confirmMsg: "确认启用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                $(this).alertmsg("ok", "已启用");
+                            } else {
+                                $(this).alertmsg("warn", "启用失败");
+                            }
+                        }
+                    })
+                    break;
+                case "jinyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/Goods/SetGoodsStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "3" },
+                        confirmMsg: "确认禁用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                $(this).alertmsg("ok", "已禁用");
+                            } else {
+                                $(this).alertmsg("warn", "禁用失败");
+                            }
+                        }
+                    })
+                    break;
+            }
+        });
+        maingrid = $("#tabGoods").datagrid({
+            gridTitle: '商品维护',
+            showToolbar: true,
+            toolbarItem: 'add, edit, cancel, save, del,refresh',
+            toolbarCustom: function () {
+                return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
+            },
+            addLocation: 'first',
+            dataUrl: '/Goods/GetAllGoodsJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:true,
+                    width: 50
+
+                },
+                {
+                    name: 'FCREATEID',
+                    label: '创建人编号',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    name: 'FCREATETIME',
+                    label: '创建时间',
+                    type: 'date',
+                    align: 'center',
+                    width: 110,
+                    add: false,
+                    edit: false,
+
+                    pattern:'yyyy-MM-dd'
+                },
+                {
+                    name: 'FID',
+                    label: '编号',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FNAME',
+                    label: '名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FSTANDARD',
+                    label: '规格',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FCALCTYPE',
+                    label: '计量方式',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FCATEGORY',
+                    label: '商品类别',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FISCONSUMABLES',
+                    label: '是否消耗品',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FSTATUS',
+                    label: '启用状态',
+                    type: 'select',
+                    items: [{ '1': '未启用' }, { '2': '已启用' }, { '3': '已禁' }],
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem,
+                    rule: 'required'
+                },
+                {
+                    name: 'FSTARTTIME',
+                    label: '启用时间',
+                    type: 'date',
+                    add: false,
+                    edit:false,
+                    width: 110,
+                    pattern: 'yyyy-MM-dd'
+                },
+                {
+                    name: 'FENDTIME',
+                    label: '禁用时间',
+                    type: 'date',
+                    add: false,
+                    edit: false,
+                    width: 110,
+                    pattern: 'yyyy-MM-dd'
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 80
+                }
+            ],
+            editUrl: '/Goods/EditGoods',
+            delUrl: '/Goods/DelGoods',
+            delConfirm: true,
+            beforeEdit: function (value, value1) {
+                if (value1 != undefined&&value1.length>0)
+                {
+                    if (value1[0].FSTATUS == "2") {
+                        $(this).alertmsg('warn', '已是启用状态，不可编辑！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '编辑提示' });
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            },
+            beforeDelete: function () {
+                //hpf 查看源码删除动作未带返回值，后续可参照编辑修改
+                var value = maingrid.data('selectedDatas')[0];
+                if (value.FSTATUS == "2") {
+                    $(this).alertmsg('warn', '已是启用状态，不可删除！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '删除提示' });
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: false,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: true
+        });
+    });
+</script>

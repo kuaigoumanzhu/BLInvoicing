@@ -5,10 +5,10 @@ using System.Text;
 
 namespace BL.Models
 {
-    public class T_WAREHOUSEModel
+    public class T_GOODSModel
     {
         /// <summary>
-        /// 主键
+        /// FGUID主键
         /// </summary>
         public string FGUID { get; set; }
         /// <summary>
@@ -28,17 +28,25 @@ namespace BL.Models
         /// </summary>
         public string FNAME { get; set; }
         /// <summary>
-        /// 仓库类别
+        /// 规格
+        /// </summary>
+        public string FSTANDARD { get; set; }
+        /// <summary>
+        /// 计量单位
+        /// </summary>
+        public string FUNIT { get; set; }
+        /// <summary>
+        /// 计量方式
+        /// </summary>
+        public string FCALCTYPE { get; set; }
+        /// <summary>
+        /// 商品类别
         /// </summary>
         public string FCATEGORY { get; set; }
         /// <summary>
-        /// 上级编码
+        /// 是否消耗品
         /// </summary>
-        public string FPARENTID { get; set; }
-        /// <summary>
-        /// 省份
-        /// </summary>
-        public string FPROVINCE { get; set; }
+        public string FISCONSUMABLES { get; set; }
         /// <summary>
         /// 状态
         /// </summary>
@@ -46,14 +54,11 @@ namespace BL.Models
         /// <summary>
         /// 启用时间
         /// </summary>
-        public DateTime FSTARTTIME { get; set; }
+        public DateTime? FSTARTTIME { get; set; }
         /// <summary>
         /// 禁用时间
         /// </summary>
-        public DateTime FENDTIME { get; set; }
-        /// <summary>
-        /// 禁用时间
-        /// </summary>
+        public DateTime? FENDTIME { get; set; }
         public string FMEMO { get; set; }
     }
 }
