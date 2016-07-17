@@ -71,5 +71,21 @@ where FGUID=@FGUID ";
                 return db.Execute(sql, new { FGUID=FGUID});
             }
         }
+        public bool SetGoodsStatusByGuid(string FGUID, string FSTATUS, DateTime now)
+        {
+            string sql = string.Empty;
+            if (FSTATUS == "2")//设置启用
+            {
+                sql = "update T_GOODS set  FSTATUS=@FSTATUS,FSTARTTIME=@time where FGUID=@FGUID";
+            }
+            else if (FSTATUS == "3")
+            {
+                sql = "update T_GOODS set  FSTATUS=@FSTATUS,FENDTIME=@time where FGUID=@FGUID";
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Execute(sql, new { FSTATUS = FSTATUS, time = now, FGUID = FGUID }) > 0;
+            }
+        }
     }
 }

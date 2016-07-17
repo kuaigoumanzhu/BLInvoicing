@@ -3,13 +3,53 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        console.log(this);
+        $(document).on("click", "#qiyong,#jinyong", function () {
+            var selectedDatas = maingrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '请选择一个对象');
+                return false;
+            }
+            var btn = $(this).attr("id");
+            var data = selectedDatas[0];
+            switch (btn) {
+                case "qiyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/Goods/SetGoodsStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "2" },
+                        confirmMsg: "确认启用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                $(this).alertmsg("ok", "已启用");
+                            } else {
+                                $(this).alertmsg("warn", "启用失败");
+                            }
+                        }
+                    })
+                    break;
+                case "jinyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/Goods/SetGoodsStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "3" },
+                        confirmMsg: "确认禁用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                $(this).alertmsg("ok", "已禁用");
+                            } else {
+                                $(this).alertmsg("warn", "禁用失败");
+                            }
+                        }
+                    })
+                    break;
+            }
+        });
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,
             toolbarItem: 'add, edit, cancel, save, del,refresh',
             toolbarCustom: function () {
-                return '<input type="button" class="btn-green" value="启用"/>&nbsp;&nbsp;<input type="button" class="btn-red"  value="禁用"/>';
+                return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
             },
             addLocation: 'first',
             dataUrl: '/Goods/GetAllGoodsJson',
@@ -121,6 +161,28 @@
             editUrl: '/Goods/EditGoods',
             delUrl: '/Goods/DelGoods',
             delConfirm: true,
+            beforeEdit: function (value, value1) {
+                if (value1 != undefined&&value1.length>0)
+                {
+                    if (value1[0].FSTATUS == "2") {
+                        $(this).alertmsg('warn', '已是启用状态，不可编辑！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '编辑提示' });
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            },
+            beforeDelete: function () {
+                //hpf 查看源码删除动作未带返回值，后续可参照编辑修改
+                var value = maingrid.data('selectedDatas')[0];
+                if (value.FSTATUS == "2") {
+                    $(this).alertmsg('warn', '已是启用状态，不可删除！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '删除提示' });
+                    return false;
+                } else {
+                    return true;
+                }
+            },
             contextMenuB: true,
             editMode: 'inline',
             fullGrid: true,

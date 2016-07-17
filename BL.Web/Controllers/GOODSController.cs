@@ -107,5 +107,17 @@ namespace BL.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// 设置商品状态
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FSTATUS">1未启用，2已启用，3禁用</param>
+        /// <returns></returns>
+        [JsonException]
+        public string SetGoodsStatus(string FGUID, string FSTATUS)
+        {
+            var time = DateTime.Now;
+            return JsonHelper.Instance.Serialize(new { result = goodsService.SetGoodsStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
+        }
     }
 }
