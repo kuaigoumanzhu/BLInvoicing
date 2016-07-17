@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -122,6 +123,7 @@
   <ItemGroup>
     <Compile Include="Controllers\DATADICTController.cs" />
     <Compile Include="Controllers\DICTCategoryController.cs" />
+    <Compile Include="Controllers\GoodsBackController.cs" />
     <Compile Include="Controllers\GOODSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />

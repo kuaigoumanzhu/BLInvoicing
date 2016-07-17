@@ -11909,6 +11909,10 @@
                             
                             changeData[op.name] = defaultVal
                         } else {
+                            //hpf 2016 07 17 解决部分浏览器下无法获得值的问题
+                            if ($el.val() == null) {
+                                $el.find("option:first").prop("selected", 'selected');
+                            }
                             ($el.isTag('select') && !$el.prop('multiple')) && (changeData[op.name] = $el.val())
                         }
                     }
@@ -12096,6 +12100,8 @@
         
         if (that.isDom) data = $tr.data('initData')
         else data = that.data[data_index]
+        console.log(that);
+        console.log(that.data);
         
         if ($tr.hasClass(that.classnames.tr_edit)) {
             // validate
@@ -12427,6 +12433,8 @@
                         
                         changeData[model.name] = defaultVal
                     } else {
+                        console.log($sel);
+                        console.log($el.val());
                         ($el.isTag('select') && !$el.prop('multiple')) && (changeData[model.name] = $el.val())
                     }
                 }
