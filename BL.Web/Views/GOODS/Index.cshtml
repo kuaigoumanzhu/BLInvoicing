@@ -6,7 +6,7 @@
         $(document).on("click", "#qiyong,#jinyong", function () {
             var selectedDatas = maingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
-                $(this).alertmsg('warn', '请选择一个对象');
+                $(this).alertmsg('warn', '未选中任何行');
                 return false;
             }
             var btn = $(this).attr("id");

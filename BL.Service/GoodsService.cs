@@ -7,17 +7,30 @@ using BL.Models;
 using Dapper;
 using System.Data;
 using System.Data.SqlClient;
+using System.Collections;
 
 namespace BL.Service
 {
     public class GoodsService : DBContext
     {
-        public IEnumerable<T_GOODSModel> GetAllGoodsInfo()
+        public IEnumerable<T_GOODSModel> GetAllGoodsInfo(IDictionary paraDic,ref int totalPage,int pageIndex=1,int pageSize=10)
         {
-            string sql = "select * from T_GOODS";
+            //string sql = "select * from T_GOODS";
             using (IDbConnection db = OpenConnection())
             {
-                return db.Query<T_GOODSModel>(sql);
+                DynamicParameters dp = new DynamicParameters();
+                dp.Add("@tblName", "T_GOODS");
+                dp.Add("@strWhere", "");
+                dp.Add("@fldName","*");
+                dp.Add("@strOrder","FCREATETIME desc");
+                dp.Add("@PageSize",pageSize);
+                dp.Add("@PageIndex",pageIndex);
+                //return db.Query<T_GOODSModel>(sql);
+                var result= db.QueryMultiple("sp_SplitPage_GetList",dp,null,null,CommandType.StoredProcedure);
+                var resultPage = result.Read<Int32>();
+                var resultGrid = result.Read<T_GOODSModel>();
+                totalPage = resultPage.First();
+                return resultGrid;
             }
         }
 

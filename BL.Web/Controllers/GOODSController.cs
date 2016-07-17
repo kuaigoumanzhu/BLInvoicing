@@ -5,6 +5,7 @@ using BL.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -23,10 +24,12 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllGoodsJson()
+        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=1)
         {
-            var lst = goodsService.GetAllGoodsInfo();
-            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = lst.Count() });
+            IDictionary dic = new Hashtable();
+            int totalPage=0;
+            var lst = goodsService.GetAllGoodsInfo(dic,ref totalPage,pageCurrent,pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize =pageSize,pageCurrent=pageCurrent,total=totalPage });
         }
         [JsonException]
         public string EditGoods(string json)
