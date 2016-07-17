@@ -3,11 +3,53 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        console.log(this);
+        //hpf 启用禁用
+        $(document).on("click", "#qiyong,#jinyong", function () {
+            var selectedDatas = maingrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '请选择一个对象');
+                return false;
+            }
+            var btn = $(this).attr("id");
+            var data = selectedDatas[0];
+            switch (btn) {
+                case "qiyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/WareHose/SetWareHoseStatus",
+                        data: { FGUID: data.FGUID, FSTATUS:"2"},
+                        confirmMsg: "确认启用？",
+                        callback:function(json){
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME:json.time});
+                                $(this).alertmsg("ok", "已启用");
+                            }else{
+                                $(this).alertmsg("warn", "启用失败");
+                            }
+                        }
+                    })
+                    break;
+                case "jinyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/WareHose/SetWareHoseStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "3" },
+                        confirmMsg: "确认禁用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME:json.time});
+                                $(this).alertmsg("ok", "已禁用");
+                            } else {
+                                $(this).alertmsg("warn", "禁用失败");
+                            }
+                        }
+                    })
+                    break;
+            }
+        });
        maingrid = $("#tabWareHose").datagrid({
             gridTitle: '仓库维护',
             showToolbar: true,
-            toolbarItem: 'all',
+            toolbarItem: 'add,save,|,cancel,del,edit',
+            toolbarCustom: '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>',
             addLocation: 'first',
             dataUrl: '/WareHose/GetAllWareHoseJson',
             dataType: 'json',
@@ -57,31 +99,65 @@
                     items: [{ '1': '未启用' }, { '2': '已启用' }, { '3': '已禁' }],
                     align: 'center',
                     width: 80,
+                    edit: false,
+                    add:false,
                     render: $.datagrid.renderItem
                 },
                 {
                     name: 'FSTARTTIME',
                     label: '启用时间',
                     type: 'date',
-                    width: 150,
-                    pattern: 'yyyy-MM-dd'
+                    edit: false,
+                    add: false,
+                    width: 180,
+                    render: function (value) {
+                        return value == null ? "" : value;
+                    }
                 },
                 {
                     name: 'FENDTIME',
                     label: '禁用时间',
                     type: 'date',
-                    pattern: 'yyyy-MM-dd'
+                    edit: false,
+                    add: false,
+                    width: 180,
+                    render: function (value) {
+                        return value == null ? "" : value;
+                    }
                 }
             ],
+            delPK: 'FGUID',
             editUrl: '/WareHose/EditWareHoseJson',
-            delUrl: 'ajaxDone1.html',
+            delUrl: '/WareHose/DelWareHoseJson',
             contextMenuB: true,
             editMode: 'inline',
-            fullGrid: true,
             showLinenumber: false,
             paging: false,
             height: '100%',
-            showCheckboxcol: true
+            inlineEditMult:false,
+            showCheckboxcol: true,
+            beforeEdit: function (value, value1) {
+                if (value1 != undefined&&value1.length>0)
+                {
+                    if (value1[0].FSTATUS == "2") {
+                        $(this).alertmsg('warn', '已是启用状态，不可编辑！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '编辑提示' });
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            },
+            beforeDelete: function () {
+                //hpf 查看源码删除动作未带返回值，后续可参照编辑修改
+                var value = maingrid.data('selectedDatas')[0];
+                if (value.FSTATUS == "2") {
+                    $(this).alertmsg('warn', '已是启用状态，不可删除！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '删除提示' });
+                    return false;
+                } else {
+                    return true;
+                }
+            }
         });
     });
 </script>
