@@ -24,7 +24,7 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=1)
+        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=1,string FID="",string FNAME="")
         {
             IDictionary dic = new Hashtable();
             int totalPage=0;
@@ -34,23 +34,13 @@ namespace BL.Web.Controllers
         [JsonException]
         public string EditGoods(string json)
         {
-            JArray t = (JArray)JsonConvert.DeserializeObject(json);
-            T_GOODSModel model = new T_GOODSModel();
-            model.FCREATEID = t[0]["FCREATEID"].ToString();
+            var models = JsonHelper.Instance.Deserialize<List<T_GOODSModel>>(json);
+            var model = models[0];
             model.FCREATETIME =DateTime.Now;
-            model.FID = t[0]["FID"].ToString();
-            model.FNAME = t[0]["FNAME"].ToString();
-            model.FSTANDARD = t[0]["FSTANDARD"].ToString();
-            model.FUNIT = t[0]["FUNIT"].ToString();
-            model.FCALCTYPE = t[0]["FCALCTYPE"].ToString();
-            model.FCATEGORY = t[0]["FCATEGORY"].ToString();
-            model.FISCONSUMABLES = t[0]["FISCONSUMABLES"].ToString();
-            model.FSTATUS = t[0]["FSTATUS"].ToString();
-            
-            model.FMEMO = t[0]["FMEMO"].ToString();
             int rel = 0;
-            if (t[0]["addFlag"]!=null && Convert.ToBoolean(t[0]["addFlag"].ToString()))
+            if (string.IsNullOrEmpty(model.FGUID))
             {
+                model.FGUID = Guid.NewGuid().ToString();
                 if (model.FSTATUS == "2")
                 {
                     model.FSTARTTIME = DateTime.Now;
@@ -68,21 +58,12 @@ namespace BL.Web.Controllers
             {
                 if (model.FSTATUS == "2")
                 {
-                    model.FSTARTTIME = DateTime.Now;
-                    if (t[0]["FENDTIME"].ToString() != "")
-                    {
-                        model.FENDTIME = Convert.ToDateTime(t[0]["FENDTIME"].ToString());
-                    }
+                    model.FSTARTTIME = DateTime.Now;                    
                 }
                 else if (model.FSTATUS == "3")
                 {
-                    if (t[0]["FSTARTTIME"].ToString() != "")
-                    {
-                        model.FSTARTTIME = Convert.ToDateTime(t[0]["FSTARTTIME"].ToString());
-                    }
                     model.FENDTIME = DateTime.Now;
                 }
-                model.FGUID = t[0]["FGUID"].ToString();
                 rel=goodsService.EditGoods(model);
             }
             if (rel > 0)

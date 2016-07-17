@@ -33,7 +33,6 @@ namespace BL.MVC
             get; set;
 
         }
-
         public string forward { get; set; }
         public string forwardConfirm { get; set; }
         public UiResponse()
