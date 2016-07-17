@@ -1,0 +1,56 @@
+﻿<div class="bjui-pageContent">
+
+    <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+      
+        maingrid = $("#tabGoods").datagrid({
+            gridTitle: '字典类别维护',
+            showToolbar: true,
+            toolbarItem: 'add,save,|,cancel,del,edit',
+            addLocation: 'first',
+            dataUrl: '/DICTCategory/GetAllDATADICTJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:true,
+                    width: 50
+
+                },
+                {
+                    name: 'FID',
+                    label: '编号',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FNAME',
+                    label: '名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 80
+                }
+            ],
+            editUrl: '/DICTCategory/EditDATADICT',
+            delUrl: '/DICTCategory/DelDATADICT',
+            delConfirm: true,
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: false,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

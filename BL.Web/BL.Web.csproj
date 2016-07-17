@@ -120,9 +120,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\DATADICTController.cs" />
+    <Compile Include="Controllers\DICTCategoryController.cs" />
     <Compile Include="Controllers\GOODSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\SUPPLIERController.cs" />
     <Compile Include="Controllers\WareHoseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -607,6 +610,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\GOODS\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DICTCategory\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\DATADICT\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
