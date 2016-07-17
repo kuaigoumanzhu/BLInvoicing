@@ -1,8 +1,18 @@
 ﻿<div class="bjui-pageContent">
+    <form action="/Goods/GetAllGoodsJson" id="form_goods" data-toggle="ajaxsearch">
+        <p><label class="x85">编号：</label><input type="text" name="FID" id="txtFID" placeholder="编号" class="form-control"><label class="x85">名称：</label><input type="text" name="FNAME" placeholder="名称" id="txtFNAME" class="form-control"><button type="button" id="btnSearch" class="btn btn-default">搜索</button></p>
+       
+
+</form>
     <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
+        $("#btnSearch").click(function () {
+            maingrid.dataUrl = '/Goods/GetAllGoodsJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+            $("#tabGoods").refresh();
+        });
+
         $(document).on("click", "#qiyong,#jinyong", function () {
             var selectedDatas = maingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
