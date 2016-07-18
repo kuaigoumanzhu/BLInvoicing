@@ -9,8 +9,13 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            maingrid.dataUrl = '/DATADICT/GetAllDATADICTJson?FNAME=' + $("#txtFNAME").val();
-            maingrid.datagrid("refresh");
+            $(this).bjuiajax("doAjax", {
+                url: "/DATADICT/GetAllDATADICTJson",
+                data: { FNAME: $("#txtFNAME").val() },
+                callback: function (json) {
+                    maingrid.datagrid("loadData",json,true);
+                }
+            })
         });
 
         $(document).on("click", "#qiyong,#jinyong", function () {
@@ -89,8 +94,13 @@
                 {
                     name: 'FCATEGORY',
                     label: '类别',
+                    type:'select',
+                    items: function () {
+                        return $.getJSON('/DATADICT/GetCategoryJson')
+                    },
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FPARENTID',

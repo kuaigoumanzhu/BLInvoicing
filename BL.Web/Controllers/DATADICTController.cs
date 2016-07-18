@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -25,7 +26,7 @@ namespace BL.Web.Controllers
         public string GetAllDATADICTJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
-            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            if (!string.IsNullOrEmpty(Request.Form["FNAME"]))
             {
                 dic["FNAME"] = Request["FNAME"].ToString();
             }
@@ -33,6 +34,20 @@ namespace BL.Web.Controllers
             var lst = datadictService.GetAllDATADICTInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
+        [JsonException]
+        public string GetCategoryJson()
+        {
+            var lst = datadictService.GetAllDictCategoryInfo();
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach (T_DATADICTModel item in lst)
+            {
+                sb.Append("{\""+item.FID + "\":\"" + item.FNAME+"\"},");
+            }
+            string result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            return result;
+        }
+
         [JsonException]
         public string EditDATADICT(string json)
         {

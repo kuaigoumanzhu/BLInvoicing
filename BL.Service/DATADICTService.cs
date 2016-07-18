@@ -46,6 +46,15 @@ namespace BL.Service
             }
         }
 
+        public IEnumerable<T_DATADICTModel> GetAllDictCategoryInfo()
+        {
+            string sql = "select * from T_DATADICT where FCATEGORY='数据字典类别'";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_DATADICTModel>(sql);
+            }
+        } 
+
         /// <summary>
         /// 获取字典信息
         /// </summary>
