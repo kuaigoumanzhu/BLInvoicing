@@ -75,12 +75,6 @@
 
                 },
                 {
-                    name: 'FCREATEID',
-                    label: '创建人编号',
-                    align: 'center',
-                    width: 100
-                },
-                {
                     name: 'FCREATETIME',
                     label: '创建时间',
                     type: 'date',
@@ -88,7 +82,7 @@
                     width: 110,
                     add: false,
                     edit: false,
-
+                    hide: true,
                     pattern:'yyyy-MM-dd'
                 },
                 {
@@ -130,8 +124,11 @@
                 {
                     name: 'FISCONSUMABLES',
                     label: '是否消耗品',
+                    type:'select',
+                    items:[{'0':'否'},{'1':'是'}],
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FSTATUS',

@@ -53,7 +53,38 @@ namespace BL.Service
             {
                 return db.Query<T_DATADICTModel>(sql);
             }
-        } 
+        }
+
+        /// <summary>
+        /// 判断字典类别编号是否已存在
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsCategory(string FGUID, string FID)
+        {
+            string sql = "select * from T_DATADICT where FCATEGORY='数据字典类别' and FGUID!=@FGUID and FID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_DATADICTModel>(sql, new { FGUID=FGUID,FID=FID}).Count() > 0;
+            }
+        }
+        /// <summary>
+        /// 判断同一类别下字典编号是否重复
+        /// </summary>
+        /// <param name="FCATEGORY"></param>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsDICT(string FCATEGORY, string FGUID, string FID)
+        {
+            string sql = "select * from T_DATADICT where FCATEGORY=@FCATEGORY and FGUID!=@FGUID and FID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_DATADICTModel>(sql, new {FCATEGORY=FCATEGORY, FGUID = FGUID, FID = FID }).Count() > 0;
+            }
+        }
+
 
         /// <summary>
         /// 获取字典信息

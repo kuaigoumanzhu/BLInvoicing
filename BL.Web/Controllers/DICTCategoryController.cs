@@ -35,20 +35,27 @@ namespace BL.Web.Controllers
         {
             var models = JsonHelper.Instance.Deserialize<List<T_DATADICTModel>>(json);
             var model = models[0];
-            if (string.IsNullOrEmpty(model.FGUID))
+            if (datadictService.IsExistsCategory(model.FGUID, model.FID))
             {
-                model.FCATEGORY = "数据字典类别";
-                model.FCREATEID = UserContext.CurrentUser.UserName;
-                model.FGUID = Guid.NewGuid().ToString();
-                model.FCREATETIME = DateTime.Now;
-                model.FSTATUS = "2";
-                model.FSTARTTIME = DateTime.Now;
-                model.FGUID = Guid.NewGuid().ToString();
-                return JsonHelper.Instance.Serialize(datadictService.AddDATADICT(model));
+                return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
             }
             else
             {
-                return JsonHelper.Instance.Serialize(datadictService.EditDATADICT(model));
+                if (string.IsNullOrEmpty(model.FGUID))
+                {
+                    model.FCATEGORY = "数据字典类别";
+                    model.FCREATEID = UserContext.CurrentUser.UserName;
+                    model.FGUID = Guid.NewGuid().ToString();
+                    model.FCREATETIME = DateTime.Now;
+                    model.FSTATUS = "2";
+                    model.FSTARTTIME = DateTime.Now;
+                    model.FGUID = Guid.NewGuid().ToString();
+                    return JsonHelper.Instance.Serialize(datadictService.AddDATADICT(model));
+                }
+                else
+                {
+                    return JsonHelper.Instance.Serialize(datadictService.EditDATADICT(model));
+                }
             }
         }
         [JsonException]

@@ -62,7 +62,7 @@ namespace BL.Service
         public T_GOODSModel EditGoods(T_GOODSModel model)
         {
 
-            string sql = @"update  T_GOODS set FCREATEID=@FCREATEID, FCREATETIME=@FCREATETIME, FID=@FID, FNAME=@FNAME, FSTANDARD=@FSTANDARD, FUNIT=@FUNIT, FCALCTYPE=@FCALCTYPE, FCATEGORY=@FCATEGORY, FISCONSUMABLES=@FISCONSUMABLES, FSTATUS=@FSTATUS, FSTARTTIME=@FSTARTTIME, FENDTIME=@FENDTIME, FMEMO=@FMEMO
+            string sql = @"update  T_GOODS set  FID=@FID, FNAME=@FNAME, FSTANDARD=@FSTANDARD, FUNIT=@FUNIT, FCALCTYPE=@FCALCTYPE, FCATEGORY=@FCATEGORY, FISCONSUMABLES=@FISCONSUMABLES,  FMEMO=@FMEMO
 where FGUID=@FGUID ";
             using (IDbConnection db = OpenConnection())
             {
@@ -80,6 +80,21 @@ where FGUID=@FGUID ";
                     model.message = "修改失败";
                     return model;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 判断编号是否已存在
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsFID(string FGUID, string FID)
+        {
+            string sql = "select * from T_GOODS where FGUID!=@FGUID and FID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query < T_GOODSModel>(sql, new { FGUID = FGUID,FID=FID }).Count()>0;
             }
         }
 

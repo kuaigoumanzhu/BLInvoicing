@@ -24,7 +24,7 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=1,string FID="",string FNAME="")
+        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=10,string FID="",string FNAME="")
         {
             IDictionary dic = new Hashtable();
             int totalPage=0;
@@ -36,36 +36,43 @@ namespace BL.Web.Controllers
         {
             var models = JsonHelper.Instance.Deserialize<List<T_GOODSModel>>(json);
             var model = models[0];
-            if (string.IsNullOrEmpty(model.FGUID))
+            if (goodsService.IsExistsFID(model.FGUID, model.FID))
             {
-                model.FCREATEID = UserContext.CurrentUser.UserName;
-                model.FGUID = Guid.NewGuid().ToString();
-                model.FCREATETIME = DateTime.Now;
-                model.FSTATUS = "1";
-                if (model.FSTATUS == "2")
-                {
-                    model.FSTARTTIME = DateTime.Now;
-                    model.FENDTIME = null;
-                }
-                else if (model.FSTATUS == "3")
-                {
-                    model.FENDTIME = DateTime.Now;
-                    model.FSTARTTIME = null;
-                }
-                model.FGUID = Guid.NewGuid().ToString();
-                return JsonHelper.Instance.Serialize(goodsService.AddGoods(model));
+                return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
             }
             else
             {
-                if (model.FSTATUS == "2")
+                if (string.IsNullOrEmpty(model.FGUID))
                 {
-                    model.FSTARTTIME = DateTime.Now;
+                    model.FCREATEID = UserContext.CurrentUser.UserName;
+                    model.FGUID = Guid.NewGuid().ToString();
+                    model.FCREATETIME = DateTime.Now;
+                    model.FSTATUS = "1";
+                    if (model.FSTATUS == "2")
+                    {
+                        model.FSTARTTIME = DateTime.Now;
+                        model.FENDTIME = null;
+                    }
+                    else if (model.FSTATUS == "3")
+                    {
+                        model.FENDTIME = DateTime.Now;
+                        model.FSTARTTIME = null;
+                    }
+                    model.FGUID = Guid.NewGuid().ToString();
+                    return JsonHelper.Instance.Serialize(goodsService.AddGoods(model));
                 }
-                else if (model.FSTATUS == "3")
+                else
                 {
-                    model.FENDTIME = DateTime.Now;
+                    if (model.FSTATUS == "2")
+                    {
+                        model.FSTARTTIME = DateTime.Now;
+                    }
+                    else if (model.FSTATUS == "3")
+                    {
+                        model.FENDTIME = DateTime.Now;
+                    }
+                    return JsonHelper.Instance.Serialize(goodsService.EditGoods(model));
                 }
-                return JsonHelper.Instance.Serialize(goodsService.EditGoods(model));
             }
         }
         [JsonException]

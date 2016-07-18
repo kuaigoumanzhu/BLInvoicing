@@ -8,7 +8,7 @@
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '字典类别维护',
             showToolbar: true,
-            toolbarItem: 'add,save,|,cancel,del,edit',
+            toolbarItem: 'add,save,|,cancel,edit',
             addLocation: 'first',
             dataUrl: '/DICTCategory/GetAllDATADICTJson',
             dataType: 'json',
@@ -44,7 +44,7 @@
             editUrl: '/DICTCategory/EditDATADICT',
             delUrl: '/DICTCategory/DelDATADICT',
             delConfirm: true,
-            contextMenuB: true,
+            contextMenuB: false,
             editMode: 'inline',
             fullGrid: true,
             showLinenumber: false,
