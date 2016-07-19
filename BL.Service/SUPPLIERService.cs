@@ -81,7 +81,20 @@ where FGUID=@FGUID ";
                 }
             }
         }
-
+        /// <summary>
+        /// 获取编号是否存在
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsFID(string FGUID, string FID)
+        {
+            string sql = "select * from T_SUPPLIER where FGUID!=@FGUID and FID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_SUPPLIERModel>(sql, new { FGUID = FGUID, FID = FID }).Count() > 0;
+            }
+        }
         public int DelSUPPLIER(string FGUID)
         {
 

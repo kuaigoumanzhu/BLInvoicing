@@ -46,12 +46,12 @@ namespace BL.Service
             }
         }
 
-        public IEnumerable<T_DATADICTModel> GetAllDictCategoryInfo()
+        public IEnumerable<T_DATADICTModel> GetAllDictCategoryInfo(string dictCategory)
         {
-            string sql = "select * from T_DATADICT where FCATEGORY='数据字典类别'";
+            string sql = "select * from T_DATADICT where FCATEGORY=@FCATEGORY and FSTATUS=2";
             using (IDbConnection db = OpenConnection())
             {
-                return db.Query<T_DATADICTModel>(sql);
+                return db.Query<T_DATADICTModel>(sql, new { FCATEGORY = dictCategory });
             }
         }
 

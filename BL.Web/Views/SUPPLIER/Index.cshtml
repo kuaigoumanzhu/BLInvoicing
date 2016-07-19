@@ -1,0 +1,192 @@
+﻿<div class="bjui-pageContent">
+    <form action="/Goods/GetAllGoodsJson" id="form_goods" data-toggle="ajaxsearch">
+        <p><label class="x85">名称：</label><input type="text" name="FNAME" placeholder="名称" id="txtFNAME" class="form-control"><button type="button" id="btnSearch" class="btn btn-default">搜索</button></p>
+       
+
+</form>
+    <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            $(this).bjuiajax("doAjax", {
+                url: "/DATADICT/GetAllDATADICTJson",
+                data: { FNAME: $("#txtFNAME").val() },
+                callback: function (json) {
+                    maingrid.datagrid("loadData",json,true);
+                }
+            })
+        });
+
+        $(document).on("click", "#qiyong,#jinyong", function () {
+            var selectedDatas = maingrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '未选中任何行');
+                return false;
+            }
+            var btn = $(this).attr("id");
+            var data = selectedDatas[0];
+            switch (btn) {
+                case "qiyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/SUPPLIER/SetSupplierStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "2" },
+                        confirmMsg: "确认启用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                $(this).alertmsg("ok", "已启用");
+                            } else {
+                                $(this).alertmsg("warn", "启用失败");
+                            }
+                        }
+                    })
+                    break;
+                case "jinyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/SUPPLIER/SetSupplierStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "3" },
+                        confirmMsg: "确认禁用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                $(this).alertmsg("ok", "已禁用");
+                            } else {
+                                $(this).alertmsg("warn", "禁用失败");
+                            }
+                        }
+                    })
+                    break;
+            }
+        });
+        maingrid = $("#tabGoods").datagrid({
+            gridTitle: '商品维护',
+            showToolbar: true,
+            toolbarItem: 'add,save,|,cancel,del,edit',
+            toolbarCustom: function () {
+                return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
+            },
+            addLocation: 'first',
+            dataUrl: '/SUPPLIER/GetAllSupplierJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:true,
+                    width: 50
+
+                },
+                {
+                    name: 'FID',
+                    label: '编号',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FNAME',
+                    label: '名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FADDRESS',
+                    label: '地址',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FNAME',
+                    label: '电话',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FPROVINCE',
+                    label: '省份',
+                    type:'select',
+                    items: function () {
+                        return $.getJSON('/DATADICT/GetCategoryJson?FCATEGORY=33')
+                    },
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FCATEGORY',
+                    label: '供应商类别',
+                    type: 'select',
+                    items: function () {
+                        return $.getJSON('/DATADICT/GetCategoryJson?FCATEGORY=44')
+                    },
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FSTATUS',
+                    label: '启用状态',
+                    type: 'select',
+                    items: [{ '1': '未启用' }, { '2': '已启用' }, { '3': '已禁' }],
+                    align: 'center',
+                    width: 80,
+                    add: false,
+                    edit: false,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FSTARTTIME',
+                    label: '启用时间',
+                    type: 'date',
+                    add: false,
+                    edit:false,
+                    width: 110,
+                    pattern: 'yyyy-MM-dd'
+                },
+                {
+                    name: 'FENDTIME',
+                    label: '禁用时间',
+                    type: 'date',
+                    add: false,
+                    edit: false,
+                    width: 110,
+                    pattern: 'yyyy-MM-dd'
+                }
+            ],
+            editUrl: '/SUPPLIER/EditSupplier',
+            delUrl: '/SUPPLIER/DelSupplier',
+            delConfirm: true,
+            beforeEdit: function (value, value1) {
+                if (value1 != undefined&&value1.length>0)
+                {
+                    if (value1[0].FSTATUS == "2") {
+                        $(this).alertmsg('warn', '已是启用状态，不可编辑！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '编辑提示' });
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+                return true;
+            },
+            beforeDelete: function () {
+                //hpf 查看源码删除动作未带返回值，后续可参照编辑修改
+                var value = maingrid.data('selectedDatas')[0];
+                if (value.FSTATUS == "2") {
+                    $(this).alertmsg('warn', '已是启用状态，不可删除！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '删除提示' });
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: false,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

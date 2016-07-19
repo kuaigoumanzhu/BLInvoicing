@@ -35,9 +35,9 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
         [JsonException]
-        public string GetCategoryJson()
+        public string GetCategoryJson(string FCATEGORY = "数据字典类别")
         {
-            var lst = datadictService.GetAllDictCategoryInfo();
+            var lst = datadictService.GetAllDictCategoryInfo(FCATEGORY);
             StringBuilder sb = new StringBuilder();
             sb.Append("[");
             foreach (T_DATADICTModel item in lst)
@@ -47,6 +47,7 @@ namespace BL.Web.Controllers
             string result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
             return result;
         }
+
 
         [JsonException]
         public string EditDATADICT(string json)
