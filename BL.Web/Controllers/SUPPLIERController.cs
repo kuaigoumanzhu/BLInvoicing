@@ -22,13 +22,25 @@ namespace BL.Web.Controllers
         {
             return View();
         }
+        public ActionResult SUPPLIERList()
+        {
+            return View();
+        }
         [JsonException]
         public string GetAllSupplierJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
-            if (!string.IsNullOrEmpty(Request.Form["FNAME"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
             {
-                dic["FNAME"] = Request["FNAME"].ToString();
+                dic["FID"] = Request.QueryString["FID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            {
+                dic["FNAME"] = Request.QueryString["FNAME"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FCATEGORY"]))
+            {
+                dic["FCATEGORY"] = Request.QueryString["FCATEGORY"];
             }
             int totalPage = 0;
             var lst = supplierService.GetAllSUPPLIERInfo(dic, ref totalPage, pageCurrent, pageSize);

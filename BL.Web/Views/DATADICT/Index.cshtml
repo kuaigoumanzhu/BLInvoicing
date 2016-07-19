@@ -1,11 +1,10 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     <label class="control-label">类别</label>
-    <select name="fStatus" data-toggle="selectpicker">
-        <option value="1" selected="selected">未提交</option>
-        <option value="2">已提交</option>
+    <select name="fStatus" id="selCategory" data-toggle="selectpicker">
+        
     </select>
     <label class="control-label">名称</label>
-    <input type="text" id="FNAME" size="15" />
+    <input type="text" id="txtFNAME" size="15" />
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
@@ -14,13 +13,8 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            $(this).bjuiajax("doAjax", {
-                url: "/DATADICT/GetAllDATADICTJson",
-                data: { FNAME: $("#txtFNAME").val() },
-                callback: function (json) {
-                    maingrid.datagrid("loadData",json,true);
-                }
-            })
+            var url = '/DATADICT/GetAllDATADICTJson?FNAME=' + $("#txtFNAME").val() + "&FCATEGORY=" + $("#selCategory").val();
+            maingrid.datagrid("reload", { dataUrl: url });
         });
 
         $(document).on("click", "#qiyong,#jinyong", function () {
@@ -64,15 +58,15 @@
                     break;
             }
         });
+        LoadDictCategory("selCategory");
         var itemsData;
         $(this).bjuiajax("doAjax", {
-            url: "/DATADICT/GetCategoryJson",
+            url: "/DATADICT/GetDataCategoryJson",
             async: false,
             callback: function (json) {
                 itemsData = json;
-                console.log(json);
             }
-        })
+        });
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,

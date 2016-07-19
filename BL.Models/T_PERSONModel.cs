@@ -12,9 +12,13 @@ namespace BL.Models
         /// </summary>
         public string FGUID { get; set; }
         /// <summary>
+        /// 创建人
+        /// </summary>
+        public string FCREATEID { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
-        public string FCREATETIME { get; set; }
+        public DateTime? FCREATETIME { get; set; }
         /// <summary>
         /// 编号
         /// </summary>
@@ -54,11 +58,11 @@ namespace BL.Models
         /// <summary>
         /// 启用时间
         /// </summary>
-        public string FSTARTTIME { get; set; }
+        public DateTime? FSTARTTIME { get; set; }
         /// <summary>
         /// 结束时间
         /// </summary>
-        public string FENDTIME { get; set; }
+        public DateTime? FENDTIME { get; set; }
         /// <summary>
         /// 功能URL用英文逗号隔开存储。
         /// </summary>

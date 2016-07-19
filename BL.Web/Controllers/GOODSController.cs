@@ -23,10 +23,23 @@ namespace BL.Web.Controllers
         {
             return View();
         }
+        public ActionResult GoodsList()
+        {
+            return View();
+        }
         [JsonException]
         public string GetAllGoodsJson(int pageCurrent=1, int pageSize=10,string FID="",string FNAME="")
         {
             IDictionary dic = new Hashtable();
+
+            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            {
+                dic["FID"] = Request.QueryString["FID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            {
+                dic["FNAME"] = Request.QueryString["FNAME"];
+            }
             int totalPage=0;
             var lst = goodsService.GetAllGoodsInfo(dic,ref totalPage,pageCurrent,pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize =pageSize,pageCurrent=pageCurrent,total=totalPage });

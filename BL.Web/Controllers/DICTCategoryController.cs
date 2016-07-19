@@ -21,11 +21,20 @@ namespace BL.Web.Controllers
         {
             return View();
         }
+        public ActionResult DICTCategoryList()
+        {
+            return View();
+        }
         [JsonException]
         public string GetAllDATADICTJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
             dic["FCATEGORY"] = "数据字典类别";
+
+            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            {
+                dic["FNAME"] = Request.QueryString["FNAME"];
+            }
             int totalPage = 0;
             var lst = datadictService.GetAllDictCategoryInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });

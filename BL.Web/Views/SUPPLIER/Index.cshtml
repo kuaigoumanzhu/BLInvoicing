@@ -1,12 +1,10 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     <label class="control-label">编号</label>
-    <input type="text" id="FID" size="15" />
+    <input type="text" id="txtFID" size="15" />
     <label class="control-label">名称</label>
-    <input type="text" id="FNAMW"  size="15"/>
+    <input type="text" id="txtFNAME"  size="15"/>
     <label class="control-label">供应商类别</label>
-    <select name="fStatus" data-toggle="selectpicker">
-        <option value="1" selected="selected">未提交</option>
-        <option value="2">已提交</option>
+    <select name="fStatus" id="selGYSCategory" data-toggle="selectpicker">
     </select>
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
@@ -16,13 +14,8 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            $(this).bjuiajax("doAjax", {
-                url: "/DATADICT/GetAllDATADICTJson",
-                data: { FNAME: $("#txtFNAME").val() },
-                callback: function (json) {
-                    maingrid.datagrid("loadData",json,true);
-                }
-            })
+            var url = '/SUPPLIER/GetAllSupplierJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val() + "&FCATEGORY=" + $("#selGYSCategory").val();
+            maingrid.datagrid("reload", { dataUrl: url });
         });
 
         $(document).on("click", "#qiyong,#jinyong", function () {
@@ -66,6 +59,25 @@
                     break;
             }
         });
+
+        LoadDictCategory("selGYSCategory","44");
+        var itemsData_sf;
+        $(this).bjuiajax("doAjax", {
+            url: "/DATADICT/GetDataCategoryJson?FCATEGORY=33",
+            async: false,
+            callback: function (json) {
+                itemsData_sf = json;
+            }
+        })
+
+        var itemsData_gyslb;
+        $(this).bjuiajax("doAjax", {
+            url: "/DATADICT/GetDataCategoryJson?FCATEGORY=44",
+            async: false,
+            callback: function (json) {
+                itemsData_gyslb = json;
+            }
+        })
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,
@@ -115,7 +127,7 @@
                     label: '省份',
                     type:'select',
                     items: function () {
-                        return $.getJSON('/DATADICT/GetCategoryJson?FCATEGORY=33')
+                        return itemsData_sf;
                     },
                     align: 'center',
                     width: 80,
@@ -126,7 +138,7 @@
                     label: '供应商类别',
                     type: 'select',
                     items: function () {
-                        return $.getJSON('/DATADICT/GetCategoryJson?FCATEGORY=44')
+                        return itemsData_gyslb
                     },
                     align: 'center',
                     width: 80,

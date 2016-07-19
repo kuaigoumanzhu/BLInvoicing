@@ -30,6 +30,11 @@ namespace BL.Service
                 {
                     whereStr += string.Format(" and FCATEGORY='{0}'", paraDic["FCATEGORY"].ToString());
                 }
+
+                if (paraDic.Contains("FNAME") && paraDic["FNAME"].ToString().Trim() != "")
+                {
+                    whereStr += string.Format(" and FNAME like '%{0}%'", paraDic["FNAME"].ToString());
+                }
                 DynamicParameters dp = new DynamicParameters();
                 dp.Add("@tblName", "T_DATADICT");
                 dp.Add("@strWhere", whereStr);
@@ -104,6 +109,10 @@ namespace BL.Service
                 if (paraDic.Contains("FNAME"))
                 {
                     whereStr += string.Format(" and FNAME like '%{0}%'", paraDic["FNAME"].ToString());
+                }
+                if (paraDic.Contains("FCATEGORY"))
+                {
+                    whereStr += string.Format(" and FCATEGORY='{0}'", paraDic["FCATEGORY"].ToString());
                 }
                 DynamicParameters dp = new DynamicParameters();
                 dp.Add("@tblName", "T_DATADICT");

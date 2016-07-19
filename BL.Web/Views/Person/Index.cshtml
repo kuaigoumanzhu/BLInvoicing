@@ -11,8 +11,8 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            var url = '/Goods/GetAllGoodsJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
-            maingrid.datagrid("reload", {dataUrl:url});
+            var url = '/Person/GetAllPERSONJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+            maingrid.datagrid("reload", { dataUrl: url });
         });
 
         $(document).on("click", "#qiyong,#jinyong", function () {
@@ -26,7 +26,7 @@
             switch (btn) {
                 case "qiyong":
                     $(this).bjuiajax("doAjax", {
-                        url: "/Goods/SetGoodsStatus",
+                        url: "/Person/SetPERSONStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "2" },
                         confirmMsg: "确认启用？",
                         callback: function (json) {
@@ -41,7 +41,7 @@
                     break;
                 case "jinyong":
                     $(this).bjuiajax("doAjax", {
-                        url: "/Goods/SetGoodsStatus",
+                        url: "/Person/SetPERSONStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "3" },
                         confirmMsg: "确认禁用？",
                         callback: function (json) {
@@ -64,7 +64,7 @@
                 return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
             },
             addLocation: 'first',
-            dataUrl: '/Goods/GetAllGoodsJson',
+            dataUrl: '/Person/GetAllPERSONJson',
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -75,17 +75,6 @@
                     hide:true,
                     width: 50
 
-                },
-                {
-                    name: 'FCREATETIME',
-                    label: '创建时间',
-                    type: 'date',
-                    align: 'center',
-                    width: 110,
-                    add: false,
-                    edit: false,
-                    hide: true,
-                    pattern:'yyyy-MM-dd'
                 },
                 {
                     name: 'FID',
@@ -100,37 +89,46 @@
                     width: 80
                 },
                 {
-                    name: 'FSTANDARD',
-                    label: '规格',
+                    name: 'FCOMPANYID',
+                    label: '公司编号',
                     align: 'center',
                     width: 80
                 },
                 {
-                    name: 'FUNIT',
-                    label: '计量单位',
+                    name: 'FCOMPANY',
+                    label: '公司名称',
                     align: 'center',
                     width: 80
                 },
                 {
-                    name: 'FCALCTYPE',
-                    label: '计量方式',
+                    name: 'FDEPTID',
+                    label: '部门编号',
                     align: 'center',
                     width: 80
                 },
                 {
-                    name: 'FCATEGORY',
-                    label: '商品类别',
+                    name: 'FDEPT',
+                    label: '部门名称',
                     align: 'center',
                     width: 80
                 },
                 {
-                    name: 'FISCONSUMABLES',
-                    label: '是否消耗品',
-                    type:'select',
-                    items:[{'0':'否'},{'1':'是'}],
+                    name: 'FPOSTID',
+                    label: '岗位编号',
                     align: 'center',
-                    width: 80,
-                    render: $.datagrid.renderItem
+                    width: 80
+                },
+                {
+                    name: 'FPOST',
+                    label: '岗位名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FPOSTID',
+                    label: '岗位编号',
+                    align: 'center',
+                    width: 80
                 },
                 {
                     name: 'FSTATUS',
@@ -160,16 +158,10 @@
                     edit: false,
                     width: 110,
                     pattern: 'yyyy-MM-dd'
-                },
-                {
-                    name: 'FMEMO',
-                    label: '备注',
-                    align: 'center',
-                    width: 80
                 }
             ],
-            editUrl: '/Goods/EditGoods',
-            delUrl: '/Goods/DelGoods',
+            editUrl: '/Person/EditPERSON',
+            delUrl: '/Person/DelPERSON',
             delConfirm: true,
             beforeEdit: function (value, value1) {
                 if (value1 != undefined&&value1.length>0)

@@ -1,6 +1,6 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     <label class="control-label">名称</label>
-    <input type="text" id="FNAME" size="15" />
+    <input type="text" id="txtFNAME" size="15" />
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
@@ -9,7 +9,10 @@
 </div>
 <script type="text/javascript">
     $(function () {
-      
+        $("#btnSearch").click(function () {
+            var url = '/DICTCategory/GetAllDATADICTJson?FNAME=' + $("#txtFNAME").val();
+            maingrid.datagrid("reload", { dataUrl: url });
+        });
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '字典类别维护',
             showToolbar: true,
