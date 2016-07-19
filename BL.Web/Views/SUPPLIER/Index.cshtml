@@ -1,9 +1,16 @@
-﻿<div class="bjui-pageContent">
-    <form action="/Goods/GetAllGoodsJson" id="form_goods" data-toggle="ajaxsearch">
-        <p><label class="x85">名称：</label><input type="text" name="FNAME" placeholder="名称" id="txtFNAME" class="form-control"><button type="button" id="btnSearch" class="btn btn-default">搜索</button></p>
-       
-
-</form>
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <label class="control-label">编号</label>
+    <input type="text" id="FID" size="15" />
+    <label class="control-label">名称</label>
+    <input type="text" id="FNAMW"  size="15"/>
+    <label class="control-label">供应商类别</label>
+    <select name="fStatus" data-toggle="selectpicker">
+        <option value="1" selected="selected">未提交</option>
+        <option value="2">已提交</option>
+    </select>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
     <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
