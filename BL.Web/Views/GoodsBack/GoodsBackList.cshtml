@@ -1,0 +1,102 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <label class="control-label">日期</label>
+    <input type="text" name="dateTime" id="dateTime" value="" data-toggle="datepicker" size="13" />
+    <label class="control-label">单据编号</label>
+    <input type="text" id="fCode" size="15" />
+    <label class="control-label">供应商</label>
+    <input type="text" id="fCode"  size="15"/>
+    <label class="control-label">采购人</label>
+    <input type="text" id="fCode" size="10"/>
+    <label class="control-label">表单状态</label>
+    <select name="fStatus" data-toggle="selectpicker">
+        <option value="1" selected="selected">未提交</option>
+        <option value="2">已提交</option>
+    </select>
+    <button type="button" id="searchCodeName" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabGoodsBack" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        maingrid = $("#tabGoodsBack").datagrid({
+            gridTitle: '商品回库列表',
+            addLocation: 'first',
+            dataUrl: '/GoodsBack/GetGoodsBackList',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FDATE',
+                    label: '日期',
+                    align: 'center',
+                    width: 50
+                },
+                {
+                    name: 'FCODE',
+                    label: '单据编号',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FOUTWAREHOUSEID',
+                    label: '调出仓库',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FINWAREHOUSEID',
+                    label: '调回仓库',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FMEMO',
+                    label: '摘要',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FAPPLYID',
+                    label: '填表人',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FAPPLYTIME',
+                    label: '填表日期',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FSTATUS',
+                    label: '表单状态',
+                    type: 'select',
+                    items: [{ '1': '未提交' }, { '2': '已提交' }],
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false,
+                    render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FSTARTTIME',
+                    label: '启用时间',
+                    type: 'date',
+                    edit: false,
+                    add: false,
+                    width: 180,
+                    render: function (value) {
+                        return value == null ? "" : value;
+                    }
+                },
+            ],
+            contextMenuB: true,
+            editMode: 'inline',
+            showLinenumber: false,
+            paging: false,
+            height: '100%',
+            inlineEditMult: false,
+        });
+    })
+</script>
