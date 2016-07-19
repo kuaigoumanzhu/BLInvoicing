@@ -59,6 +59,15 @@
                     break;
             }
         });
+        var itemsData;
+        $(this).bjuiajax("doAjax", {
+            url: "/DATADICT/GetCategoryJson",
+            async: false,
+            callback: function (json) {
+                itemsData = json;
+                console.log(json);
+            }
+        })
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,
@@ -96,7 +105,7 @@
                     label: '类别',
                     type:'select',
                     items: function () {
-                        return $.getJSON('/DATADICT/GetCategoryJson')
+                        return itemsData;
                     },
                     align: 'center',
                     width: 80,
