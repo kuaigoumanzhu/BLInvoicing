@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="GoodsBackService.cs" />
     <Compile Include="GoodsService.cs" />
+    <Compile Include="DATADICTService.cs" />
+    <Compile Include="SUPPLIERService.cs" />
     <Compile Include="WareHoseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

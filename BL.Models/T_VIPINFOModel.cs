@@ -5,63 +5,55 @@ using System.Text;
 
 namespace BL.Models
 {
-    public class T_GOODSModel : UiResponse
+    public class T_VIPINFOModel:UiResponse
     {
         /// <summary>
-        /// FGUID主键
+        /// FGUID 主键
         /// </summary>
         public string FGUID { get; set; }
         /// <summary>
-        /// 创建人编号
+        /// 创建人编号 默认当前登录者编号
         /// </summary>
         public string FCREATEID { get; set; }
         /// <summary>
-        /// 创建时间
+        /// 创建时间 默认当前服务器时间
         /// </summary>
         public DateTime? FCREATETIME { get; set; }
         /// <summary>
-        /// 编号
+        /// 编号（卡号）
         /// </summary>
         public string FID { get; set; }
         /// <summary>
-        /// 名称
+        /// 姓名
         /// </summary>
         public string FNAME { get; set; }
         /// <summary>
-        /// 规格
+        /// 性别
         /// </summary>
-        public string FSTANDARD { get; set; }
+        public string FSEX { get; set; }
         /// <summary>
-        /// 计量单位
+        /// 年龄
         /// </summary>
-        public string FUNIT { get; set; }
+        public string FAGE { get; set; }
         /// <summary>
-        /// 计量方式
+        /// 电话
         /// </summary>
-        public string FCALCTYPE { get; set; }
+        public string FTEL { get; set; }
         /// <summary>
-        /// 商品类别
+        /// 手机
         /// </summary>
-        public string FCATEGORY { get; set; }
+        public string FMOBILE { get; set; }
         /// <summary>
-        /// 是否消耗品
+        /// 办卡地址
         /// </summary>
-        public string FISCONSUMABLES { get; set; }
+        public string FPLACE { get; set; }
         /// <summary>
-        /// 状态
+        /// 消费次数
         /// </summary>
-        public string FSTATUS { get; set; }
+        public int FCONSUMPTION { get; set; }
         /// <summary>
-        /// 启用时间
+        /// 累计积分
         /// </summary>
-        public DateTime? FSTARTTIME { get; set; }
-        /// <summary>
-        /// 禁用时间
-        /// </summary>
-        public DateTime? FENDTIME { get; set; }
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string FMEMO { get; set; }
+        public float FINTEGRAL { get; set; }
     }
 }

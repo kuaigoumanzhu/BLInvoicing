@@ -8,35 +8,53 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
 namespace BL.Web.Controllers
 {
-    public class GOODSController : Controller
+    public class DATADICTController : Controller
     {
-        //
-        // GET: /GOODS/
-        GoodsService goodsService = new GoodsService();
+        DATADICTService datadictService = new DATADICTService();
 
         public ActionResult Index()
         {
             return View();
         }
         [JsonException]
-        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=10,string FID="",string FNAME="")
+        public string GetAllDATADICTJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
-            int totalPage=0;
-            var lst = goodsService.GetAllGoodsInfo(dic,ref totalPage,pageCurrent,pageSize);
-            return JsonHelper.Instance.Serialize(new { list = lst, pageSize =pageSize,pageCurrent=pageCurrent,total=totalPage });
+            if (!string.IsNullOrEmpty(Request.Form["FNAME"]))
+            {
+                dic["FNAME"] = Request["FNAME"].ToString();
+            }
+            int totalPage = 0;
+            var lst = datadictService.GetAllDATADICTInfo(dic, ref totalPage, pageCurrent, pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
         [JsonException]
-        public string EditGoods(string json)
+        public string GetCategoryJson(string FCATEGORY = "数据字典类别")
         {
-            var models = JsonHelper.Instance.Deserialize<List<T_GOODSModel>>(json);
+            var lst = datadictService.GetAllDictCategoryInfo(FCATEGORY);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach (T_DATADICTModel item in lst)
+            {
+                sb.Append("{\""+item.FID + "\":\"" + item.FNAME+"\"},");
+            }
+            string result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            return result;
+        }
+
+
+        [JsonException]
+        public string EditDATADICT(string json)
+        {
+            var models = JsonHelper.Instance.Deserialize<List<T_DATADICTModel>>(json);
             var model = models[0];
-            if (goodsService.IsExistsFID(model.FGUID, model.FID))
+            if (datadictService.IsExistsDICT(model.FCATEGORY, model.FGUID, model.FID))
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
             }
@@ -59,7 +77,7 @@ namespace BL.Web.Controllers
                         model.FSTARTTIME = null;
                     }
                     model.FGUID = Guid.NewGuid().ToString();
-                    return JsonHelper.Instance.Serialize(goodsService.AddGoods(model));
+                    return JsonHelper.Instance.Serialize(datadictService.AddDATADICT(model));
                 }
                 else
                 {
@@ -71,16 +89,16 @@ namespace BL.Web.Controllers
                     {
                         model.FENDTIME = DateTime.Now;
                     }
-                    return JsonHelper.Instance.Serialize(goodsService.EditGoods(model));
+                    return JsonHelper.Instance.Serialize(datadictService.EditDATADICT(model));
                 }
             }
         }
         [JsonException]
         [HttpPost]
-        public string DelGoods(string json)
+        public string DelDATADICT(string json)
         {
             JArray t = (JArray)JsonConvert.DeserializeObject(json);
-            int rel = goodsService.DelGoods(t[0]["FGUID"].ToString());
+            int rel = datadictService.DelDATADICT(t[0]["FGUID"].ToString());
             if (rel > 0)
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "删除成功" });
@@ -98,10 +116,11 @@ namespace BL.Web.Controllers
         /// <param name="FSTATUS">1未启用，2已启用，3禁用</param>
         /// <returns></returns>
         [JsonException]
-        public string SetGoodsStatus(string FGUID, string FSTATUS)
+        public string SetDATADICTStatus(string FGUID, string FSTATUS)
         {
             var time = DateTime.Now;
-            return JsonHelper.Instance.Serialize(new { result = goodsService.SetGoodsStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
+            return JsonHelper.Instance.Serialize(new { result = datadictService.SetDATADICTStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
         }
+
     }
 }

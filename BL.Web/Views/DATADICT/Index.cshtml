@@ -1,6 +1,6 @@
 ﻿<div class="bjui-pageContent">
     <form action="/Goods/GetAllGoodsJson" id="form_goods" data-toggle="ajaxsearch">
-        <p><label class="x85">编号：</label><input type="text" name="FID" id="txtFID" placeholder="编号" class="form-control"><label class="x85">名称：</label><input type="text" name="FNAME" placeholder="名称" id="txtFNAME" class="form-control"><button type="button" id="btnSearch" class="btn btn-default">搜索</button></p>
+        <p><label class="x85">名称：</label><input type="text" name="FNAME" placeholder="名称" id="txtFNAME" class="form-control"><button type="button" id="btnSearch" class="btn btn-default">搜索</button></p>
        
 
 </form>
@@ -9,8 +9,13 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            maingrid.dataUrl = '/Goods/GetAllGoodsJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
-            maingrid.datagrid("refresh");
+            $(this).bjuiajax("doAjax", {
+                url: "/DATADICT/GetAllDATADICTJson",
+                data: { FNAME: $("#txtFNAME").val() },
+                callback: function (json) {
+                    maingrid.datagrid("loadData",json,true);
+                }
+            })
         });
 
         $(document).on("click", "#qiyong,#jinyong", function () {
@@ -24,7 +29,7 @@
             switch (btn) {
                 case "qiyong":
                     $(this).bjuiajax("doAjax", {
-                        url: "/Goods/SetGoodsStatus",
+                        url: "/DATADICT/SetDATADICTStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "2" },
                         confirmMsg: "确认启用？",
                         callback: function (json) {
@@ -39,7 +44,7 @@
                     break;
                 case "jinyong":
                     $(this).bjuiajax("doAjax", {
-                        url: "/Goods/SetGoodsStatus",
+                        url: "/DATADICT/SetDATADICTStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "3" },
                         confirmMsg: "确认禁用？",
                         callback: function (json) {
@@ -62,7 +67,7 @@
                 return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
             },
             addLocation: 'first',
-            dataUrl: '/Goods/GetAllGoodsJson',
+            dataUrl: '/DATADICT/GetAllDATADICTJson',
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -73,17 +78,6 @@
                     hide:true,
                     width: 50
 
-                },
-                {
-                    name: 'FCREATETIME',
-                    label: '创建时间',
-                    type: 'date',
-                    align: 'center',
-                    width: 110,
-                    add: false,
-                    edit: false,
-                    hide: true,
-                    pattern:'yyyy-MM-dd'
                 },
                 {
                     name: 'FID',
@@ -98,37 +92,33 @@
                     width: 80
                 },
                 {
-                    name: 'FSTANDARD',
-                    label: '规格',
-                    align: 'center',
-                    width: 80
-                },
-                {
-                    name: 'FUNIT',
-                    label: '计量单位',
-                    align: 'center',
-                    width: 80
-                },
-                {
-                    name: 'FCALCTYPE',
-                    label: '计量方式',
-                    align: 'center',
-                    width: 80
-                },
-                {
                     name: 'FCATEGORY',
-                    label: '商品类别',
-                    align: 'center',
-                    width: 80
-                },
-                {
-                    name: 'FISCONSUMABLES',
-                    label: '是否消耗品',
+                    label: '类别',
                     type:'select',
-                    items:[{'0':'否'},{'1':'是'}],
+                    items: function () {
+                        return $.getJSON('/DATADICT/GetCategoryJson')
+                    },
                     align: 'center',
                     width: 80,
                     render: $.datagrid.renderItem
+                },
+                {
+                    name: 'FPARENTID',
+                    label: '上级编码',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FORDER',
+                    label: '序号',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 80
                 },
                 {
                     name: 'FSTATUS',
@@ -158,16 +148,10 @@
                     edit: false,
                     width: 110,
                     pattern: 'yyyy-MM-dd'
-                },
-                {
-                    name: 'FMEMO',
-                    label: '备注',
-                    align: 'center',
-                    width: 80
                 }
             ],
-            editUrl: '/Goods/EditGoods',
-            delUrl: '/Goods/DelGoods',
+            editUrl: '/DATADICT/EditDATADICT',
+            delUrl: '/DATADICT/DelDATADICT',
             delConfirm: true,
             beforeEdit: function (value, value1) {
                 if (value1 != undefined&&value1.length>0)

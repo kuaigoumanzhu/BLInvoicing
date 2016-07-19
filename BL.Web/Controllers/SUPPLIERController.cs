@@ -8,35 +8,38 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
 namespace BL.Web.Controllers
 {
-    public class GOODSController : Controller
+    public class SUPPLIERController : Controller
     {
-        //
-        // GET: /GOODS/
-        GoodsService goodsService = new GoodsService();
+        SUPPLIERService supplierService = new SUPPLIERService();
 
         public ActionResult Index()
         {
             return View();
         }
         [JsonException]
-        public string GetAllGoodsJson(int pageCurrent=1, int pageSize=10,string FID="",string FNAME="")
+        public string GetAllSupplierJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
-            int totalPage=0;
-            var lst = goodsService.GetAllGoodsInfo(dic,ref totalPage,pageCurrent,pageSize);
-            return JsonHelper.Instance.Serialize(new { list = lst, pageSize =pageSize,pageCurrent=pageCurrent,total=totalPage });
+            if (!string.IsNullOrEmpty(Request.Form["FNAME"]))
+            {
+                dic["FNAME"] = Request["FNAME"].ToString();
+            }
+            int totalPage = 0;
+            var lst = supplierService.GetAllSUPPLIERInfo(dic, ref totalPage, pageCurrent, pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
         [JsonException]
-        public string EditGoods(string json)
+        public string EditSupplier(string json)
         {
-            var models = JsonHelper.Instance.Deserialize<List<T_GOODSModel>>(json);
+            var models = JsonHelper.Instance.Deserialize<List<T_SUPPLIERModel>>(json);
             var model = models[0];
-            if (goodsService.IsExistsFID(model.FGUID, model.FID))
+            if (supplierService.IsExistsFID(model.FGUID, model.FID))
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
             }
@@ -59,7 +62,7 @@ namespace BL.Web.Controllers
                         model.FSTARTTIME = null;
                     }
                     model.FGUID = Guid.NewGuid().ToString();
-                    return JsonHelper.Instance.Serialize(goodsService.AddGoods(model));
+                    return JsonHelper.Instance.Serialize(supplierService.AddSUPPLIER(model));
                 }
                 else
                 {
@@ -71,16 +74,16 @@ namespace BL.Web.Controllers
                     {
                         model.FENDTIME = DateTime.Now;
                     }
-                    return JsonHelper.Instance.Serialize(goodsService.EditGoods(model));
+                    return JsonHelper.Instance.Serialize(supplierService.EditSUPPLIER(model));
                 }
             }
         }
         [JsonException]
         [HttpPost]
-        public string DelGoods(string json)
+        public string DelSupplier(string json)
         {
             JArray t = (JArray)JsonConvert.DeserializeObject(json);
-            int rel = goodsService.DelGoods(t[0]["FGUID"].ToString());
+            int rel = supplierService.DelSUPPLIER(t[0]["FGUID"].ToString());
             if (rel > 0)
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "删除成功" });
@@ -98,10 +101,11 @@ namespace BL.Web.Controllers
         /// <param name="FSTATUS">1未启用，2已启用，3禁用</param>
         /// <returns></returns>
         [JsonException]
-        public string SetGoodsStatus(string FGUID, string FSTATUS)
+        public string SetSupplierStatus(string FGUID, string FSTATUS)
         {
             var time = DateTime.Now;
-            return JsonHelper.Instance.Serialize(new { result = goodsService.SetGoodsStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
+            return JsonHelper.Instance.Serialize(new { result = supplierService.SetSUPPLIERStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
         }
+
     }
 }

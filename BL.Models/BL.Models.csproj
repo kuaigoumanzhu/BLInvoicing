@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="T_DATADICTModel.cs" />
     <Compile Include="T_GOODSModel.cs" />
     <Compile Include="T_ REPERTORYCHECKDETAILSModel.cs" />
     <Compile Include="T_ REPERTORYCHECKModel.cs" />
@@ -48,6 +49,8 @@
     <Compile Include="T_GOODSBACKModel.cs" />
     <Compile Include="T_OTHEROUTDETAILSModel.cs" />
     <Compile Include="T_OTHEROUTModel.cs" />
+    <Compile Include="T_SUPPLIERModel.cs" />
+    <Compile Include="T_VIPINFOModel.cs" />
     <Compile Include="T_WAREHOUSEModel.cs" />
     <Compile Include="UiResponse.cs" />
     <Compile Include="UserInfo.cs" />
