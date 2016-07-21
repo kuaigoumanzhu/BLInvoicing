@@ -5,7 +5,7 @@
 </div>
 <div class="bjui-pageContent">
 
-    <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
+    <table id="tabDICTCategory" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -13,7 +13,7 @@
             var url = '/DICTCategory/GetAllDATADICTJson?FNAME=' + $("#txtFNAME").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
-        maingrid = $("#tabGoods").datagrid({
+        maingrid = $("#tabDICTCategory").datagrid({
             gridTitle: '字典类别维护',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel,edit',

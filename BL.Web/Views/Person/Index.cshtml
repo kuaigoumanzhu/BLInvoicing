@@ -6,7 +6,7 @@
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
-    <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
+    <table id="tabPerson" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -56,8 +56,8 @@
                     break;
             }
         });
-        maingrid = $("#tabGoods").datagrid({
-            gridTitle: '商品维护',
+        maingrid = $("#tabPerson").datagrid({
+            gridTitle: '人员维护',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel,del,edit',
             toolbarCustom: function () {
