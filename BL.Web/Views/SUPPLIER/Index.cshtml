@@ -59,25 +59,11 @@
                     break;
             }
         });
+        LoadGYSCategory("selGYSCategory");
+        var itemsData_sf = LoadProvinceDataForRowSel();
+        console.log(itemsData_sf);
+        var itemsData_gyslb = LoadGYSDataForRowSel();
 
-        LoadDictCategory("selGYSCategory","44");
-        var itemsData_sf;
-        $(this).bjuiajax("doAjax", {
-            url: "/DATADICT/GetDataCategoryJson?FCATEGORY=33",
-            async: false,
-            callback: function (json) {
-                itemsData_sf = json;
-            }
-        })
-
-        var itemsData_gyslb;
-        $(this).bjuiajax("doAjax", {
-            url: "/DATADICT/GetDataCategoryJson?FCATEGORY=44",
-            async: false,
-            callback: function (json) {
-                itemsData_gyslb = json;
-            }
-        })
         maingrid = $("#tabSUPPLIER").datagrid({
             gridTitle: '供应商维护',
             showToolbar: true,
