@@ -8,7 +8,7 @@ namespace BL.Models
     /// <summary>
     /// 库存盘点主表
     /// </summary>
-    public class T__REPERTORYCHECK
+    public class T_REPERTORYCHECK
     {
         /// <summary>
         /// 主键
