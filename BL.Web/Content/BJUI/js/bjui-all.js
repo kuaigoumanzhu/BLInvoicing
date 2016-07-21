@@ -7070,7 +7070,8 @@
         beforeDelete    : null,     // Function - before delete method, return true execute delete method
         beforeSave      : null,     // Function - before save method, arguments($trs, datas)
         afterSave       : null,     // Function - after save method, arguments($trs, datas)
-        afterDelete     : null      // Function - after delete method
+        afterDelete     :null,      // Function - after delete method
+        onDblClickRow   :null,      //hpf 2016 07 21添加双击事件
     }
     
     Datagrid.renderItem = function(value, data, items) {
@@ -9504,10 +9505,22 @@
         var that = this, options = that.options, trs = that.$tbody.find('> tr')
         
         if (!$trs) $trs = trs
-        
+        //hpf 2016 07 21 初始化双击事件
+        $trs.on('dblclick', function () {
+            var $tr = $(this), index = $tr.index(), data;
+            var dblClickRow = options.onDblClickRow;
+            if (dblClickRow) {
+                if (typeof dblClickRow === 'function') {
+                    index = that.tools.getNoChildDataIndex(index)
+                    if (that.isDom) data = $tr.data('initData') || that.tools.setDomData($tr)
+                    else data = that.data[index]
+                    dblClickRow.call(that, data, index);
+
+                }
+            }
+        })
         $trs.on('click.bjui.datagrid.tr', function(e, checkbox) {
             var $tr = $(this), index = $tr.index(), data, $selectedTrs = that.$tbody.find('> tr.'+ that.classnames.tr_selected), $last = that.$lastSelect, checked, $lockTrs = that.$lockTbody && that.$lockTbody.find('> tr')
-            
             if (checkbox) {
                 checked = checkbox.is(':checked')
                 if (!checked) that.$lastSelect = $tr
