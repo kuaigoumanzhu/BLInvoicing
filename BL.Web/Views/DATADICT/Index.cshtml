@@ -59,14 +59,8 @@
             }
         });
         LoadDictCategory("selCategory");
-        var itemsData;
-        $(this).bjuiajax("doAjax", {
-            url: "/DATADICT/GetDataCategoryJson",
-            async: false,
-            callback: function (json) {
-                itemsData = json;
-            }
-        });
+        var itemsData = LoadDataForRowSel();
+      
         maingrid = $("#tabDATADICT").datagrid({
             gridTitle: '字典维护',
             showToolbar: true,

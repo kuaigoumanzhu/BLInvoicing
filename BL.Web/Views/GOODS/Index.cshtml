@@ -14,7 +14,6 @@
             var url = '/Goods/GetAllGoodsJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
             maingrid.datagrid("reload", {dataUrl:url});
         });
-
         $(document).on("click", "#qiyong,#jinyong", function () {
             var selectedDatas = maingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
@@ -56,6 +55,8 @@
                     break;
             }
         });
+        var itemJLDW = LoadUnitDataForRowSel();
+        var itemSPFL = LoadGoodsDataForRowSel();
         maingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,
@@ -108,8 +109,13 @@
                 {
                     name: 'FUNIT',
                     label: '计量单位',
+                    type: 'select',
+                    items: function () {
+                        return itemJLDW;
+                    },
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FCALCTYPE',
@@ -120,8 +126,13 @@
                 {
                     name: 'FCATEGORY',
                     label: '商品类别',
+                    type: 'select',
+                    items: function () {
+                        return itemSPFL;
+                    },
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FISCONSUMABLES',

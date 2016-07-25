@@ -46,13 +46,17 @@ namespace BL.Web.Controllers
         public string GetDataCategoryJson(string FCATEGORY = "数据字典类别")
         {
             var lst = datadictService.GetAllDictCategoryInfo(FCATEGORY);
-            StringBuilder sb = new StringBuilder();
-            sb.Append("[");
-            foreach (T_DATADICTModel item in lst)
+            string result = "[]";
+            if (lst.Count() > 0)
             {
-                sb.Append("{\""+item.FID + "\":\"" + item.FNAME+"\"},");
+                StringBuilder sb = new StringBuilder();
+                sb.Append("[");
+                foreach (T_DATADICTModel item in lst)
+                {
+                    sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
+                }
+                result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
             }
-            string result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
             return result;
         }
         [JsonException]
