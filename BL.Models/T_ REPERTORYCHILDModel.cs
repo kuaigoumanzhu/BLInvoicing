@@ -45,7 +45,7 @@ namespace BL.Models
         /// <summary>
         /// 商品名称
         /// </summary>
-        public string FNAME { get; set; }
+        public string FGOODSNAME { get; set; }
         /// <summary>
         /// 计量单位
         /// </summary>

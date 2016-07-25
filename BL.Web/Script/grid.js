@@ -1,4 +1,6 @@
-﻿/*
+﻿/// <reference path="../Content/BJUI/js/jquery-1.11.3.min.js" />
+/// <reference path="../Content/BJUI/js/bjui-all.js" />
+/*
 grid基类
 */
 function Grid() {

@@ -73,5 +73,10 @@ namespace BL.Web.Controllers
             var lst = goodsBack.GetAllGoodsBackDetailsInfo(parentId);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = lst.Count() });
         }
+        [JsonException]
+        public string EditGoodsBackDetailsJson(string json)
+        {
+            return "";
+        }
     }
 }

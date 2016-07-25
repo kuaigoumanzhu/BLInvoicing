@@ -1,12 +1,8 @@
 ﻿@model IEnumerable<BL.Models.T_REPERTORYCHILDModel>
 <div class="bjui-pageHeader">
-    <form id="pagerForm" data-toggle="ajaxsearch" action="/Common/LookUpRepertoryChild?inWareHouse" method="post">
-        <div class="bjui-searchBar">
-            <div class="pull-right">
-                <button type="button" class="btn btn-blue" data-toggle="lookupback" data-lookupid="child" data-warn="请至少选择一项职业" data-icon="check-square-o">选择选中</button>
-            </div>
-        </div>
-    </form>
+    <div class="pull-right">
+        <button type="button" class="btn btn-close btn-blue" data-icon="check-square-o">选择选中</button>
+    </div>
 </div>
 <div class="bjui-pageContent">
     <table data-toggle="tablefixed" data-width="100%">
@@ -21,7 +17,6 @@
                 <th data-order-field="FPRICE">成本单价</th>
                 <th data-order-field="FMARKETPRICE">销售单价</th>
                 <th width="28"><input type="checkbox" class="checkboxCtrl" data-group="child" data-toggle="icheck"></th>
-                <th width="74">操作</th>
             </tr>
         </thead>
         <tbody>
@@ -34,15 +29,12 @@
                     <td>@i</td>
                     <td>@item.FBARCODE</td>
                     <td>@item.FGOODSID</td>
-                    <td>@item.FNAME</td>
+                    <td>@item.FGOODSNAME</td>
                     <td>@item.FUNIT</td>
                     <td>@item.FQUANTITY</td>
                     <td>@item.FPRICE</td>
                     <td>@item.FMARKETPRICE</td>
                     <td><input type="checkbox" name="child" data-toggle="icheck" value="@Json"></td>
-                    <td>
-                        <a href="javascript:;" data-toggle="lookupback" data-args="@Json" class="btn btn-blue" title="选择本项" data-icon="check">选择</a>
-                    </td>
                 </tr>
             }
         </tbody>

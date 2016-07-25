@@ -22,10 +22,11 @@
         var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID";
         goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
-            toolbarCustom: '<button id="print" class="btn btn-green">打印</button><button id="preview" class="btn btn-red">预览</button>' +
-            '<button id="export" class="btn btn-red">导出</button><button id="applay" class="btn btn-red">提交</button>',
+            toolbarCustom: '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button><button type="button" id="btnDel" data-icon="remove"  class="btn btn-red">删除</button>'+
+            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>'+
+            '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
             showToolbar: true,
-            toolbarItem: 'add,save,del,cancel',
+            toolbarItem: 'add,edit,save,del,cancel',
             addLocation: 'first',
             dataUrl: url,
             dataType: 'json',
@@ -35,79 +36,93 @@
                     name: 'FBARCODE',
                     label: '商品条码',
                     align: 'center',
-                    width: 170
+                    width: 100,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FGOODSID',
                     label: '商品编号',
                     align: 'center',
-                    width: 170,
-                    add: false
+                    width: 100,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FGOODSNAME',
                     label: '商品名称',
                     align: 'center',
                     width: 100,
-                    add: false
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FUNIT',
                     label: '计量单位',
                     align: 'center',
-                    width: 100,
-                    add: false
+                    width: 80,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FBATCH',
                     label: '批次',
                     align: 'center',
-                    width: 100,
-                    type: 'lookup'
+                    width: 220,
+                    edit: false,
+                    add:false
                 },
                 {
-                    name: 'FQUANTITY',
+                    name: 'FENABLE',
                     label: '账存数量',
                     align: 'center',
-                    width: 100,
-                    add: false
+                    width: 80,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FPRICE',
                     label: '成本单价',
                     align: 'center',
-                    width: 100,
-                    add: false
+                    width: 80,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FMARKETPRICE',
                     label: '销售单价',
                     align: 'center',
                     width: 80,
-                    add: false
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FACTUALQUANTITY',
                     label: '实际数量',
                     rule: 'number',
-                    width: 180
+                    width: 80,
+                    type:'spinner',
+                    attrs:{max:10000},
+                    rule:"required,integer"
                 },
                 {
                     name: 'FDIFFERQUANTITY',
                     label: '数量差异',
                     align: 'center',
-                    width: 100,
-                    add: false
+                    width: 80,
+                    edit: false,
+                    add:false
                 },
                 {
                     name: 'FDIFFERMONEY',
                     label: '销售金额差异',
                     align: 'center',
                     width: 100,
-                    add: false
+                    edit: false,
+                    add:false
                 }
             ],
-            editUrl: '/GoodsBack/EditGoodsBackJson',
+            editUrl: '/GoodsBack/EditGoodsBackDetailsJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
@@ -116,7 +131,73 @@
                 return true;
             }
         });
+        var datas=[];
+        var trdata=null;
+        var clickTR=null;
+        $(document).on("click","#btnAdd,#btnSave,#btnDel",function(){
+            var btn = $(this).attr("id");
+            switch(btn){
+                case "btnAdd":
+                    Add();
+                    break;
+                case "btnSave":
+                    datas=[]
+                    goodsBackDetailGrid.datagrid("doSaveEditRow"); 
+                    break;
+                case "btnDel":
 
-        
+                    break;
+            }
+        })
+        function Add(){
+            datas=[];
+            $(this).dialog({
+                id:'GoodsBackDetail',
+                url:'/Common/LookUpRepertoryChild?inWareHouse='+outWare,
+                title:'选择商品',
+                width:840,
+                beforeClose:function($dialog){
+                    var $checked=$dialog.find('input[name="child"]:checked');
+                    if($checked.length==0)
+                        return true;
+                    $checked.each(function(){
+                        var goods=JSON.parse($(this).val());
+                        goods.FNAME=goods.FGOODSNAME;
+                        delete goods.FGOODSNAME;
+                        datas.unshift(goods);
+                        goodsBackDetailGrid.datagrid("add",0,goods);   
+                    });
+                    goodsBackDetailGrid.data("bjui.datagrid").tools.createTrs(datas,true);
+                    $checked.each(function(i){
+                        goodsBackDetailGrid.datagrid("doEditRow", i); 
+                    });
+                    trClick();
+                    return true;
+                }
+            })
+        };
+        $(document).on('keypress',"#tabGoodsBackDetails input",function(event){
+            //改为只监听数字键
+            if(event.keyCode!="13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if(trdata!=null){
+                var differQuantity= trdata.FENABLE-$(this).val();
+                var differMoney=differQuantity*trdata.FMARKETPRICE;
+                goodsBackDetailGrid.datagrid("updateRow", trdata.gridIndex,{"FACTUALQUANTITY":$(this).val(),"FDIFFERQUANTITY":differQuantity,"FDIFFERMONEY":differMoney});  
+                if(clickTR!=null&&clickTR.hasClass("datagrid-edit-tr"))
+                    clickTR.removeClass("datagrid-edit-tr");
+                goodsBackDetailGrid.datagrid("doEditRow", trdata.gridIndex);
+                //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                $($(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
+            }
+        })
+        function trClick(){
+            var that=goodsBackDetailGrid.data("bjui.datagrid");
+            that.$tbody.find('> tr').on('keyCodeEnter',function(){
+                trdata=that.data[$(this).index()];
+                clickTR=$(this);
+            });
+        }
     })
 </script>

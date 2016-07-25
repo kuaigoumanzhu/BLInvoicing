@@ -69,7 +69,7 @@ function LoadDataForRowSel(categoryId)
     });
     return rel;
 }
-}
+//hpf 表格下来列表根据value获得text
 (function ($) {
     $.fn.GetSelectText = function () {
         var lst = arguments[0];
