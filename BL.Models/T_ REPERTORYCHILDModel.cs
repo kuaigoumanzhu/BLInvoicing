@@ -6,9 +6,9 @@ using System.Text;
 namespace BL.Models
 {
     /// <summary>
-    /// 商品回库明细表
+    /// 分仓库存表
     /// </summary>
-    public class T_GOODSBACKDETAILSModel:UiResponse
+    public class T_REPERTORYCHILDModel
     {
         /// <summary>
         /// 主键
@@ -23,9 +23,21 @@ namespace BL.Models
         /// </summary>
         public DateTime FCREATETIME { get; set; }
         /// <summary>
-        /// 主表FGUID:T_PURCHASEBACK(采购退货)表中FGUID
+        /// 批次:T_PURCHASE(采购入库主表)中FCODE批次直接用采购入库单号表示
         /// </summary>
-        public string FPARENTID { get; set; }
+        public string FBATCH { get; set; }
+        /// <summary>
+        /// 调出仓库T_WAREHOUSE表中FID 下拉选择 where FCATEGORY=“1”；
+        /// </summary>
+        public string FOUTWAREHOUSEID{get;set;}
+        /// <summary>
+        /// 调入仓库T_WAREHOUSE表中FID 下拉选择 where FCATEGORY=“2”
+        /// </summary>
+        public string FINWAREHOUSEID { get; set; }
+        /// <summary>
+        /// 条码
+        /// </summary>
+        public string FBARCODE { get; set; }
         /// <summary>
         /// 商品编号:T_GOODS(商品表)表中FID
         /// </summary>
@@ -33,25 +45,25 @@ namespace BL.Models
         /// <summary>
         /// 商品名称
         /// </summary>
-        public string FGOODSNAME { get; set; }
+        public string FNAME { get; set; }
         /// <summary>
         /// 计量单位
         /// </summary>
         public string FUNIT { get; set; }
         /// <summary>
-        /// 批次:T_PURCHASE(采购入库主表)中FCODE批次直接用采购入库单号表示
-        /// </summary>
-        public string FBATCH { get; set; }
-        /// <summary>
-        /// 账存数量
+        /// 总数量
         /// </summary>
         public float FQUANTITY { get; set; }
         /// <summary>
-        /// 实际数量
+        /// 剩余数量
         /// </summary>
-        public float FACTUALQUANTITY { get; set; }
+        public float FSURPLUS { get; set;}
         /// <summary>
-        /// 单价
+        /// 可用数量
+        /// </summary>
+        public float FENABLE { get; set;}
+        /// <summary>
+        /// 成本单价
         /// </summary>
         public float FPRICE { get; set; }
         /// <summary>
@@ -59,19 +71,7 @@ namespace BL.Models
         /// </summary>
         public float FMARKETPRICE { get; set; }
         /// <summary>
-        /// 差异数量
-        /// </summary>
-        public float FDIFFERQUANTITY { get; set; }
-        /// <summary>
-        /// 差异金额
-        /// </summary>
-        public float FDIFFERMONEY { get; set; }
-        /// <summary>
-        /// 条码
-        /// </summary>
-        public string FBARCODE { get; set; }
-        /// <summary>
-        /// 备注
+        /// 摘要
         /// </summary>
         public string FMEMO { get; set; }
     }

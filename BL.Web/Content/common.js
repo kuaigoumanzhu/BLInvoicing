@@ -18,3 +18,16 @@
         }
     });
 }
+(function ($) {
+    $.fn.GetSelectText = function () {
+        var lst = arguments[0];
+        var key = arguments[1];
+        for (var i = 0, l = lst.length; i < l; i++) {
+            for (var item in lst[i]) {
+                if (item == key) {
+                    return lst[i][key];
+                }
+            }
+        }
+    }
+})(jQuery);

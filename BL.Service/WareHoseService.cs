@@ -14,7 +14,7 @@ namespace BL.Service
     {
         public IEnumerable<T_WAREHOUSEModel> GetAllWareHoseInfo()
         {
-            string sql = "select * from T_WAREHOUSE";
+            string sql = "select * from T_WAREHOUSE with(nolock)";
             using (IDbConnection db = OpenConnection())
             {
                 return db.Query<T_WAREHOUSEModel>(sql);

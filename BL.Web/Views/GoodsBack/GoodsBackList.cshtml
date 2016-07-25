@@ -3,10 +3,6 @@
     <input type="text" name="dateTime" id="dateTime" value="" data-toggle="datepicker" size="13" />
     <label class="control-label">单据编号</label>
     <input type="text" id="fCode" size="15" />
-    <label class="control-label">供应商</label>
-    <input type="text" id="fCode"  size="15"/>
-    <label class="control-label">采购人</label>
-    <input type="text" id="fCode" size="10"/>
     <label class="control-label">表单状态</label>
     <select name="fStatus" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
@@ -19,8 +15,18 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        maingrid = $("#tabGoodsBack").datagrid({
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        var url="";
+        goodsBackGrid = $("#tabGoodsBack").datagrid({
             gridTitle: '商品回库列表',
+            showToolbar: true,
+            toolbarItem: 'add,save,cancel',
             addLocation: 'first',
             dataUrl: '/GoodsBack/GetGoodsBackList',
             dataType: 'json',
@@ -29,44 +35,57 @@
                 {
                     name: 'FDATE',
                     label: '日期',
+                    type: 'date',
                     align: 'center',
-                    width: 50
+                    add: false,
+                    width: 170
                 },
                 {
                     name: 'FCODE',
                     label: '单据编号',
                     align: 'center',
-                    width: 100,
+                    width: 170,
+                    add: false
                 },
                 {
                     name: 'FOUTWAREHOUSEID',
                     label: '调出仓库',
                     align: 'center',
-                    width: 100,
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
+                    width: 100
                 },
                 {
                     name: 'FINWAREHOUSEID',
                     label: '调回仓库',
                     align: 'center',
-                    width: 100,
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
+                    width: 100
                 },
                 {
                     name: 'FMEMO',
                     label: '摘要',
                     align: 'center',
-                    width: 100,
+                    width: 100
                 },
                 {
-                    name: 'FAPPLYID',
+                    name: 'FAPPLYName',
                     label: '填表人',
                     align: 'center',
                     width: 100,
+                    add: false
                 },
                 {
                     name: 'FAPPLYTIME',
                     label: '填表日期',
                     align: 'center',
                     width: 100,
+                    add: false
                 },
                 {
                     name: 'FSTATUS',
@@ -75,8 +94,6 @@
                     items: [{ '1': '未提交' }, { '2': '已提交' }],
                     align: 'center',
                     width: 80,
-                    edit: false,
-                    add: false,
                     render: $.datagrid.renderItem
                 },
                 {
@@ -91,12 +108,27 @@
                     }
                 },
             ],
+            linenumberAll:true,
+            editUrl: '/GoodsBack/EditGoodsBackJson',
             contextMenuB: true,
             editMode: 'inline',
-            showLinenumber: false,
-            paging: false,
             height: '100%',
             inlineEditMult: false,
+            onDblClickRow: function (rowData, index) {
+                var outWare = $(this).GetSelectText(wareHouseLst, rowData.FOUTWAREHOUSEID);
+                var inWare = $(this).GetSelectText(wareHouseLst, rowData.FINWAREHOUSEID);
+                var jsonStr = JSON.stringify(rowData);
+                $(this).navtab({
+                    id: 'goodsBackDetails', url: '/GoodsBack/GoodBackDetails', title: '商品回库明细',
+                    data: { rowData: jsonStr, outWare: outWare, inWare: inWare }, fresh:true
+                });
+            }
         });
+        function DetailsGrid() {
+            
+            this.reload = function () {
+                this.goodsBackDetailGrid.datagrid('reload', { dataUrl: url });
+            }
+        }
     })
 </script>

@@ -52,4 +52,15 @@ namespace BL.Models
         /// </summary>
         public DateTime? FENDTIME { get; set; }
     }
+    public class SelectWareHouseModel
+    {
+        /// <summary>
+        /// 编号
+        /// </summary>
+        public string FID { get; set; }
+        /// <summary>
+        /// 名称
+        /// </summary>
+        public string FNAME { get; set; }
+    }
 }

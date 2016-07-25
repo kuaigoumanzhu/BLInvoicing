@@ -121,6 +121,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CONSUMABLESController.cs" />
     <Compile Include="Controllers\DATADICTController.cs" />
     <Compile Include="Controllers\DICTCategoryController.cs" />
@@ -633,6 +634,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CONSUMABLES\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GoodsBack\GoodBackDetails.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Common\LookUpRepertoryChild.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

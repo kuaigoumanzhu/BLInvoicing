@@ -11125,12 +11125,15 @@
                 }
             })
             
-            if (addData && typeof addData === 'object')
+            if (addData && typeof addData === 'object') {
                 $tr.data('datagrid.addData', addData)
-            
-            obj = $.extend({}, that.attach, obj)
-            if (!that.emptyData) that.emptyData = obj
-            
+                obj = $.extend({}, obj, addData);//hpf 2016 07 24 添加数据合并
+                obj = $.extend({}, that.attach, obj)
+                that.emptyData = obj;
+            } else {
+                obj = $.extend({}, that.attach, obj)
+                that.emptyData = obj//hpf 2016 07 24不管有没有值都重新初始化
+            }
             return {tr:$tr, lockTr:$lockTr.find('> td').length ? $lockTr : null}
         }
         

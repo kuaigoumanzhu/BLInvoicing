@@ -1,0 +1,122 @@
+﻿@model BL.Models.ViewGOODSBACKModel
+<div class="bjui-pageHeader" style="background:#FFF;">
+    <table>
+        <tbody>
+            <tr>
+                <td><label>日期：</label><input type="text" id="date" value="" data-toggle="datepicker" size="12" /></td>
+                <td><label>调出仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare</label></td>
+                <td><label>调回仓库：</label><label id="FINWAREHOUSEID">@ViewBag.inWare</label></td>
+                <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
+                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
+                <td><label>摘要：</label><label id="fmemo">@Model.FMEMO</label></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabGoodsBackDetails" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var outWare=@Model.FOUTWAREHOUSEID;
+        var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID";
+        goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
+            gridTitle: '商品回库明细',
+            toolbarCustom: '<button id="print" class="btn btn-green">打印</button><button id="preview" class="btn btn-red">预览</button>' +
+            '<button id="export" class="btn btn-red">导出</button><button id="applay" class="btn btn-red">提交</button>',
+            showToolbar: true,
+            toolbarItem: 'add,save,del,cancel',
+            addLocation: 'first',
+            dataUrl: url,
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FBARCODE',
+                    label: '商品条码',
+                    align: 'center',
+                    width: 170
+                },
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 170,
+                    add: false
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FBATCH',
+                    label: '批次',
+                    align: 'center',
+                    width: 100,
+                    type: 'lookup'
+                },
+                {
+                    name: 'FQUANTITY',
+                    label: '账存数量',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FPRICE',
+                    label: '成本单价',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FMARKETPRICE',
+                    label: '销售单价',
+                    align: 'center',
+                    width: 80,
+                    add: false
+                },
+                {
+                    name: 'FACTUALQUANTITY',
+                    label: '实际数量',
+                    rule: 'number',
+                    width: 180
+                },
+                {
+                    name: 'FDIFFERQUANTITY',
+                    label: '数量差异',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FDIFFERMONEY',
+                    label: '销售金额差异',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                }
+            ],
+            editUrl: '/GoodsBack/EditGoodsBackJson',
+            contextMenuB: true,
+            editMode: 'inline',
+            height: '100%',
+            beforeEdit:function(){
+                
+                return true;
+            }
+        });
+
+        
+    })
+</script>
