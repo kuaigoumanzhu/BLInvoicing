@@ -125,6 +125,7 @@
     <Compile Include="Controllers\CONSUMABLESController.cs" />
     <Compile Include="Controllers\DATADICTController.cs" />
     <Compile Include="Controllers\DICTCategoryController.cs" />
+    <Compile Include="Controllers\FNCBALANCEController.cs" />
     <Compile Include="Controllers\GoodsBackController.cs" />
     <Compile Include="Controllers\GOODSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -646,6 +647,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Common\LookUpRepertoryChild.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\FNCBALANCE\FncbalanceDetail.cshtml" />
+    <Content Include="Views\FNCBALANCE\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

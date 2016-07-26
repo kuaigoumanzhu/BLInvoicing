@@ -45,12 +45,12 @@ namespace BL.Service
         {
             using (IDbConnection db = OpenConnection())
             {
-                //开户事务
+                //开始事务
                 var trans = db.BeginTransaction();
                 var rows = db.Execute("delete from T_WARNING ",null, trans);
                 if (rows > 0)
                 {
-                    rows = db.Execute("insert into T_WARNING (FGUID,FCREATEID,FCREATETIME,FWAREHOUSEID,FGOODSID,FGOODSNAME,FENDTIME) select NEWID(),@FCREATEID,@FCREATETIME,FINWAREHOUSEID,FGOODSID,FGOODSNAME from T_REPERTORYCHILD", new { FCREATEID = model.FCREATEID, FCREATETIME=model.FCREATETIME }, trans);
+                    rows = db.Execute("insert into T_WARNING (FGUID,FCREATEID,FCREATETIME,FWAREHOUSEID,FGOODSID,FGOODSNAME,FENDTIME) select NEWID(),@FCREATEID,@FCREATETIME,FINWAREHOUSEID,FGOODSID,FGOODSNAME,(select max(FDATE) from T_SALEDAYBOOK where FPARENTID=T_REPERTORYCHILD.FGUID) from T_REPERTORYCHILD", new { FCREATEID = model.FCREATEID, FCREATETIME = model.FCREATETIME }, trans);
                     if (rows > 0) 
                         trans.Commit();
                     else
