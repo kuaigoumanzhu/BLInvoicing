@@ -1,0 +1,105 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <h2>财务结算</h2>
+    <input type="hidden" id="hidFparentId" value="" />
+    <label class="control-label">日期</label>
+    <input type="text" name="dateTime" id="saledateTime" value="" data-toggle="datepicker" size="13" />  
+    <label class="control-label">仓库</label>
+    <select id="selWarehose" data-toggle="selectpicker">
+        <option value="1" selected="selected">未提交</option>
+        <option value="2">已提交</option>
+    </select>
+    <label class="control-label">单据编号</label>
+    <input type="text" id="txtNo"  size="15"/>
+    <label class="control-label">摘要</label>    
+    <input type="text" id="txtFmemo"  size="15"/>
+    <label class="control-label">制单人</label>    
+    <input type="text" id="txtCreateor"  size="15"/>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnNew" class="btn btn-success">新增</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabFNCBALANCEDetail" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+            maingrid.datagrid("reload", {dataUrl:url});
+        });
+
+        $("#saledateTime").blur(function () {
+            if($("#selWarehose").val()!="")
+            {
+                var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+                maingrid.datagrid("reload", { dataUrl: url });
+            }
+        });
+        $("#selWarehose").change(function () {
+            if ($("#saledateTime").val() != "") {
+                var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+                maingrid.datagrid("reload", { dataUrl: url });
+            }
+        });
+
+        var itemJLDW = LoadUnitDataForRowSel();
+        var itemSPFL = LoadGoodsDataForRowSel();
+        maingrid = $("#tabFNCBALANCEDetail").datagrid({
+            gridTitle: '财务结算明细',
+            showToolbar: true,
+            toolbarItem: 'save,|,cancel,edit',
+            addLocation: 'first',
+            dataUrl: '/FNCBALANCE/GetAllFNCBALANCEJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:true,
+                    width: 50
+
+                },
+                {
+                    name: 'FWAREHOUSEID',
+                    label: '销售仓库',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FMARKETMONEY',
+                    label: '销售金额',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FBACKTMONEY',
+                    label: '回款金额',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FDIFFERMONEY',
+                    label: '差异金额',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 110
+                }
+            ],
+            contextMenuB: true,
+            editUrl: '/FNCBALANCE/GetAllFNCBALANCEJson',
+            editMode: 'inline',
+            inlineEditMult:true,
+            fullGrid: true,
+            showLinenumber: true,
+            paging: false,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

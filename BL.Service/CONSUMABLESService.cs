@@ -12,7 +12,7 @@ namespace BL.Service
 {
     public class CONSUMABLESService : DBContext
     {
-        public IEnumerable<T_GOODSModel> GetAllGoodsInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
+        public IEnumerable<T_CONSUMABLESModel> GetAllCONSUMABLESInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " 1=1 ";
@@ -36,7 +36,7 @@ namespace BL.Service
                 //return db.Query<T_GOODSModel>(sql);
                 var result = db.QueryMultiple("sp_SplitPage_GetList", dp, null, null, CommandType.StoredProcedure);
                 var resultPage = result.Read<Int32>();
-                var resultGrid = result.Read<T_GOODSModel>();
+                var resultGrid = result.Read<T_CONSUMABLESModel>();
                 totalPage = resultPage.First();
                 return resultGrid;
             }
