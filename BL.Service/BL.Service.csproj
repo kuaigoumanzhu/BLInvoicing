@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonService.cs" />
     <Compile Include="CONSUMABLESService.cs" />
     <Compile Include="FNCBALANCEDETAILSService.cs" />
     <Compile Include="FNCBALANCEService.cs" />
