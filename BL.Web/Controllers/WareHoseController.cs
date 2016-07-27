@@ -41,22 +41,29 @@ namespace BL.Web.Controllers
             var models = JsonHelper.Instance.Deserialize<List<T_WAREHOUSEModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
-            if (model.FCATEGORY == "1")
+            if (wareHose.IsExistsFID(model.FGUID, model.FID))
             {
-                model.FPARENTID = "-1";
-            }
-            if (string.IsNullOrEmpty(model.FGUID))//没有guid表示新增
-            {
-                model.FGUID = Guid.NewGuid().ToString();
-                model.FCREATETIME = DateTime.Now;
-                model.FSTATUS = "1";
-                var result = wareHose.AddWareHoseInfo(model);
-                return JsonHelper.Instance.Serialize(result);
+                return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
             }
             else
             {
-                var result = wareHose.EditWareHoseByGuid(model);
-                return JsonHelper.Instance.Serialize(result);
+                if (model.FCATEGORY == "1")
+                {
+                    model.FPARENTID = "-1";
+                }
+                if (string.IsNullOrEmpty(model.FGUID))//没有guid表示新增
+                {
+                    model.FGUID = Guid.NewGuid().ToString();
+                    model.FCREATETIME = DateTime.Now;
+                    model.FSTATUS = "1";
+                    var result = wareHose.AddWareHoseInfo(model);
+                    return JsonHelper.Instance.Serialize(result);
+                }
+                else
+                {
+                    var result = wareHose.EditWareHoseByGuid(model);
+                    return JsonHelper.Instance.Serialize(result);
+                }
             }
         }
         /// <summary>

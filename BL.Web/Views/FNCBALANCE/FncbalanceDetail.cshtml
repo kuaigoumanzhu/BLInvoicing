@@ -1,54 +1,66 @@
-﻿<div class="bjui-pageHeader" style="background:#FFF;">
-    <h2>财务结算</h2>
-    <input type="hidden" id="hidFparentId" value="" />
-    <label class="control-label">日期</label>
-    <input type="text" name="dateTime" id="saledateTime" value="" data-toggle="datepicker" size="13" />  
-    <label class="control-label">仓库</label>
-    <select id="selWarehose" data-toggle="selectpicker">
-        <option value="1" selected="selected">未提交</option>
-        <option value="2">已提交</option>
-    </select>
-    <label class="control-label">单据编号</label>
-    <input type="text" id="txtNo"  size="15"/>
-    <label class="control-label">摘要</label>    
-    <input type="text" id="txtFmemo"  size="15"/>
-    <label class="control-label">制单人</label>    
-    <input type="text" id="txtCreateor"  size="15"/>
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
-    <button type="button" id="btnNew" class="btn btn-success">新增</button>
+﻿@model BL.Models.T_FNCBALANCEModel
+<div class="bjui-pageHeader" style="background:#FFF;">
+    <table class="table">
+        <tbody>
+            <tr><td colspan="3" style="text-align:center;">财务结算</td></tr>
+            <tr>
+                <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12"  /></td>
+                <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
+                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
+            </tr>
+            <tr>
+                <td><label>摘要：</label><label id="fmemo">@Model.FMEMO</label></td>
+                <td></td>
+                <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div class="bjui-pageContent">
     <table id="tabFNCBALANCEDetail" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
-            maingrid.datagrid("reload", {dataUrl:url});
-        });
+        //$("#btnSearch").click(function () {
+        //    var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+        //    maingrid.datagrid("reload", {dataUrl:url});
+        //});
 
-        $("#saledateTime").blur(function () {
-            if($("#selWarehose").val()!="")
-            {
-                var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
-                maingrid.datagrid("reload", { dataUrl: url });
-            }
-        });
-        $("#selWarehose").change(function () {
-            if ($("#saledateTime").val() != "") {
-                var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
-                maingrid.datagrid("reload", { dataUrl: url });
-            }
-        });
+        //$("#saledateTime").blur(function () {
+        //    if($("#selWarehose").val()!="")
+        //    {
+        //        var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+        //        maingrid.datagrid("reload", { dataUrl: url });
+        //    }
+        //});
+        //$("#selWarehose").change(function () {
+        //    if ($("#saledateTime").val() != "") {
+        //        var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+        //        maingrid.datagrid("reload", { dataUrl: url });
+        //    }
+        //});
 
         var itemJLDW = LoadUnitDataForRowSel();
         var itemSPFL = LoadGoodsDataForRowSel();
-        maingrid = $("#tabFNCBALANCEDetail").datagrid({
+        var fparentId = '@Model.FGUID';
+        var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
+        var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        FNCBALANCEDetailgrid = $("#tabFNCBALANCEDetail").datagrid({
             gridTitle: '财务结算明细',
+            toolbarCustom: 
+           '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
+           '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
             showToolbar: true,
             toolbarItem: 'save,|,cancel,edit',
             addLocation: 'first',
-            dataUrl: '/FNCBALANCE/GetAllFNCBALANCEJson',
+            dataUrl: '/FNCBALANCE/getSaleDayBook?FPARENTID=' + fparentId + "&FINWAREHOUSEID=" + FINWAREHOUSEID + "&Fdate=" + Fdate,
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -64,24 +76,32 @@
                     name: 'FWAREHOUSEID',
                     label: '销售仓库',
                     align: 'center',
-                    width: 100,
+                    edit:false,
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
+                    width: 80
                 },
                 {
                     name: 'FMARKETMONEY',
                     label: '销售金额',
                     align: 'center',
+                    edit:false,
                     width: 80
                 },
                 {
                     name: 'FBACKTMONEY',
                     label: '回款金额',
                     align: 'center',
+                    rule: 'number,required',
                     width: 80
                 },
                 {
                     name: 'FDIFFERMONEY',
                     label: '差异金额',
                     align: 'center',
+                    edit:false,
                     width: 80
                 },
                 {
@@ -92,7 +112,7 @@
                 }
             ],
             contextMenuB: true,
-            editUrl: '/FNCBALANCE/GetAllFNCBALANCEJson',
+            editUrl: '/FNCBALANCE/EditFncbalanceDetail?FPARENTID=' + fparentId,
             editMode: 'inline',
             inlineEditMult:true,
             fullGrid: true,
@@ -102,4 +122,18 @@
             showCheckboxcol: false
         });
     });
+    $(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {
+        //改为只监听数字键
+        if (event.keyCode != "13")
+            return;
+        $(this).trigger("keyCodeEnter");
+        var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
+        if (trdata.length > 0) {
+            var differMoney = trdata[0].FMARKETMONEY - $(this).val();
+            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
+            if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+                $(trdata[0]).removeClass("datagrid-edit-tr");
+            FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+        }
+    })
 </script>

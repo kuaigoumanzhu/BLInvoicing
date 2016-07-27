@@ -91,5 +91,19 @@ namespace BL.Service
                 return db.Execute(sql, new { FSTATUS = FSTATUS, time = now, FGUID = FGUID }) > 0;
             }
         }
+        /// <summary>
+        /// 判断编号是否已存在
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsFID(string FGUID, string FID)
+        {
+            string sql = "select * from T_WAREHOUSE where FGUID!=@FGUID and FID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_GOODSModel>(sql, new { FGUID = FGUID, FID = FID }).Count() > 0;
+            }
+        }
     }
 }

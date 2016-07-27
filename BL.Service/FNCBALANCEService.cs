@@ -40,5 +40,30 @@ namespace BL.Service
                 return resultGrid;
             }
         }
+
+        public T_FNCBALANCEModel AddFncbalance(T_FNCBALANCEModel model)
+        {
+
+            string sql = @"insert into  T_FNCBALANCE( FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME
+)";
+            using (IDbConnection db = OpenConnection())
+            {
+                if (db.Execute(sql, model) > 0)
+                {
+                    var res = db.QuerySingle<T_FNCBALANCEModel>("select * from T_FNCBALANCE with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+                    res.closeCurrent = true;
+                    res.message = "添加成功";
+                    return res;
+                }
+                else
+                {
+                    model.closeCurrent = true;
+                    model.statusCode = "300";
+                    model.message = "添加失败";
+                    return model;
+                }
+            }
+        }
     }
 }

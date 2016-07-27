@@ -14,7 +14,7 @@
         <option value="2">已提交</option>
     </select>
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
-    <button type="button" id="btnNew" class="btn btn-success" data-toggle="navtab" data-options="{id:'fncbalanceDetailTab', reloadWarn:'已打开财务结算明细页面，确认将重新载入?', url:'/FNCBALANCE/FncbalanceDetail?d=5', title:'财务结算明细'}">新增</button>
+   
 </div>
 <div class="bjui-pageContent">
     <table id="tabFNCBALANCE" data-height="100%" class="table table-bordered table-striped"></table>
@@ -27,9 +27,17 @@
         });
         var itemJLDW = LoadUnitDataForRowSel();
         var itemSPFL = LoadGoodsDataForRowSel();
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
         maingrid = $("#tabFNCBALANCE").datagrid({
             gridTitle: '财务结算列表',
-            showToolbar: false,
+            showToolbar: true,
+            toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
             dataUrl: '/FNCBALANCE/GetAllFNCBALANCEJson',
             dataType: 'json',
@@ -54,6 +62,7 @@
                 {
                     name: 'FCODE',
                     label: '单据编号',
+                    add:false,
                     align: 'center',
                     width: 100,
                 },
@@ -61,6 +70,10 @@
                     name: 'FWAREHOUSEID',
                     label: '仓库',
                     align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
                     width: 80
                 },
                 {
@@ -73,6 +86,7 @@
                     name: 'FCREATEID',
                     label: '填表人',
                     align: 'center',
+                    add: false,
                     width: 80
                 },
                 {
@@ -81,16 +95,8 @@
                     type: 'date',
                     align: 'center',
                     width: 110,
+                    add: false,
                     pattern: 'yyyy-MM-dd'
-                },
-                {
-                    name: 'FISCONSUMABLES',
-                    label: '是否消耗品',
-                    type:'select',
-                    items:[{'0':'否'},{'1':'是'}],
-                    align: 'center',
-                    width: 80,
-                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FSTATUS',
@@ -98,17 +104,27 @@
                     type: 'select',
                     items: [{ '1': '未提交' }, { '2': '已提交' }],
                     align: 'center',
+                    add:false,
                     width: 80,
                     render: $.datagrid.renderItem
                 }
             ],
             contextMenuB: true,
+            editUrl: '/FNCBALANCE/EditFncbalance',
             editMode: 'inline',
             fullGrid: true,
             showLinenumber: true,
             paging: true,
             height: '100%',
-            showCheckboxcol: false
+            showCheckboxcol: false,
+            onDblClickRow: function (rowData, index) {
+                var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                var jsonStr = JSON.stringify(rowData);
+                $(this).navtab({
+                    id: 'FncbalanceDetail', url: '/FNCBALANCE/FncbalanceDetail', title: '财务结算明细',
+                    data: { rowData: jsonStr, outWare: outWare }, fresh: true
+                });
+            }
         });
     });
 </script>
