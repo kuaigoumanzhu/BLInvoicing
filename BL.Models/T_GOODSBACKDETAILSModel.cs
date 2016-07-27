@@ -23,7 +23,7 @@ namespace BL.Models
         /// </summary>
         public DateTime FCREATETIME { get; set; }
         /// <summary>
-        /// 主表FGUID:T_PURCHASEBACK(采购退货)表中FGUID
+        /// 主表FGUID
         /// </summary>
         public string FPARENTID { get; set; }
         /// <summary>

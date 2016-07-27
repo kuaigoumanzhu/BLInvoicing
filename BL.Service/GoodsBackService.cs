@@ -84,5 +84,72 @@ namespace BL.Service
                 return db.Query<T_GOODSBACKDETAILSModel>(sql, new { parentId = parentId });
             }
         }
+        /// <summary>
+        /// 保存商品回库信息，修改分仓库存表可用数量
+        /// </summary>
+        public IEnumerable<T_GOODSBACKDETAILSModel> AddGoodsBackDetailUpdateChild(IList<T_GOODSBACKDETAILSModel> lst,string userId)
+        {
+            string sql = @"insert into T_GOODSBACKDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FGOODSID,FGOODSNAME,FUNIT,FBATCH,
+                            FQUANTITY,FACTUALQUANTITY,FPRICE,FMARKETPRICE,FDIFFERQUANTITY,FDIFFERMONEY,FBARCODE,FMEMO) values(@FGUID,
+                            @FCREATEID,@FCREATETIME,@FPARENTID,@FGOODSID,@FGOODSNAME,@FUNIT,@FBATCH,
+                            @FQUANTITY,@FACTUALQUANTITY,@FPRICE,@FMARKETPRICE,@FDIFFERQUANTITY,@FDIFFERMONEY,@FBARCODE,@FMEMO)";
+            string getsql = @"select * from T_GOODSBACKDETAILS with(nolock) where FGUID=@FGUID";
+            string getChildSql = @"select * from T_REPERTORYCHILD where FBARCODE=@FBARCODE";
+            string updatesql = @"update T_REPERTORYCHILD set FENABLE=@current where FBARCODE=@FBARCODE and FENABLE=@FENABLE";
+            var now = DateTime.Now;
+            IList<T_GOODSBACKDETAILSModel> models = new List<T_GOODSBACKDETAILSModel>();
+            using (IDbConnection db = OpenConnection())
+            {
+                IDbTransaction transaction = db.BeginTransaction();
+                try
+                {
+                    foreach(var model in lst)
+                    {
+                        model.FGUID = Guid.NewGuid().ToString();
+                        model.FCREATEID = userId;
+                        model.FCREATETIME = now;
+                        db.Execute(sql, model, transaction);
+                        models.Add(db.QuerySingle<T_GOODSBACKDETAILSModel>(getsql, new { FGUID = model.FGUID },transaction));
+                        //获取分仓库存可用数量
+                        var childModel = db.QuerySingle<T_REPERTORYCHILDModel>(getChildSql, new { FBARCODE = model.FBARCODE },transaction);
+                        var number = childModel.FENABLE - model.FACTUALQUANTITY;
+                        if (number < 0)
+                        {
+                            transaction.Rollback();
+                            throw new Exception("可用数量小于0！");
+                        }
+                        if(db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current=number, FENABLE = childModel.FENABLE },transaction)<=0)
+                        {
+                            transaction.Rollback();
+                            throw new Exception("可用数量已被其他人修改过！请重新保存");
+                        }
+                    }
+                    transaction.Commit();
+                    return models;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+        
+        public bool DelGoodsBackDetail(string guid)
+        {
+            string sql = "delete from T_GOODSBACKDETAILS where FGUID=@FGUID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Execute(sql, new { FGUID = guid }) > 0;
+            }
+        }
+        public bool GetGoodsBackByParentId(string parentId)
+        {
+            string sql = "select count(*) from T_GOODSBACK  with(nolock) where FGUID=@FGUID and FSTATUS='1'";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<int>(sql,new { FGUID=parentId}).Single() > 0;
+            }
+        }
     }
 }

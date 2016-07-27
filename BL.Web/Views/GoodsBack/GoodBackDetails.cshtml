@@ -12,6 +12,7 @@
             </tr>
         </tbody>
     </table>
+    <input type="hidden" id="parentId" value="@Model.FGUID" />
 </div>
 <div class="bjui-pageContent">
     <table id="tabGoodsBackDetails" data-height="100%" class="table table-bordered table-striped"></table>
@@ -22,11 +23,11 @@
         var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID";
         goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
-            toolbarCustom: '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button><button type="button" id="btnDel" data-icon="remove"  class="btn btn-red">删除</button>'+
+            toolbarCustom: '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button>'+
             '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>'+
             '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
             showToolbar: true,
-            toolbarItem: 'add,edit,save,del,cancel',
+            toolbarItem: 'del',
             addLocation: 'first',
             dataUrl: url,
             dataType: 'json',
@@ -122,18 +123,18 @@
                     add:false
                 }
             ],
+            delPK: 'FGUID',
             editUrl: '/GoodsBack/EditGoodsBackDetailsJson',
+            delUrl: '/GoodsBack/DelGoodsBackDetailJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
-            beforeEdit:function(){
-                
-                return true;
-            }
+            postData:'FPARENTID:'+33
         });
         var datas=[];
         var trdata=null;
         var clickTR=null;
+        var parentId=$("#parentId").val();
         $(document).on("click","#btnAdd,#btnSave,#btnDel",function(){
             var btn = $(this).attr("id");
             switch(btn){
@@ -145,7 +146,7 @@
                     goodsBackDetailGrid.datagrid("doSaveEditRow"); 
                     break;
                 case "btnDel":
-
+                    goodsBackDetailGrid.datagrid("delRows",goodsBackDetailGrid.data('selectedDatas')); 
                     break;
             }
         })
@@ -162,8 +163,8 @@
                         return true;
                     $checked.each(function(){
                         var goods=JSON.parse($(this).val());
-                        goods.FNAME=goods.FGOODSNAME;
-                        delete goods.FGOODSNAME;
+                        delete goods.FGUID;
+                        goods.FPARENTID=parentId;
                         datas.unshift(goods);
                         goodsBackDetailGrid.datagrid("add",0,goods);   
                     });
