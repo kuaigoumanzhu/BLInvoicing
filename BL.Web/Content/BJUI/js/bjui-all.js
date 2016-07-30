@@ -7072,7 +7072,7 @@
         afterSave       : null,     // Function - after save method, arguments($trs, datas)
         afterDelete     :null,      // Function - after delete method
         onDblClickRow   :null,      //hpf 2016 07 21添加双击事件
-        onLoaded        :null
+        onLoaded        :null       //hpf 2016 07 30 加载完成后执行
     }
     
     Datagrid.renderItem = function(value, data, items) {
@@ -7631,6 +7631,7 @@
                 
                 return data_index
             },
+            //hpf 2016 07 30 加载完成后事件
             onLoaded: function (response) {
                 var loaded = options.onLoaded;
                 
@@ -7697,7 +7698,7 @@
                         } else {
                             BJUI.debug('Datagrid Plugin: The options \'dataType\' is incorrect!')
                         }
-                        tools.onLoaded(response);
+                        tools.onLoaded(response);//hpf 2016 07 30 加载完成后执行
                     },
                     errCallback: function() {
                         that.destroy()
