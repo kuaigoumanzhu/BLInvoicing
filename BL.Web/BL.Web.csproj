@@ -667,6 +667,12 @@
   <ItemGroup>
     <Content Include="Views\CONSUMABLES\selectInGoods.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\CONSUMABLESSearch.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\CONSUMABLESHourseSearch.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

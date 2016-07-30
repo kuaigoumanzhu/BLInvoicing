@@ -16,13 +16,17 @@ namespace BL.Service
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " 1=1 ";
-            if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
+            if (paraDic.Contains("Fdate") && paraDic["Fdate"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FID like '%{0}%'", paraDic["FID"].ToString());
+                whereStr += string.Format(" and datediff(day,FDATE,'{0}')=0", paraDic["Fdate"].ToString());
             }
-            if (paraDic.Contains("FNAME") && paraDic["FNAME"].ToString().Trim() != "")
+            if (paraDic.Contains("FCode") && paraDic["FCode"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FNAME like '%{0}%'", paraDic["FNAME"].ToString());
+                whereStr += string.Format(" and FCODE like '%{0}%'", paraDic["FCode"].ToString());
+            }
+            if (paraDic.Contains("FState") && paraDic["FState"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and FSTATUS='{0}'", paraDic["FState"].ToString());
             }
             using (IDbConnection db = OpenConnection())
             {

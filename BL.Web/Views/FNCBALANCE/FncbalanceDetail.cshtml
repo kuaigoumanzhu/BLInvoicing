@@ -43,6 +43,7 @@
         var itemJLDW = LoadUnitDataForRowSel();
         var itemSPFL = LoadGoodsDataForRowSel();
         var fparentId = '@Model.FGUID';
+        var fstatue='@Model.FSTATUS';
         var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
@@ -119,7 +120,19 @@
             showLinenumber: true,
             paging: false,
             height: '100%',
-            showCheckboxcol: false
+            showCheckboxcol: false,
+            onLoaded: function (response)
+            {
+                console.log(fstatue);
+                if (fstatue == '1')
+                {
+                    console.log(response.list.length);
+                    for(var i=0;i<response.list.length;i++)
+                    {
+                        FNCBALANCEDetailgrid.datagrid("doEditRow", i);
+                    }
+                }
+            }
         });
     });
     $(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {

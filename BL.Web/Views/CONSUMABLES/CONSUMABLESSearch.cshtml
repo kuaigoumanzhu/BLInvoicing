@@ -1,0 +1,121 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    
+    <label class="control-label">出入库类型</label>
+    <select id="selFType" data-toggle="selectpicker">
+        <option value="" >全部</option>
+        <option value="1" >入库</option>
+        <option value="2">出库</option>
+    </select>
+    <label class="control-label">开始日期</label>
+    <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />  
+    <label class="control-label">结束日期</label>
+    <input type="text" name="dateTime" id="enddateTime" value="" data-toggle="datepicker" size="13" /> 
+    <label class="control-label">单据编号</label>
+    <input type="text" id="txtNo"  size="15"/>
+    <label class="control-label">商品名称</label>
+    <input type="text" id="txtFGoodsName"  size="15"/>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabCONSUMABLESsearch" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            var url = '/CONSUMABLES/GetCONSUMABLESSearchJson?FType=' + $("#selFType").val() + '&startFDate=' + $("#startdateTime").val() + '&endFDate=' + $("#endFdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FGoodsName=" + $("#txtFGoodsName").val() ;
+            CONSUMABLESsearchgrid.datagrid("reload", { dataUrl: url });
+        });
+
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        var jldw = LoadUnitDataForRowSel();
+        CONSUMABLESsearchgrid = $("#tabCONSUMABLESsearch").datagrid({
+            gridTitle: '消耗品出入库查询列表',
+            showToolbar: false,
+            toolbarItem: '',
+            addLocation: 'first',
+            dataUrl: '/CONSUMABLES/GetCONSUMABLESSearchJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return jldw;
+                    },
+                    width: 110
+                },
+                {
+                    name: 'FQUANTITY',
+                    label: '数量',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FMONEY',
+                    label: '金额',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FDATE',
+                    label: '日期',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FCODE',
+                    label: '单据编号',
+                    add: false,
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FPERSONID',
+                    label: '领用人/采购人',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 80
+                }
+            ],
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: true,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

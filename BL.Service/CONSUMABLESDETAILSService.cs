@@ -114,24 +114,32 @@ where FGUID=@FGUID ";
                 }
             }
         }
+        public int DelCONSUMABLESDETAILS(string FGUID)
+        {
 
+            string sql = @"delete  T_CONSUMABLESDETAILS 
+where FGUID=@FGUID ";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Execute(sql, new { FGUID = FGUID });
+            }
+        }
         public IEnumerable<Object> GetSelectOutGoods(IDictionary paraDic)
         {
-            string whereStr = " cd.goodsNum>0 ";
+            string whereStr = " ";
             DynamicParameters dp = new DynamicParameters();
             if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
             {
-                whereStr += " and cd.FWAREHOUSEID=@FWAREHOUSEID";
+                whereStr += " and c.FWAREHOUSEID=@FWAREHOUSEID";
                 dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
 
             }
-            string sqlstr = @"select g.*,cd.* from T_goods g
-inner join (select c.FWAREHOUSEID,d.FGOODSID,SUM(case when c.FTYPE=1 then d.FQUANTITY else -d.FQUANTITY end) goodsNum from T_CONSUMABLES c
- inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID group by c.FWAREHOUSEID,d.FGOODSID) cd on g.FID=cd.FGOODSID where " + whereStr ;
+            string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum from T_CONSUMABLES c
+ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID where c.FSTATUS='2' " + whereStr + "  group by c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT having SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end)>0";
 
             using (IDbConnection db = OpenConnection())
             {
-                var result = db.Query<Object>(sqlstr,dp);
+                var result = db.Query<Object>(sqlstr,dp).AsList();
                 return result;
             }
 

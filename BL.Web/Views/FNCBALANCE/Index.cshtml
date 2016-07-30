@@ -22,7 +22,7 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?Fdate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FState=" + $("#selState").val();
             maingrid.datagrid("reload", {dataUrl:url});
         });
         var itemJLDW = LoadUnitDataForRowSel();

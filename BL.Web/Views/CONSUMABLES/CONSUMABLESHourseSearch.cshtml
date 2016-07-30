@@ -1,0 +1,86 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    
+    <label class="control-label">商品编号</label>
+    <input type="text" id="txtNo"  size="15"/>
+    <label class="control-label">商品名称</label>
+    <input type="text" id="txtFGoodsName"  size="15"/>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabCONSUMABLESSHourse" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            var url = '/CONSUMABLES/GetCONSUMABLESHourseJson?FGoodsCode=' + $("#txtNo").val() + "&FGoodsName=" + $("#txtFGoodsName").val();
+            CONSUMABLEHoursegrid.datagrid("reload", { dataUrl: url });
+        });
+
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        var jldw = LoadUnitDataForRowSel();
+        CONSUMABLEHoursegrid = $("#tabCONSUMABLESSHourse").datagrid({
+            gridTitle: '消耗品出入库查询列表',
+            showToolbar: false,
+            toolbarItem: '',
+            addLocation: 'first',
+            dataUrl: '/CONSUMABLES/GetCONSUMABLESHourseJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    type: 'select',
+                    items: function () {
+                        return jldw;
+                    },
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'syCou',
+                    label: '剩余数量',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FMONEY',
+                    label: '金额',
+                    align: 'center',
+                    width: 110
+                }
+            ],
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: true,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

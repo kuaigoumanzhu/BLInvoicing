@@ -44,6 +44,7 @@
         //});
         var fparentId = '@Model.FGUID';
         var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
+        var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
@@ -53,14 +54,14 @@
             }
         });
         var gysList = LoadGYSDataForRowSel();
+        var fstatus='@Model.FSTATUS';
         ConsumablesInDetailgrid = $("#tabConsumablesInDetail").datagrid({
             gridTitle: '消耗品入库登记明细',
             toolbarCustom:
-                '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button>' +
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
+           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
-            toolbarItem: 'del',
+            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
             addLocation: 'first',
             dataUrl: '/CONSUMABLES/GetAllCONSUMABLESDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',
@@ -78,21 +79,22 @@
                     name: 'FGOODSID',
                     label: '商品编号',
                     align: 'center',
-                    eidt:false,
                     width: 80
                 },
                 {
-                    name: 'FNAME',
+                    name: 'FGOODSNAME',
                     label: '商品名称',
                     align: 'center',
-                    eidt: false,
                     width: 80
                 },
                 {
                     name: 'FUNIT',
                     label: '计量单位',
-                    eidt: false,
                     align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return jldw;
+                    },
                     width: 80
                 },
                 {
@@ -132,7 +134,9 @@
             ],
             contextMenuB: true,
             editUrl: '/CONSUMABLES/EditConsumablesInDetail?FPARENTID=' + fparentId,
+            delUrl: '/CONSUMABLES/DelConsumablesDetail',
             editMode: 'inline',
+            delConfirm: true,
             inlineEditMult:true,
             fullGrid: true,
             showLinenumber: true,
@@ -143,6 +147,7 @@
 
 
         var outWare = '@Model.FWAREHOUSEID';
+
         $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
             var btn = $(this).attr("id");
             switch (btn) {
@@ -158,43 +163,21 @@
                     break;
             }
         })
-
-        function Add() {
-            datas = [];
-            $(this).dialog({
-                id: 'ConsumablesInDetail',
-                url: '/CONSUMABLES/selectInGoods',
-                title: '选择商品',
-                width: 840,
-                mask: true,
-                beforeClose: function ($dialog) {
-                    var $checked = $dialog.find('input[name="child"]:checked');
-                    if ($checked.length == 0)
-                        return true;
-                    $checked.each(function () {
-                        var goods = JSON.parse($(this).val());
-                        delete goods.FGUID;
-                        goods.FGOODSID = goods.FID;
-                        delete goods.FID;
-                        //delete goods.FCALCTYPE;
-                        //delete goods.FCATEGORY;
-                        //delete goods.FISCONSUMABLES;
-                        //delete goods.FSTATUS;
-                        //delete goods.FSTARTTIME;
-                        //delete goods.FENDTIME;
-                        //goods.FPARENTID = parentId;
-                        datas.unshift(goods);
-                        ConsumablesInDetailgrid.datagrid("add", 0, goods);
-                    });
-                    ConsumablesInDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
-                    $checked.each(function (i) {
-                        ConsumablesInDetailgrid.datagrid("doEditRow", i);
-                    });
-                    //trClick();
-                    return true;
+        $("#applay").click(function () {
+            submitConsumable();
+        });
+        function submitConsumable() {
+            $(this).bjuiajax("doAjax", {
+                url: "/CONSUMABLES/SubmitConsumable?fguid=" + fparentId,
+                callback: function (json) {
+                    if (json == '1')
+                    {
+                        $(this).alertmsg("ok", "提交成功");
+                        $(this).navtab('closeTab', "ConsumablesInDetail");
+                    }
                 }
-            })
-        };
+            });
+        }
     });
     $(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
         //改为只监听数字键

@@ -28,13 +28,21 @@ namespace BL.Web.Controllers
         {
             IDictionary dic = new Hashtable();
 
-            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["Fdate"]))
             {
-                dic["FID"] = Request.QueryString["FID"];
+                dic["Fdate"] = Request.QueryString["Fdate"];
             }
-            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
             {
-                dic["FNAME"] = Request.QueryString["FNAME"];
+                dic["FCode"] = Request.QueryString["FCode"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FState"]))
+            {
+                dic["FState"] = Request.QueryString["FState"];
+            }
+            else
+            {
+                dic["FState"] ="1";
             }
             int totalPage = 0;
             var lst = fncbalanceService.GetAllFNCBALANCEInfo(dic, ref totalPage, pageCurrent, pageSize);

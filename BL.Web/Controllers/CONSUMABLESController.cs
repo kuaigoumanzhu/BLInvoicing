@@ -2,6 +2,8 @@
 using BL.Models;
 using BL.MVC;
 using BL.Service;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,13 +39,25 @@ namespace BL.Web.Controllers
             {
                 dic["FType"] = Request.QueryString["FType"];
             }
-            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["FDate"]))
             {
-                dic["FID"] = Request.QueryString["FID"];
+                dic["FDate"] = Request.QueryString["FDate"];
             }
-            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
             {
-                dic["FNAME"] = Request.QueryString["FNAME"];
+                dic["FCode"] = Request.QueryString["FCode"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FPERSONID"]))
+            {
+                dic["FPERSONID"] = Request.QueryString["FPERSONID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FStatus"]))
+            {
+                dic["FStatus"] = Request.QueryString["FStatus"];
+            }
+            else
+            {
+                dic["FStatus"] = "1";
             }
             int totalPage = 0;
             var lst = consumablesService.GetAllCONSUMABLESInfo(dic, ref totalPage, pageCurrent, pageSize);
@@ -134,7 +148,34 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
 
         }
+        [JsonException]
+        [HttpPost]
+        public string DelConsumablesDetail(string json)
+        {
+            JArray t = (JArray)JsonConvert.DeserializeObject(json);
+            int rel = consumablesDetailsService.DelCONSUMABLESDETAILS(t[0]["FGUID"].ToString());
+            if (rel > 0)
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "删除成功" });
+            }
+            else
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "删除失败" });
+            }
+        }
         #endregion
+
+        public string SubmitConsumable(string fguid)
+        {
+            if (consumablesService.submitConsumables(fguid))
+            {
+                return "1";
+            }
+            else
+            {
+                return "0";
+            }
+        }
 
         public ActionResult selectOutGoods()
         {
@@ -156,5 +197,63 @@ namespace BL.Web.Controllers
             var lst = goodsService.GetGoodsInfo(dic);
             return View(lst);
         }
+
+        public ActionResult CONSUMABLESSearch()
+        {
+            return View();
+        }
+        [JsonException]
+        public string GetCONSUMABLESSearchJson(int pageCurrent = 1, int pageSize = 10)
+        {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FType"]))
+            {
+                dic["FType"] = Request.QueryString["FType"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["startFDate"]))
+            {
+                dic["startFDate"] = Request.QueryString["startFDate"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["endFDate"]))
+            {
+                dic["endFDate"] = Request.QueryString["endFDate"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
+            {
+                dic["FCode"] = Request.QueryString["FCode"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FGoodsName"]))
+            {
+                dic["FGoodsName"] = Request.QueryString["FGoodsName"];
+            }
+                dic["FStatus"] = "2";
+            
+            int totalPage = 0;
+            var lst = consumablesService.SearchCONSUMABLES(dic, ref totalPage, pageCurrent, pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
+        }
+
+
+        public ActionResult CONSUMABLESHourseSearch()
+        {
+            return View();
+        }
+        [JsonException]
+        public string GetCONSUMABLESHourseJson(int pageCurrent = 1, int pageSize = 10)
+        {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FGoodsCode"]))
+            {
+                dic["FGoodsCode"] = Request.QueryString["FGoodsCode"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FGoodsName"]))
+            {
+                dic["FGoodsName"] = Request.QueryString["FGoodsName"];
+            }
+
+            int totalPage = 0;
+            var lst = consumablesService.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
+        } 
     }
 }

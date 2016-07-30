@@ -4,7 +4,7 @@
     <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />  
     <label class="control-label">单据编号</label>
     <input type="text" id="txtNo"  size="15"/>
-    <label class="control-label">采购人</label>
+    <label class="control-label">领用人</label>
     <input type="text" id="txtPerson"  size="15"/>
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
@@ -19,7 +19,7 @@
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            var url = '/CONSUMABLES/GetAllCONSUMABLESJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+            var url = '/CONSUMABLES/GetAllCONSUMABLESJson?FType=2&FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FPERSONID=" + $("#txtPerson").val() + "&FStatus=" + $("#selState").val();
             maingrid.datagrid("reload", {dataUrl:url});
         });
 

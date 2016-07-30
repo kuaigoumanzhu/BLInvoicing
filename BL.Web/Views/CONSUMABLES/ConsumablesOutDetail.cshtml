@@ -52,14 +52,15 @@
             }
         });
         var gysList = LoadGYSDataForRowSel();
+        var fstatus = '@Model.FSTATUS';
         ConsumablesOutDetailgrid = $("#tabConsumablesOutDetail").datagrid({
             gridTitle: '消耗品出库明细',
             toolbarCustom:
-                '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button>'+
+                (fstatus=='2'?'':'<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button>')+
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
+           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus=='2'?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
-            toolbarItem: 'del',
+            toolbarItem: (fstatus=='2'?'':'del'),
             addLocation: 'first',
             dataUrl: '/CONSUMABLES/GetAllCONSUMABLESDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',
@@ -80,7 +81,7 @@
                     width: 80
                 },
                 {
-                    name: 'FNAME',
+                    name: 'FGOODSNAME',
                     label: '商品名称',
                     align: 'center',
                     width: 80
@@ -128,6 +129,22 @@
             showCheckboxcol: false
         });
 
+        $("#applay").click(function () {
+            submitConsumable();
+        });
+        function submitConsumable() {
+            $(this).bjuiajax("doAjax", {
+                url: "/CONSUMABLES/SubmitConsumable?fguid=" + fparentId,
+                callback: function (json) {
+                    if (json == '1')
+                    {
+                        $(this).alertmsg("ok", "提交成功");
+                        $(this).navtab('closeTab', "CONSUMABLESOutDetail");
+                    }
+                }
+            });
+        }
+
         var outWare = '@Model.FWAREHOUSEID';
         $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
             var btn = $(this).attr("id");
@@ -160,7 +177,7 @@
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
                         delete goods.FGUID;
-                        goods.FPARENTID = parentId;
+                        //goods.FPARENTID = parentId;
                         datas.unshift(goods);
                         ConsumablesOutDetailgrid.datagrid("add", 0, goods);
                     });
@@ -168,7 +185,7 @@
                     $checked.each(function (i) {
                         ConsumablesOutDetailgrid.datagrid("doEditRow", i);
                     });
-                    trClick();
+                    //trClick();
                     return true;
                 }
             })

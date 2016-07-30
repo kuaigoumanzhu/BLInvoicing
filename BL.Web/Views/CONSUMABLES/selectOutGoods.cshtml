@@ -22,19 +22,16 @@
                foreach (var item in list)
             {
                 i = i + 1;
-                
                 string Json = BL.Framework.JsonHelper.Instance.Serialize(item);
-                @*<tr>
+                Newtonsoft.Json.Linq.JObject jarray = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(Json);
+                <tr>
                     <td>@i</td>
-                    <td>@item.FBARCODE</td>
-                    <td>@item.FGOODSID</td>
-                    <td>@item.FGOODSNAME</td>
-                    <td>@item.FUNIT</td>
-                    <td>@item.FQUANTITY</td>
-                    <td>@item.FPRICE</td>
-                    <td>@item.FMARKETPRICE</td>
+                    <td>@jarray["FGOODSID"]</td>
+                    <td>@jarray["FGOODSNAME"]</td>
+                    <td>@jarray["FUNIT"]</td>
+                    <td>@jarray["goodsNum"]</td>
                     <td><input type="checkbox" name="child" data-toggle="icheck" value="@Json"></td>
-                </tr>*@
+                </tr>
             }
             }
         </tbody>
