@@ -42,7 +42,37 @@ namespace BL.Service
                 return resultGrid;
             }
         }
-
+        public IEnumerable<T_GOODSModel> GetGoodsInfo(IDictionary paraDic)
+        {
+            string sql = "select * from T_GOODS";
+            DynamicParameters dp = new DynamicParameters();
+            string whereStr = " where 1=1 ";
+            if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
+            {
+                whereStr += " and FID like '%'+@FID+'%'";
+                dp.Add("@FID", paraDic["FID"].ToString());
+            }
+            if (paraDic.Contains("FNAME") && paraDic["FNAME"].ToString().Trim() != "")
+            {
+                whereStr += " and FNAME like '%'+@FNAME+'%'";
+                dp.Add("@FNAME", paraDic["FNAME"].ToString());
+            }
+            if (paraDic.Contains("FISCONSUMABLES") && paraDic["FISCONSUMABLES"].ToString().Trim() != "")
+            {
+                whereStr += " and FISCONSUMABLES=@FISCONSUMABLES";
+                dp.Add("@FISCONSUMABLES", paraDic["FISCONSUMABLES"].ToString());
+            }
+            if (paraDic.Contains("FSTATUS") && paraDic["FSTATUS"].ToString().Trim() != "")
+            {
+                whereStr += " and FSTATUS=@FSTATUS";
+                dp.Add("@FSTATUS", paraDic["FSTATUS"].ToString());
+            }
+            
+            using (IDbConnection db = OpenConnection())
+            {                
+                return db.Query<T_GOODSModel>(sql+whereStr,dp);
+            }
+        }
         public T_GOODSModel AddGoods(T_GOODSModel model)
         {
 

@@ -18,7 +18,7 @@ namespace BL.Models
         /// <summary>
         /// 创建时间默认当前服务器时间
         /// </summary>
-        public DateTime FCREATETIME { get; set; }
+        public DateTime? FCREATETIME { get; set; }
         /// <summary>
         /// 类型（1、入库，2、出库）
         /// </summary>
@@ -58,6 +58,6 @@ namespace BL.Models
         /// <summary>
         /// 提交时间
         /// </summary>
-        public DateTime FAPPLYTIME { get; set; }
+        public DateTime? FAPPLYTIME { get; set; }
     }
 }

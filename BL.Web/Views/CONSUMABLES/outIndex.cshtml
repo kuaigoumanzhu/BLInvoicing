@@ -31,11 +31,11 @@
             }
         });
         maingrid = $("#tabCONSUMABLES").datagrid({
-            gridTitle: '消耗品入库登记列表',
+            gridTitle: '消耗品出库列表',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
-            dataUrl: '/CONSUMABLES/GetAllCONSUMABLESJson?FType=1',
+            dataUrl: '/CONSUMABLES/GetAllCONSUMABLESJson?FType=2',
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -75,10 +75,9 @@
                 },
                 {
                     name: 'FPERSONID',
-                    label: '采购人',
+                    label: '领用人',
                     align: 'center',
-                    width: 80,
-                    render: $.datagrid.renderItem
+                    width: 80
                 },
                 {
                     name: 'FMEMO',
@@ -112,7 +111,7 @@
                 }
             ],
             contextMenuB: true,
-            editUrl: '/CONSUMABLES/EditCONSUMABLES?FType=1',
+            editUrl: '/CONSUMABLES/EditCONSUMABLES?FType=2',
             editMode: 'inline',
             fullGrid: true,
             showLinenumber: true,
@@ -123,7 +122,7 @@
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
-                    id: 'ConsumablesInDetail', url: '/CONSUMABLES/ConsumablesInDetail', title: '消耗品入库登记明细',
+                    id: 'CONSUMABLESOutDetail', url: '/CONSUMABLES/ConsumablesOutDetail', title: '消耗品出库明细',
                     data: { rowData: jsonStr, outWare: outWare }, fresh: true
                 });
             }

@@ -652,6 +652,21 @@
     <Content Include="Views\FNCBALANCE\FncbalanceDetail.cshtml" />
     <Content Include="Views\FNCBALANCE\Index.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\ConsumablesInDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\outIndex.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\ConsumablesOutDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\selectOutGoods.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CONSUMABLES\selectInGoods.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

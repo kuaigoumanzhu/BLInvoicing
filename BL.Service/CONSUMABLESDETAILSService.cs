@@ -10,9 +10,9 @@ using System.Text;
 
 namespace BL.Service
 {
-    public class FNCBALANCEDETAILSService : DBContext
+    public class CONSUMABLESDETAILSService : DBContext
     {
-        public IEnumerable<T_FNCBALANCEDETAILSModel> GetAllFNCBALANCEInfo(IDictionary paraDic)
+        public IEnumerable<T_CONSUMABLESDETAILSModel> GetAllCONSUMABLESDETAILSInfo(IDictionary paraDic)
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " 1=1 ";
@@ -34,8 +34,8 @@ namespace BL.Service
             }
             using (IDbConnection db = OpenConnection())
             {
-                string sqlstr = "select * from T_FNCBALANCEDETAILS where ";
-                var result = db.Query<T_FNCBALANCEDETAILSModel>(sqlstr+whereStr,dp);
+                string sqlstr = "select * from T_CONSUMABLESDETAILS where ";
+                var result = db.Query<T_CONSUMABLESDETAILSModel>(sqlstr+whereStr,dp);
                 return result;
             }
         }
@@ -43,7 +43,6 @@ namespace BL.Service
         public IEnumerable<Object> GetSaleDayBook(IDictionary paraDic)
         {
             string whereStr = " 1=1 ";
-
             DynamicParameters dp = new DynamicParameters();
             if (paraDic.Contains("FINWAREHOUSEID") && paraDic["FINWAREHOUSEID"].ToString().Trim() != "")
             {
@@ -60,24 +59,24 @@ group by FINWAREHOUSEID";
 
             using (IDbConnection db = OpenConnection())
             {
-                var result = db.Query<Object>(sqlstr, dp);
+                var result = db.Query<Object>(sqlstr,dp);
                 return result;
             }
 
         }
 
 
-        public T_FNCBALANCEDETAILSModel AddFNCBALANCEDETAILS(T_FNCBALANCEDETAILSModel model)
+        public T_CONSUMABLESDETAILSModel AddFNCBALANCEDETAILS(T_CONSUMABLESDETAILSModel model)
         {
 
-            string sql = @"insert into  T_FNCBALANCEDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FWAREHOUSEID, FMARKETMONEY, FBACKTMONEY, FDIFFERMONEY, FMEMO
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FWAREHOUSEID, @FMARKETMONEY, @FBACKTMONEY, @FDIFFERMONEY, @FMEMO
+            string sql = @"insert into  T_CONSUMABLESDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FQUANTITY, FPRICE, FMONEY, FSUPPLIERID, FMEMO
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FGOODSID, @FGOODSNAME, @FUNIT, @FQUANTITY, @FPRICE, @FMONEY, @FSUPPLIERID, @FMEMO
 )";
             using (IDbConnection db = OpenConnection())
             {
                 if (db.Execute(sql, model) > 0)
                 {
-                    var res = db.QuerySingle<T_FNCBALANCEDETAILSModel>("select * from T_FNCBALANCEDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+                    var res = db.QuerySingle<T_CONSUMABLESDETAILSModel>("select * from T_CONSUMABLESDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
                     res.closeCurrent = true;
                     res.message = "添加成功";
                     return res;
@@ -92,16 +91,16 @@ group by FINWAREHOUSEID";
             }
         }
 
-        public T_FNCBALANCEDETAILSModel EditFNCBALANCEDETAILS(T_FNCBALANCEDETAILSModel model)
+        public T_CONSUMABLESDETAILSModel EditFNCBALANCEDETAILS(T_CONSUMABLESDETAILSModel model)
         {
 
-            string sql = @"update  T_FNCBALANCEDETAILS set   FBACKTMONEY=@FBACKTMONEY, FDIFFERMONEY=@FDIFFERMONEY, FMEMO=@FMEMO
+            string sql = @"update  T_CONSUMABLESDETAILS set   FGOODSID=@FGOODSID, FGOODSNAME=@FGOODSNAME, FUNIT=@FUNIT, FQUANTITY=@FQUANTITY, FPRICE=@FPRICE, FMONEY=@FMONEY, FSUPPLIERID=@FSUPPLIERID, FMEMO=@FMEMO
 where FGUID=@FGUID ";
             using (IDbConnection db = OpenConnection())
             {
                 if (db.Execute(sql, model) > 0)
                 {
-                    var res = db.QuerySingle<T_FNCBALANCEDETAILSModel>("select * from T_FNCBALANCEDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+                    var res = db.QuerySingle<T_CONSUMABLESDETAILSModel>("select * from T_CONSUMABLESDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
                     res.closeCurrent = true;
                     res.message = "修改成功";
                     return res;
@@ -115,5 +114,27 @@ where FGUID=@FGUID ";
                 }
             }
         }
+
+        public IEnumerable<Object> GetSelectOutGoods(IDictionary paraDic)
+        {
+            string whereStr = " cd.goodsNum>0 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
+            {
+                whereStr += " and cd.FWAREHOUSEID=@FWAREHOUSEID";
+                dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
+
+            }
+            string sqlstr = @"select g.*,cd.* from T_goods g
+inner join (select c.FWAREHOUSEID,d.FGOODSID,SUM(case when c.FTYPE=1 then d.FQUANTITY else -d.FQUANTITY end) goodsNum from T_CONSUMABLES c
+ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID group by c.FWAREHOUSEID,d.FGOODSID) cd on g.FID=cd.FGOODSID where " + whereStr ;
+
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<Object>(sqlstr,dp);
+                return result;
+            }
+
+        } 
     }
 }
