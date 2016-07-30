@@ -7072,6 +7072,7 @@
         afterSave       : null,     // Function - after save method, arguments($trs, datas)
         afterDelete     :null,      // Function - after delete method
         onDblClickRow   :null,      //hpf 2016 07 21添加双击事件
+        onLoaded        :null
     }
     
     Datagrid.renderItem = function(value, data, items) {
@@ -7630,6 +7631,16 @@
                 
                 return data_index
             },
+            onLoaded: function (response) {
+                var loaded = options.onLoaded;
+                
+                if (loaded) {
+                    if (typeof loaded === 'string') loaded = loaded.toFunc()
+                    if (typeof loaded === 'function') {
+                        loaded.call(that, response)
+                    }
+                }
+            },
             // ajax load data by url
             loadData: function(data, refreshFlag) {
                 var tools = this, url = options.dataUrl, dataType = options.dataType || 'json', model = that.columnModel
@@ -7685,7 +7696,8 @@
                             if (xmlData.length) tools.createTrsByData(xmlData, refreshFlag)
                         } else {
                             BJUI.debug('Datagrid Plugin: The options \'dataType\' is incorrect!')
-                        } 
+                        }
+                        tools.onLoaded(response);
                     },
                     errCallback: function() {
                         that.destroy()
