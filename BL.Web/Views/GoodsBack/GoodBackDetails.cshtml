@@ -1,21 +1,29 @@
 ﻿@model BL.Models.ViewGOODSBACKModel
 <div class="bjui-pageHeader" style="background:#FFF;">
-    <table>
+    <table class="table">
         <tbody>
+            <tr><td colspan="3" style="text-align:center">商品回库明细</td></tr>
             <tr>
                 <td><label>日期：</label><input type="text" id="date" value="" data-toggle="datepicker" size="12" /></td>
-                <td><label>调出仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare</label></td>
-                <td><label>调回仓库：</label><label id="FINWAREHOUSEID">@ViewBag.inWare</label></td>
-                <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
-                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
-                <td><label>摘要：</label><label id="fmemo">@Model.FMEMO</label></td>
+                <td><label>调出仓库：</label><label id="GBDFOUTWAREHOUSEID">@ViewBag.outWare</label></td>
+                <td><label>调回仓库：</label><label id="GBDFINWAREHOUSEID">@ViewBag.inWare</label></td>
+            </tr>
+            <tr>
+                <td><label>制单人：</label><label id="GBDuserName">@ViewBag.userName</label></td>
+                <td><label>单据编号：</label><label id="GBDfcode">@Model.FCODE</label></td>
+                <td><label>摘要：</label><label id="GBDfmemo">@Model.FMEMO</label></td>
             </tr>
         </tbody>
     </table>
-    <input type="hidden" id="parentId" value="@Model.FGUID" />
+    <input type="hidden" id="GBDparentId" value="@Model.FGUID" />
 </div>
 <div class="bjui-pageContent">
     <table id="tabGoodsBackDetails" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<div id="print">
+        <img alt="barcode" id="printImg" width="100" height="30" src="/Common/GetBarCodeImage?text=12345" />
+        <label>测试</label>
+        <button type="button" id="startPrint">打印</button>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -23,9 +31,9 @@
         var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID";
         goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
-            toolbarCustom: '<button type="button" id="btnAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnSave" data-icon="save" class="btn btn-default">保存</button>'+
-            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>'+
-            '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
+            toolbarCustom: '<button type="button" id="btnGBDAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnGBDSave" data-icon="save" class="btn btn-default">保存</button>'+
+            '<button type="button" id="btnGBDPrint" class="btn btn-green">打印</button><button type="button" id="btnGBDPreview" class="btn btn-red">预览</button>'+
+            '<button id="btnGBDExport" type="button" class="btn btn-red">导出</button><button type="button" id="btnGBDApplay" class="btn btn-red">提交</button>',
             showToolbar: true,
             toolbarItem: 'del',
             addLocation: 'first',
@@ -74,7 +82,7 @@
                     add:false
                 },
                 {
-                    name: 'FENABLE',
+                    name: 'FQUANTITY',
                     label: '账存数量',
                     align: 'center',
                     width: 80,
@@ -120,33 +128,42 @@
                     align: 'center',
                     width: 100,
                     edit: false,
-                    add:false
+                    add:false,
+                    calc:'sum',
+                    calcTit:'合计',
+                    calcDecimal:2
                 }
             ],
-            delPK: 'FGUID',
             editUrl: '/GoodsBack/EditGoodsBackDetailsJson',
             delUrl: '/GoodsBack/DelGoodsBackDetailJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
-            postData:'FPARENTID:'+33
+            showTfoot: true
         });
         var datas=[];
         var trdata=null;
         var clickTR=null;
-        var parentId=$("#parentId").val();
-        $(document).on("click","#btnAdd,#btnSave,#btnDel",function(){
+        var parentId=$("#GBDparentId").val();
+        $(document).on("click","#btnGBDAdd,#btnGBDSave,#btnGBDApplay,#btnGBDPrint",function(){
             var btn = $(this).attr("id");
             switch(btn){
-                case "btnAdd":
+                case "btnGBDAdd":
                     Add();
                     break;
-                case "btnSave":
+                case "btnGBDSave":
                     datas=[]
                     goodsBackDetailGrid.datagrid("doSaveEditRow"); 
                     break;
-                case "btnDel":
-                    goodsBackDetailGrid.datagrid("delRows",goodsBackDetailGrid.data('selectedDatas')); 
+                case "btnGBDApplay":
+                    GoodsApplay();
+                    break;
+                case "btnGBDPrint":
+                    //$.CurrentNavtab.find('#printImg').attr("src","/Common/GetBarCodeImage?text=12345");
+                    $(this).dialog({id:'print', target:'#print', title:'打印'});
+                    $("#startPrint").click(function(){
+                        $(".dialogContent").printArea();
+                    });
                     break;
             }
         })
@@ -164,6 +181,7 @@
                     $checked.each(function(){
                         var goods=JSON.parse($(this).val());
                         delete goods.FGUID;
+                        goods.FQUANTITY=goods.FENABLE;
                         goods.FPARENTID=parentId;
                         datas.unshift(goods);
                         goodsBackDetailGrid.datagrid("add",0,goods);   
@@ -176,6 +194,22 @@
                     return true;
                 }
             })
+        };
+        function GoodsApplay(){
+            var bgdAllDatas=goodsBackDetailGrid.data("bjui.datagrid").allData;
+            $(this).bjuiajax("doAjax",{
+                url: "/GoodsBack/ApplayGoodsBackDetailJson",
+                data: { json:JSON.stringify(bgdAllDatas),parentId:parentId },
+                confirmMsg: "确认提交？",
+                callback: function (json) {
+                    if (json.statusCode!="200") {
+                        //maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME:json.time});
+                        $(this).alertmsg("warn", json.message);
+                    } else {
+                        $(this).alertmsg("ok", "禁用失败");
+                    }
+                }
+            });
         };
         $(document).on('keypress',"#tabGoodsBackDetails input",function(event){
             //改为只监听数字键
