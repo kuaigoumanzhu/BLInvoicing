@@ -74,6 +74,7 @@ group by FINWAREHOUSEID";
 )";
             using (IDbConnection db = OpenConnection())
             {
+                
                 if (db.Execute(sql, model) > 0)
                 {
                     var res = db.QuerySingle<T_CONSUMABLESDETAILSModel>("select * from T_CONSUMABLESDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
@@ -88,6 +89,36 @@ group by FINWAREHOUSEID";
                     model.message = "添加失败";
                     return model;
                 }
+            }
+        }
+        public bool AddFNCBALANCEDETAILS(List<T_CONSUMABLESDETAILSModel> list)
+        {
+
+            string sql = "";
+            var model = list[0];
+            DynamicParameters dp = new DynamicParameters();
+            for (int i = 0; i < list.Count(); i++)
+            {
+                sql += @"insert into  T_CONSUMABLESDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FQUANTITY, FPRICE, FMONEY, FSUPPLIERID, FMEMO
+) values(@FGUID" + i + ", @FCREATEID, @FCREATETIME, @FPARENTID, @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FQUANTITY" + i + ", @FPRICE" + i + ", @FMONEY" + i + ", @FSUPPLIERID" + i + ", @FMEMO" + i + ");";
+                dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
+                dp.Add("@FCREATEID" + i, list[0].FCREATEID);
+                dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
+                dp.Add("@FPARENTID" + i, list[0].FPARENTID);
+                dp.Add("@FGOODSID" + i, list[i].FGOODSID);
+                dp.Add("@FGOODSNAME" + i, list[i].FGOODSNAME);
+                dp.Add("@FUNIT" + i, list[i].FUNIT);
+                dp.Add("@FQUANTITY" + i, list[i].FQUANTITY);
+                dp.Add("@FPRICE" + i, list[i].FPRICE);
+                dp.Add("@FMONEY" + i, list[i].FMONEY);
+                dp.Add("@FSUPPLIERID" + i, list[i].FSUPPLIERID);
+                dp.Add("@FMEMO" + i, list[i].FMEMO);
+
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+
+                return db.Execute(sql, dp) > 0;
             }
         }
 

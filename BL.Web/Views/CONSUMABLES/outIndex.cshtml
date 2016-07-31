@@ -14,7 +14,7 @@
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
-    <table id="tabCONSUMABLES" data-height="100%" class="table table-bordered table-striped"></table>
+    <table id="tabCONSUMABLESOut" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -30,7 +30,7 @@
                 wareHouseLst = json;
             }
         });
-        maingrid = $("#tabCONSUMABLES").datagrid({
+        maingrid = $("#tabCONSUMABLESOut").datagrid({
             gridTitle: '消耗品出库列表',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',

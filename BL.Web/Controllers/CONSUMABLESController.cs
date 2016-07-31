@@ -63,7 +63,6 @@ namespace BL.Web.Controllers
             var lst = consumablesService.GetAllCONSUMABLESInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
-
         [JsonException]
         public string EditCONSUMABLES(string json)
         {
@@ -98,7 +97,7 @@ namespace BL.Web.Controllers
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
             ViewBag.outWare = outWare;
-            ViewBag.userName = UserContext.CurrentUser.TrueName;
+            ViewBag.userName = common.GetNameById(model.FCREATEID);
             return View(model);
         }
         [JsonException]
@@ -133,7 +132,7 @@ namespace BL.Web.Controllers
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
             ViewBag.outWare = outWare;
-            ViewBag.userName = UserContext.CurrentUser.TrueName;
+            ViewBag.userName = model.FCREATEID;
             return View(model);
         }
         [JsonException]
@@ -145,7 +144,13 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
+            if (consumablesDetailsService.AddFNCBALANCEDETAILS(models))
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "添加成功" });
+            }
+            else {
+                return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "添加失败" });
+            }
 
         }
         [JsonException]
