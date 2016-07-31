@@ -100,7 +100,7 @@ group by FINWAREHOUSEID";
             for (int i = 0; i < list.Count(); i++)
             {
                 sql += @"insert into  T_CONSUMABLESDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FQUANTITY, FPRICE, FMONEY, FSUPPLIERID, FMEMO
-) values(@FGUID" + i + ", @FCREATEID, @FCREATETIME, @FPARENTID, @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FQUANTITY" + i + ", @FPRICE" + i + ", @FMONEY" + i + ", @FSUPPLIERID" + i + ", @FMEMO" + i + ");";
+) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FQUANTITY" + i + ", @FPRICE" + i + ", @FMONEY" + i + ", @FSUPPLIERID" + i + ", @FMEMO" + i + ");";
                 dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
                 dp.Add("@FCREATEID" + i, list[0].FCREATEID);
                 dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
@@ -117,8 +117,17 @@ group by FINWAREHOUSEID";
             }
             using (IDbConnection db = OpenConnection())
             {
-
-                return db.Execute(sql, dp) > 0;
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, dp, trans) > 0)
+                {
+                    trans.Commit();
+                    return true;
+                }
+                else
+                {
+                    trans.Rollback();
+                    return false;
+                }
             }
         }
 

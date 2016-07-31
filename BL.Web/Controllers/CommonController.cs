@@ -2,6 +2,7 @@
 using BL.MVC;
 using BL.Service;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,12 @@ namespace BL.Web.Controllers
         [JsonException]
         public string GetWareHoseJson()
         {
-            var result = commonService.GetWareHouseSelect();
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FCATEGORY"]))
+            {
+                dic["FCATEGORY"] = Request.QueryString["FCATEGORY"];
+            }
+            var result = commonService.GetWareHouseSelect(dic);
             StringBuilder sb = new StringBuilder();
             sb.Append("[");
             foreach (var item in result)

@@ -53,13 +53,14 @@
                 wareHouseLst = json;
             }
         });
+        var fstatus = '@Model.FSTATUS';
         FNCBALANCEDetailgrid = $("#tabFNCBALANCEDetail").datagrid({
             gridTitle: '财务结算明细',
             toolbarCustom: 
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button><button type="button" id="applay" class="btn btn-red">提交</button>',
+           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus=='2'?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
-            toolbarItem: 'save,|,cancel,edit',
+            toolbarItem: (fstatus=='2'?'':'save,|,cancel'),
             addLocation: 'first',
             dataUrl: '/FNCBALANCE/getSaleDayBook?FPARENTID=' + fparentId + "&FINWAREHOUSEID=" + FINWAREHOUSEID + "&Fdate=" + Fdate,
             dataType: 'json',
@@ -123,17 +124,37 @@
             showCheckboxcol: false,
             onLoaded: function (response)
             {
-                console.log(fstatue);
                 if (fstatue == '1')
                 {
-                    console.log(response.list.length);
                     for(var i=0;i<response.list.length;i++)
                     {
                         FNCBALANCEDetailgrid.datagrid("doEditRow", i);
+                        FNCBALANCEDetailgrid.datagrid("selectedRows", i);
                     }
+
                 }
             }
         });
+
+        $.CurrentNavtab.find("#export").click(function () {
+            //$("form").attr("enctype", "multipart/form-data");
+            window.open("/FNCBALANCE/ExportInfo?FPARENTID=" + fparentId);
+        })
+
+        $.CurrentNavtab.find("#applay").click(function () {
+            submitConsumable();
+        });
+        function submitConsumable() {
+            $(this).bjuiajax("doAjax", {
+                url: "/FNCBALANCE/SubmitFNCBALANCE?fguid=" + fparentId,
+                callback: function (json) {
+                    if (json == '1') {
+                        $(this).alertmsg("ok", "提交成功");
+                        $(this).navtab('closeTab', "FncbalanceDetail");
+                    }
+                }
+            });
+        }
     });
     $(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {
         //改为只监听数字键
@@ -142,11 +163,14 @@
         $(this).trigger("keyCodeEnter");
         var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
         if (trdata.length > 0) {
-            var differMoney = trdata[0].FMARKETMONEY - $(this).val();
-            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
-            if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
-                $(trdata[0]).removeClass("datagrid-edit-tr");
-            FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+            if ($(this).attr("Name") == "FBACKTMONEY") {
+                var differMoney = trdata[0].FMARKETMONEY - $(this).val();
+                FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
+                //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+                //    $(trdata[0]).removeClass("datagrid-edit-tr");
+            }
+            FNCBALANCEDetailgrid.datagrid("doSaveEditRow");
+            //FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
         }
     })
 </script>

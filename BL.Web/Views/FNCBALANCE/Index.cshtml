@@ -5,15 +5,13 @@
     <input type="text" id="txtNo"  size="15"/>
     <label class="control-label">仓库</label>
     <select id="selWarehose" data-toggle="selectpicker">
-        <option value="1" selected="selected">未提交</option>
-        <option value="2">已提交</option>
     </select>
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
         <option value="2">已提交</option>
     </select>
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearchFncbalance" class="btn btn-success">查询</button>
    
 </div>
 <div class="bjui-pageContent">
@@ -21,15 +19,19 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?Fdate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FState=" + $("#selState").val();
+        $.CurrentNavtab.find("#btnSearchFncbalance").click(function () {
+            var url = '/FNCBALANCE/GetAllFNCBALANCEJson?Fdate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FState=" + $.CurrentNavtab.find("#selState").val();
             maingrid.datagrid("reload", {dataUrl:url});
         });
+
+        LoadWareHose('selWarehose','');
+        
         var itemJLDW = LoadUnitDataForRowSel();
         var itemSPFL = LoadGoodsDataForRowSel();
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=2",
+            async:false,
             callback: function (json) {
                 wareHouseLst = json;
             }
@@ -74,7 +76,8 @@
                     items: function () {
                         return wareHouseLst;
                     },
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FMEMO',

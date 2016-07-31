@@ -3,19 +3,19 @@
     <input type="text" id="txtFID" size="15" />
     <label class="control-label">名称</label>
     <input type="text" id="txtFNAME"  size="15"/>
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearchGoods" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabGoods" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/Goods/GetAllGoodsJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
-            maingrid.datagrid("reload", {dataUrl:url});
+        $.CurrentNavtab.find("#btnSearchGoods").click(function () {
+            var url = '/Goods/GetAllGoodsJson?FID=' + $.CurrentNavtab.find("#txtFID").val() + "&FNAME=" + $.CurrentNavtab.find("#txtFNAME").val();
+            Goodsmaingrid.datagrid("reload", { dataUrl: url });
         });
-        $(document).on("click", "#qiyong,#jinyong", function () {
-            var selectedDatas = maingrid.data('selectedDatas');
+        $(document).on("click", "#Goods_qiyong,#Goods_jinyong", function () {
+            var selectedDatas = Goodsmaingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
                 $(this).alertmsg('warn', '未选中任何行');
                 return false;
@@ -23,14 +23,14 @@
             var btn = $(this).attr("id");
             var data = selectedDatas[0];
             switch (btn) {
-                case "qiyong":
+                case "Goods_qiyong":
                     $(this).bjuiajax("doAjax", {
                         url: "/Goods/SetGoodsStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "2" },
                         confirmMsg: "确认启用？",
                         callback: function (json) {
                             if (json.result) {
-                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                Goodsmaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
                                 $(this).alertmsg("ok", "已启用");
                             } else {
                                 $(this).alertmsg("warn", "启用失败");
@@ -38,14 +38,14 @@
                         }
                     })
                     break;
-                case "jinyong":
+                case "Goods_jinyong":
                     $(this).bjuiajax("doAjax", {
                         url: "/Goods/SetGoodsStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "3" },
                         confirmMsg: "确认禁用？",
                         callback: function (json) {
                             if (json.result) {
-                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                Goodsmaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
                                 $(this).alertmsg("ok", "已禁用");
                             } else {
                                 $(this).alertmsg("warn", "禁用失败");
@@ -57,12 +57,12 @@
         });
         var itemJLDW = LoadUnitDataForRowSel();
         var itemSPFL = LoadGoodsDataForRowSel();
-        maingrid = $("#tabGoods").datagrid({
+        Goodsmaingrid = $("#tabGoods").datagrid({
             gridTitle: '商品维护',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel,del,edit',
             toolbarCustom: function () {
-                return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
+                return '<button id="Goods_qiyong" class="btn btn-green">启用</button><button id="Goods_jinyong" class="btn btn-red">禁用</button>';
             },
             addLocation: 'first',
             dataUrl: '/Goods/GetAllGoodsJson',
@@ -196,7 +196,7 @@
             },
             beforeDelete: function () {
                 //hpf 查看源码删除动作未带返回值，后续可参照编辑修改
-                var value = maingrid.data('selectedDatas')[0];
+                var value = Goodsmaingrid.data('selectedDatas')[0];
                 if (value.FSTATUS == "2") {
                     $(this).alertmsg('warn', '已是启用状态，不可删除！', { displayMode: 'slide', displayPosition: 'bottomcenter', okName: '确定', title: '删除提示' });
                     return false;

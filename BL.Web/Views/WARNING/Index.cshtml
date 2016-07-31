@@ -8,19 +8,20 @@
     <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />    
     <label class="control-label">结束时间</label>
     <input type="text" name="dateTime" id="enddateTime" value="" data-toggle="datepicker" size="13" />
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearchwarning" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabWarning" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
+        $.CurrentNavtab.find("#btnSearchwarning").click(function () {
             reLoadWarning();
         });
+        LoadWareHose('selWareHouse', '');
         setInterval(reLoadWarning, 5 * 60 * 1000);
 
-        maingrid = $("#tabWarning").datagrid({
+        Warningmaingrid = $("#tabWarning").datagrid({
             gridTitle: '销售预警',
             showToolbar: false,
             addLocation: 'first',
@@ -74,8 +75,7 @@
 
     function reLoadWarning()
     {
-        console.log(1);
-        var url = '/WARNING/GetWarningJson?FWAREHOUSEID=' + $("#selWareHouse").val();
-        maingrid.datagrid("reload", { dataUrl: url });
+        var url = '/WARNING/GetWarningJson?FWAREHOUSEID=' + $.CurrentNavtab.find("#selWareHouse").val() + '&startDate=' + $.CurrentNavtab.find("#startdateTime").val() + '&endDate=' + $.CurrentNavtab.find("#enddateTime").val();
+        Warningmaingrid.datagrid("reload", { dataUrl: url });
     }
 </script>

@@ -91,6 +91,42 @@ group by FINWAREHOUSEID";
                 }
             }
         }
+        public bool AddFNCBALANCEDETAILS(List<T_FNCBALANCEDETAILSModel> list)
+        {
+
+            string sql = "";
+            var model = list[0];
+            DynamicParameters dp = new DynamicParameters();
+            for (int i = 0; i < list.Count(); i++)
+            {
+                sql += @"insert into  T_FNCBALANCEDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FWAREHOUSEID, FMARKETMONEY, FBACKTMONEY, FDIFFERMONEY, FMEMO
+) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FWAREHOUSEID" + i + ", @FMARKETMONEY" + i + ", @FBACKTMONEY" + i + ", @FDIFFERMONEY" + i + ", @FMEMO" + i + ");";
+                dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
+                dp.Add("@FCREATEID" + i, list[0].FCREATEID);
+                dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
+                dp.Add("@FPARENTID" + i, list[0].FPARENTID);
+                dp.Add("@FWAREHOUSEID" + i, list[i].FWAREHOUSEID);
+                dp.Add("@FMARKETMONEY" + i, list[i].FMARKETMONEY);
+                dp.Add("@FBACKTMONEY" + i, list[i].FBACKTMONEY);
+                dp.Add("@FDIFFERMONEY" + i, list[i].FDIFFERMONEY);
+                dp.Add("@FMEMO" + i, list[i].FMEMO);
+
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, dp, trans) > 0)
+                {
+                    trans.Commit();
+                    return true;
+                }
+                else
+                {
+                    trans.Rollback();
+                    return false;
+                }
+            }
+        }
 
         public T_FNCBALANCEDETAILSModel EditFNCBALANCEDETAILS(T_FNCBALANCEDETAILSModel model)
         {

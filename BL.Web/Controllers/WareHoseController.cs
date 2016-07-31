@@ -7,6 +7,7 @@ using BL.MVC;
 using BL.Service;
 using BL.Models;
 using BL.Framework;
+using System.Collections;
 
 namespace BL.Web.Controllers
 {
@@ -25,10 +26,45 @@ namespace BL.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [JsonException]
-        public string GetAllWareHoseJson()
+        public string GetAllWareHoseInfoJson(int pageCurrent = 1, int pageSize = 10)
         {
-            var lst = wareHose.GetAllWareHoseInfo();
-            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = lst.Count() });
+            IDictionary dic = new Hashtable();
+
+            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            {
+                dic["FID"] = Request.QueryString["FID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            {
+                dic["FNAME"] = Request.QueryString["FNAME"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FPROVINCE"]))
+            {
+                dic["FPROVINCE"] = Request.QueryString["FPROVINCE"];
+            }
+            int totalPage = 0;
+            var lst = wareHose.GetAllWareHoseInfo(dic, ref totalPage, pageCurrent, pageSize);
+            return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
+        }
+        [JsonException]
+        public JsonResult GetAllWareHoseJson()
+        {
+            IDictionary dic = new Hashtable();
+
+            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            {
+                dic["FID"] = Request.QueryString["FID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            {
+                dic["FNAME"] = Request.QueryString["FNAME"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FCATEGORY"]))
+            {
+                dic["FCATEGORY"] = Request.QueryString["FCATEGORY"];
+            }
+            var lst = wareHose.GetAllWareHoseInfo(dic);
+            return Json(lst);
         }
         /// <summary>
         /// 修改或添加仓库信息

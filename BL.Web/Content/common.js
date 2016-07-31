@@ -36,6 +36,24 @@ function LoadDictCategory(selectID, CategoryID)
         }
     });
 }
+function LoadWareHose(selectID, CategoryID) {
+    var url = "/WareHose/GetAllWareHoseJson";
+    if (CategoryID != "" && CategoryID != undefined) {
+        url += "?FCATEGORY=" + CategoryID;
+    }
+    $(this).bjuiajax("doAjax", {
+        url: url,
+        async: false,
+        callback: function (json) {
+            $.CurrentNavtab.find("#" + selectID).html('');
+            var _html = "<option value=''>全部</option>";
+            for (var i = 0; i < json.length; i++) {
+                _html += "<option value='" + json[i].FID + "'>" + json[i].FNAME + "</option>"
+            }
+            $.CurrentNavtab.find("#" + selectID).html(_html);
+        }
+    });
+}
 //供应商数据表格编辑添加下拉
 function LoadGYSDataForRowSel() {
     return LoadDataForRowSel( 'SupplierCategory');

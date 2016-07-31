@@ -135,8 +135,11 @@
             height: '100%',
             showCheckboxcol: false
         });
-
-        $("#applay").click(function () {
+        $.CurrentNavtab.find("#export").click(function () {
+            //$("form").attr("enctype", "multipart/form-data");
+            window.open("/CONSUMABLES/ExportInfoOut?FPARENTID=" + fparentId);
+        })
+        $.CurrentNavtab.find("#applay").click(function () {
             submitConsumable();
         });
         function submitConsumable() {
@@ -161,11 +164,10 @@
                     break;
                 case "btnSave":
                     datas = []
-                    $("#tabConsumablesOutDetail tbody tr").each(function (index) {
-                        ConsumablesOutDetailgrid.datagrid("selectedRows",index);
-                    })
-                    //ConsumablesOutDetailgrid.datagrid("doSaveEditRow");
-                    ConsumablesOutDetailgrid.datagrid("saveAll");
+                    //$("#tabConsumablesOutDetail tbody tr").each(function (index) {
+                    //    ConsumablesOutDetailgrid.datagrid("selectedRows",index);
+                    //})
+                    ConsumablesOutDetailgrid.datagrid("doSaveEditRow");
                     break;
                 case "btnDel":
                     ConsumablesOutDetailgrid.datagrid("delRows", goodsBackDetailGrid.data('selectedDatas'));

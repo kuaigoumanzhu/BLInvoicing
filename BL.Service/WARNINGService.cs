@@ -25,7 +25,18 @@ namespace BL.Service
             using (IDbConnection db = OpenConnection())
             {
                 string whereStr = " 1=1 ";
-
+                if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
+                {
+                    whereStr += string.Format(" and FWAREHOUSEID='{0}'", paraDic["FWAREHOUSEID"].ToString());
+                }
+                if (paraDic.Contains("startDate") && paraDic["startDate"].ToString().Trim() != "")
+                {
+                    whereStr += string.Format(" and datediff(day,FENDTIME,'{0}')<=0", paraDic["startDate"].ToString());
+                }
+                if (paraDic.Contains("endDate") && paraDic["endDate"].ToString().Trim() != "")
+                {
+                    whereStr += string.Format("  and datediff(day,FENDTIME,'{0}')>=0", paraDic["endDate"].ToString());
+                }
                 DynamicParameters dp = new DynamicParameters();
                 dp.Add("@tblName", "T_WARNING");
                 dp.Add("@strWhere", whereStr);

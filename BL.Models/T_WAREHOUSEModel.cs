@@ -18,7 +18,7 @@ namespace BL.Models
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime FCREATETIME { get; set; }
+        public DateTime? FCREATETIME { get; set; }
         /// <summary>
         /// 编号
         /// </summary>

@@ -5,20 +5,20 @@
     </select>
     <label class="control-label">名称</label>
     <input type="text" id="txtFNAME" size="15" />
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearchdict" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabDATADICT" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/DATADICT/GetAllDATADICTJson?FNAME=' + $("#txtFNAME").val() + "&FCATEGORY=" + $("#selCategory").val();
-            maingrid.datagrid("reload", { dataUrl: url });
+        $.CurrentNavtab.find("#btnSearchdict").click(function () {
+            var url = '/DATADICT/GetAllDATADICTJson?FNAME=' + $.CurrentNavtab.find("#txtFNAME").val() + "&FCATEGORY=" + $.CurrentNavtab.find("#selCategory").val();
+            DATADICTmaingrid.datagrid("reload", { dataUrl: url });
         });
 
-        $(document).on("click", "#qiyong,#jinyong", function () {
-            var selectedDatas = maingrid.data('selectedDatas');
+        $(document).on("click", "#DATADICT_qiyong,#DATADICT_jinyong", function () {
+            var selectedDatas = DATADICTmaingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
                 $(this).alertmsg('warn', '未选中任何行');
                 return false;
@@ -26,14 +26,14 @@
             var btn = $(this).attr("id");
             var data = selectedDatas[0];
             switch (btn) {
-                case "qiyong":
+                case "DATADICT_qiyong":
                     $(this).bjuiajax("doAjax", {
                         url: "/DATADICT/SetDATADICTStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "2" },
                         confirmMsg: "确认启用？",
                         callback: function (json) {
                             if (json.result) {
-                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                DATADICTmaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
                                 $(this).alertmsg("ok", "已启用");
                             } else {
                                 $(this).alertmsg("warn", "启用失败");
@@ -41,14 +41,14 @@
                         }
                     })
                     break;
-                case "jinyong":
+                case "DATADICT_jinyong":
                     $(this).bjuiajax("doAjax", {
                         url: "/DATADICT/SetDATADICTStatus",
                         data: { FGUID: data.FGUID, FSTATUS: "3" },
                         confirmMsg: "确认禁用？",
                         callback: function (json) {
                             if (json.result) {
-                                maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                DATADICTmaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
                                 $(this).alertmsg("ok", "已禁用");
                             } else {
                                 $(this).alertmsg("warn", "禁用失败");
@@ -61,12 +61,12 @@
         LoadDictCategory("selCategory");
         var itemsData = LoadDataForRowSel();
       
-        maingrid = $("#tabDATADICT").datagrid({
+        DATADICTmaingrid = $("#tabDATADICT").datagrid({
             gridTitle: '字典维护',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel,del,edit',
             toolbarCustom: function () {
-                return '<button id="qiyong" class="btn btn-green">启用</button><button id="jinyong" class="btn btn-red">禁用</button>';
+                return '<button id="DATADICT_qiyong" class="btn btn-green">启用</button><button id="DATADICT_jinyong" class="btn btn-red">禁用</button>';
             },
             addLocation: 'first',
             dataUrl: '/DATADICT/GetAllDATADICTJson',
