@@ -17,7 +17,7 @@ namespace BL.Web.Controllers
     {
         //
         // GET: /CONSUMABLES/
-        CONSUMABLESService consumablesService = new CONSUMABLESService();
+        PricesRegisterService pricesRegister = new PricesRegisterService();
         CONSUMABLESDETAILSService consumablesDetailsService = new CONSUMABLESDETAILSService();
         GoodsService goodsService = new GoodsService();
         CommonService common = new CommonService();
@@ -32,13 +32,9 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllCONSUMABLESJson(int pageCurrent = 1, int pageSize = 10)
+        public string GetAllPricesRegisterJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
-            if (!string.IsNullOrEmpty(Request.QueryString["FType"]))
-            {
-                dic["FType"] = Request.QueryString["FType"];
-            }
             if (!string.IsNullOrEmpty(Request.QueryString["FDate"]))
             {
                 dic["FDate"] = Request.QueryString["FDate"];
@@ -60,7 +56,7 @@ namespace BL.Web.Controllers
                 dic["FStatus"] = "1";
             }
             int totalPage = 0;
-            var lst = consumablesService.GetAllCONSUMABLESInfo(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = pricesRegister.GetAllPricesRegisterInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
 
@@ -88,7 +84,7 @@ namespace BL.Web.Controllers
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(consumablesService.AddCONSUMABLES(model));
+            return JsonHelper.Instance.Serialize(pricesRegister.AddCONSUMABLES(model));
 
         }
         #endregion
@@ -167,7 +163,7 @@ namespace BL.Web.Controllers
 
         public string SubmitConsumable(string fguid)
         {
-            if (consumablesService.submitConsumables(fguid))
+            if (pricesRegister.submitConsumables(fguid))
             {
                 return "1";
             }
@@ -229,7 +225,7 @@ namespace BL.Web.Controllers
             dic["FStatus"] = "2";
 
             int totalPage = 0;
-            var lst = consumablesService.SearchCONSUMABLES(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = pricesRegister.SearchCONSUMABLES(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
 
@@ -252,7 +248,7 @@ namespace BL.Web.Controllers
             }
 
             int totalPage = 0;
-            var lst = consumablesService.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = pricesRegister.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         } 
 
