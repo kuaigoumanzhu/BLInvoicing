@@ -119,6 +119,14 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="zxing, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.presentation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CommonController.cs" />
@@ -130,7 +138,9 @@
     <Compile Include="Controllers\GOODSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\OtherOutController.cs" />
     <Compile Include="Controllers\PersonController.cs" />
+    <Compile Include="Controllers\RepertoryCheckController.cs" />
     <Compile Include="Controllers\SUPPLIERController.cs" />
     <Compile Include="Controllers\WareHoseController.cs" />
     <Compile Include="Controllers\WARNINGController.cs" />
@@ -672,6 +682,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CONSUMABLES\CONSUMABLESHourseSearch.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\OtherOut\OtherOutList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\RepertoryCheck\RepertoryCheckList.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

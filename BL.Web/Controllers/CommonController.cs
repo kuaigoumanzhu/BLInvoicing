@@ -3,10 +3,14 @@ using BL.MVC;
 using BL.Service;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using ZXing;
+using ZXing.Common;
 
 namespace BL.Web.Controllers
 {
@@ -33,6 +37,20 @@ namespace BL.Web.Controllers
         {
             var lst=commonService.GetRepertoryChildByInWareHouse(inWareHouse);
             return View(lst);
+        }
+
+        public ActionResult GetBarCodeImage(string text)
+        {
+            EncodingOptions options = new EncodingOptions { Width = 300, Height = 100 };
+            BarcodeWriter writer = new BarcodeWriter();
+            writer.Format = BarcodeFormat.CODE_128;
+            writer.Options = options;
+            Bitmap barCode = writer.Write(text);
+            MemoryStream ms = new MemoryStream();
+            barCode.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            byte[] bytes = ms.GetBuffer();
+            ms.Close();
+            return new FileContentResult(bytes, "image/jpeg");
         }
     }
 }

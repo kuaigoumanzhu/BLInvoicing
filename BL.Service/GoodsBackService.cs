@@ -151,5 +151,13 @@ namespace BL.Service
                 return db.Query<int>(sql,new { FGUID=parentId}).Single() > 0;
             }
         }
+
+        public void ApplayGoodsBackDetail(IList<T_GOODSBACKDETAILSModel> lst,string parentId)
+        {
+            string goodsBacksql = "select * from T_GOODSBACK with(nolock) where FGUID=@parentId";//获取调出仓库FOUTWAREHOUSEID
+            //分仓库存表（T_ REPERTORYCHILD）调入仓库=商品回库调出仓库
+
+            //库存表（T_ REPERTORY）FWAREHOUSEID仓库=分仓库存表的调出仓库（FOUTWAREHOUSEID）
+        }
     }
 }
