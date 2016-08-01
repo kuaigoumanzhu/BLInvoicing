@@ -26,7 +26,7 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllDATADICTJson(int pageCurrent, int pageSize)
+        public string GetAllDATADICTJson(int pageCurrent=1, int pageSize=10)
         {
             IDictionary dic = new Hashtable();
             dic["FCATEGORY"] = "数据字典类别";

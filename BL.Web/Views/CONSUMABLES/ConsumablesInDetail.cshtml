@@ -2,7 +2,7 @@
 <div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center;">财务结算</td></tr>
+            <tr><td colspan="3" style="text-align:center;">消耗品入库单</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12"  /></td>
@@ -146,6 +146,10 @@
         });
 
 
+        $.CurrentNavtab.find("#export").click(function () {
+            //$("form").attr("enctype", "multipart/form-data");
+            window.open("/CONSUMABLES/ExportInfoIn?FPARENTID=" + fparentId);
+        })
         var outWare = '@Model.FWAREHOUSEID';
 
         $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
@@ -163,7 +167,7 @@
                     break;
             }
         })
-        $("#applay").click(function () {
+        $.CurrentNavtab.find("#applay").click(function () {
             submitConsumable();
         });
         function submitConsumable() {
@@ -179,18 +183,20 @@
             });
         }
     });
+
     $(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
         //改为只监听数字键
         if (event.keyCode != "13")
             return;
         $(this).trigger("keyCodeEnter");
-        var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
+        var trdata = $('#tabConsumablesInDetail').data('selectedDatas');
+        alert(trdata.length);
         if (trdata.length > 0) {
-            var differMoney = trdata[0].FMARKETMONEY - $(this).val();
-            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
+            var differMoney = trdata[0].FMONEY / $(this).val();
+            ConsumablesInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
             if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
                 $(trdata[0]).removeClass("datagrid-edit-tr");
-            FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+            ConsumablesInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
         }
     })
 </script>

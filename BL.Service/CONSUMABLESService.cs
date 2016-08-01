@@ -83,9 +83,13 @@ namespace BL.Service
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " c.FSTATUS='2' ";
-            if (paraDic.Contains("FDate") && paraDic["FDate"].ToString().Trim() != "")
+            if (paraDic.Contains("startFDate") && paraDic["startFDate"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and datediff(day,FDATE,'{0}')=0", paraDic["FDate"].ToString());
+                whereStr += string.Format(" and datediff(day,FDATE,'{0}')<=0", paraDic["startFDate"].ToString());
+            }
+            if (paraDic.Contains("endFDate") && paraDic["endFDate"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and datediff(day,FDATE,'{0}')>=0", paraDic["endFDate"].ToString());
             }
             if (paraDic.Contains("FCode") && paraDic["FCode"].ToString().Trim() != "")
             {

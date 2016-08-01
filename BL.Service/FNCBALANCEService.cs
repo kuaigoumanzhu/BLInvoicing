@@ -69,5 +69,21 @@ namespace BL.Service
                 }
             }
         }
+        public bool submitFNCBALANCE(string FGUID)
+        {
+            string sql = @"update  T_FNCBALANCE set   FSTATUS='2'
+where FGUID=@FGUID ";
+            using (IDbConnection db = OpenConnection())
+            {
+                if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

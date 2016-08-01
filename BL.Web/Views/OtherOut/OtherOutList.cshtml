@@ -1,0 +1,84 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <label class="control-label">日期</label>
+    <input type="text" name="dateTime" id="dateTime" value="" data-toggle="datepicker" size="13" />
+    <label class="control-label">单据编号</label>
+    <input type="text" id="fCode" size="15" />
+    <button type="button" id="searchCodeName" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabOhterOut" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            async: false,
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        otherOutGrid = $("#tabOhterOut").datagrid({
+            gridTitle: '其他出库单',
+            showToolbar: true,
+            toolbarItem: 'add,save,cancel',
+            addLocation: 'first',
+            dataUrl: '/OtherOut/GetOtherOutList',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FDATE',
+                    label: '日期',
+                    type: 'date',
+                    align: 'center',
+                    add: false,
+                    width: 170
+                },
+                {
+                    name: 'FCODE',
+                    label: '单据编号',
+                    align: 'center',
+                    width: 170,
+                    add: false
+                },
+                {
+                    name: 'FWAREHOUSEID',
+                    label: '仓库',
+                    align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
+                    width: 100
+                },
+                {
+                    name: 'FMEMO',
+                    label: '摘要',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    name: 'FAPPLYName',
+                    label: '填表人',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                },
+                {
+                    name: 'FAPPLYTIME',
+                    label: '填表日期',
+                    align: 'center',
+                    width: 100,
+                    add: false
+                }
+            ],
+            linenumberAll: true,
+            editUrl: '/GoodsBack/EditGoodsBackJson',
+            contextMenuB: true,
+            editMode: 'inline',
+            height: '100%',
+            inlineEditMult: false
+        });
+    })
+</script>

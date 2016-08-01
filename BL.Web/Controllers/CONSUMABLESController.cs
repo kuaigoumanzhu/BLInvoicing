@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -21,6 +22,8 @@ namespace BL.Web.Controllers
         CONSUMABLESDETAILSService consumablesDetailsService = new CONSUMABLESDETAILSService();
         GoodsService goodsService = new GoodsService();
         CommonService common = new CommonService();
+
+        DATADICTService dictService = new DATADICTService();
         #region 消耗品入库主表
         public ActionResult Index()
         {
@@ -63,7 +66,6 @@ namespace BL.Web.Controllers
             var lst = consumablesService.GetAllCONSUMABLESInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
-
         [JsonException]
         public string EditCONSUMABLES(string json)
         {
@@ -98,7 +100,7 @@ namespace BL.Web.Controllers
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
             ViewBag.outWare = outWare;
-            ViewBag.userName = UserContext.CurrentUser.TrueName;
+            ViewBag.userName = common.GetNameById(model.FCREATEID);
             return View(model);
         }
         [JsonException]
@@ -133,7 +135,7 @@ namespace BL.Web.Controllers
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
             ViewBag.outWare = outWare;
-            ViewBag.userName = UserContext.CurrentUser.TrueName;
+            ViewBag.userName = model.FCREATEID;
             return View(model);
         }
         [JsonException]
@@ -145,7 +147,13 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
+            if (consumablesDetailsService.AddFNCBALANCEDETAILS(models))
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "添加成功" });
+            }
+            else {
+                return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "添加失败" });
+            }
 
         }
         [JsonException]
@@ -254,6 +262,101 @@ namespace BL.Web.Controllers
             int totalPage = 0;
             var lst = consumablesService.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
-        } 
+        }
+
+        public string ExportInfoIn()
+        {
+            IDictionary dic = new Hashtable();
+            dic["FPARENTID"] = Request.QueryString["FPARENTID"];
+            var lst = consumablesDetailsService.GetAllCONSUMABLESDETAILSInfo(dic);
+            DataTable dt = new DataTable();
+            dt.Columns.Add("序号");
+            dt.Columns.Add("商品编号");
+            dt.Columns.Add("商品名称");
+            dt.Columns.Add("计量单位");
+            dt.Columns.Add("数量");
+            dt.Columns.Add("金额");
+            dt.Columns.Add("单价");
+            dt.Columns.Add("供应商");
+            dt.Columns.Add("备注");
+            int i = 0;
+            foreach (var item in lst)
+            {
+                DataRow dr = dt.NewRow();
+                //计量单位
+                IDictionary dicjldw = new Hashtable();
+                dicjldw["FCATEGORY"] = "Unit";
+                dicjldw["FID"] = item.FUNIT;
+                var jldw = dictService.GetAllDictInfo(dicjldw);
+                string funit = "";
+                if (jldw.Count() > 0)
+                {
+                    funit = jldw.First().FNAME;
+                }
+                //供应商
+                IDictionary dicgys = new Hashtable();
+                dicgys["FCATEGORY"] = "Unit";
+                dicgys["FID"] = item.FSUPPLIERID;
+                var gys = dictService.GetAllDictInfo(dicgys);
+                string fsupplierid = "";
+                if (gys.Count() > 0)
+                {
+                    fsupplierid = gys.First().FNAME;
+                }
+                dr["序号"] = (i + 1).ToString();
+                dr["商品编号"] = item.FGOODSID;
+                dr["商品名称"] = item.FGOODSNAME;
+                dr["计量单位"] = funit;
+                dr["数量"] = item.FQUANTITY;
+                dr["金额"] = item.FMONEY;
+                dr["单价"] = item.FPRICE;
+                dr["供应商"] = fsupplierid;
+                dr["备注"] = item.FMEMO;
+                dt.Rows.Add(dr);
+            }
+            NPOIHelper.ExportByWeb(dt, "消耗品入库单", "消耗品入库单.xls");
+            return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "导出成功" });
+        }
+        public string ExportInfoOut()
+        {
+            IDictionary dic = new Hashtable();
+            dic["FPARENTID"] = Request.QueryString["FPARENTID"];
+            var lst = consumablesDetailsService.GetAllCONSUMABLESDETAILSInfo(dic);
+            DataTable dt = new DataTable();
+            dt.Columns.Add("序号");
+            dt.Columns.Add("商品编号");
+            dt.Columns.Add("商品名称");
+            dt.Columns.Add("计量单位");
+            dt.Columns.Add("数量");
+            dt.Columns.Add("金额");
+            dt.Columns.Add("单价");
+            dt.Columns.Add("备注");
+            int i = 0;
+            foreach (var item in lst)
+            {
+                DataRow dr = dt.NewRow();
+                //计量单位
+                IDictionary dicjldw = new Hashtable();
+                dicjldw["FCATEGORY"] = "Unit";
+                dicjldw["FID"] = item.FUNIT;
+                var jldw = dictService.GetAllDictInfo(dicjldw);
+                string funit = "";
+                if (jldw.Count() > 0)
+                {
+                    funit = jldw.First().FNAME;
+                }
+                dr["序号"] = (i + 1).ToString();
+                dr["商品编号"] = item.FGOODSID;
+                dr["商品名称"] = item.FGOODSNAME;
+                dr["计量单位"] = funit;
+                dr["数量"] = item.FQUANTITY;
+                dr["金额"] = item.FMONEY;
+                dr["单价"] = item.FPRICE;
+                dr["备注"] = item.FMEMO;
+                dt.Rows.Add(dr);
+            }
+            NPOIHelper.ExportByWeb(dt, "消耗品出库单", "消耗品出库单.xls");
+            return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "导出成功" });
+        }
     }
 }

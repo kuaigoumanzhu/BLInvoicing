@@ -51,6 +51,27 @@ namespace BL.Service
             }
         }
 
+        public IEnumerable<T_DATADICTModel> GetAllDictInfo(IDictionary paraDic)
+        {
+            string sql = "select * from T_DATADICT with(nolock)";
+            string whereStr = " where 1=1";
+            DynamicParameters dp = new DynamicParameters();
+            if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
+            {
+                whereStr += " and FID = @FID";
+                dp.Add("@FID", paraDic["FID"].ToString());
+            }
+            if (paraDic.Contains("FCATEGORY") && paraDic["FCATEGORY"].ToString().Trim() != "")
+            {
+                whereStr += " and FCATEGORY = @FCATEGORY";
+                dp.Add("@FCATEGORY", paraDic["FCATEGORY"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_DATADICTModel>(sql + whereStr, dp);
+            }
+        }
+
         public IEnumerable<T_DATADICTModel> GetAllDictCategoryInfo(string dictCategory)
         {
             string sql = "select * from T_DATADICT where FCATEGORY=@FCATEGORY and FSTATUS=2";

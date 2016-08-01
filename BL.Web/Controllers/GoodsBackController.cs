@@ -83,19 +83,30 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(new { list = lst, statusCode = "200", message = "保存成功！" });
         }
 
-        public string DelGoodsBackDetailJson(string FGUID,string FPARENTID)
+        public string DelGoodsBackDetailJson(string json)
         {
-            if(!goodsBack.GetGoodsBackByParentId(FPARENTID))
+            var model = JsonHelper.Instance.Deserialize<List<T_GOODSBACKDETAILSModel>>(json)[0];
+            if(!goodsBack.GetGoodsBackByParentId(model.FPARENTID))
             {
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "该商品已提交，无法删除！" });
             }
-            if(goodsBack.DelGoodsBackDetail(FGUID))
+            if(goodsBack.DelGoodsBackDetail(model.FGUID))
             {
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { closeCurrent = true });
             }else
             {
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "删除失败！" });
             }
+        }
+        public string ApplayGoodsBackDetailJson(string json,string parentId)
+        {
+            if (!goodsBack.GetGoodsBackByParentId(parentId))
+            {
+                return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "已提交！" });
+            }
+            var models = JsonHelper.Instance.Deserialize<List<T_GOODSBACKDETAILSModel>>(json);
+            return "";
+
         }
     }
 }

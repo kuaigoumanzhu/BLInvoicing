@@ -6,6 +6,7 @@ using BL.Models;
 using System.Data;
 using BL.Framework.Orm;
 using Dapper;
+using System.Collections;
 
 namespace BL.Service
 {
@@ -48,12 +49,24 @@ namespace BL.Service
             }
         }
 
-        public IEnumerable<SelectWareHouseModel> GetWareHouseSelect()
+        public IEnumerable<SelectWareHouseModel> GetWareHouseSelect(IDictionary paraDic)
         {
+            string whereStr = " where 1=1";
+            DynamicParameters dp = new DynamicParameters();
+            if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
+            {
+                whereStr += " and FID = @FID";
+                dp.Add("@FID", paraDic["FID"].ToString());
+            }
+            if (paraDic.Contains("FCATEGORY") && paraDic["FCATEGORY"].ToString().Trim() != "")
+            {
+                whereStr += " and FCATEGORY = @FCATEGORY";
+                dp.Add("@FCATEGORY", paraDic["FCATEGORY"].ToString());
+            }
             string sql = "select FID,FNAME from T_WAREHOUSE with(nolock)";
             using (IDbConnection db = OpenConnection())
             {
-                return db.Query<SelectWareHouseModel>(sql);
+                return db.Query<SelectWareHouseModel>(sql+whereStr,dp);
             }
         }
         /// <summary>

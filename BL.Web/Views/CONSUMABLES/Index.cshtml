@@ -1,36 +1,36 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     
     <label class="control-label">日期</label>
-    <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />  
+    <input type="text" name="dateTime" id="startdateTime_conIn" value="" data-toggle="datepicker" size="13" />  
     <label class="control-label">单据编号</label>
-    <input type="text" id="txtNo"  size="15"/>
+    <input type="text" id="txtNo_conIn"  size="15"/>
     <label class="control-label">采购人</label>
-    <input type="text" id="txtPerson"  size="15"/>
+    <input type="text" id="txtPerson_conIn"  size="15"/>
     <label class="control-label">表单状态</label>
-    <select id="selState" data-toggle="selectpicker">
+    <select id="selState_conIn" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
         <option value="2">已提交</option>
     </select>
-    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearchIn" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabCONSUMABLES" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/CONSUMABLES/GetAllCONSUMABLESJson?FType=1&FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FPERSONID=" + $("#txtPerson").val() + "&FStatus=" + $("#selState").val();
-            maingrid.datagrid("reload", {dataUrl:url});
+        $.CurrentNavtab.find("#btnSearchIn").click(function () {
+            var url = '/CONSUMABLES/GetAllCONSUMABLESJson?FType=1&FDate=' + $.CurrentNavtab.find("#startdateTime_conIn").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo_conIn").val() + "&FPERSONID=" + $.CurrentNavtab.find("#txtPerson_conIn").val() + "&FStatus=" + $.CurrentNavtab.find("#selState_conIn").val();
+            CONSUMABLESgrid.datagrid("reload", { dataUrl: url });
         });
 
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=2",
             callback: function (json) {
                 wareHouseLst = json;
             }
         });
-        maingrid = $("#tabCONSUMABLES").datagrid({
+        CONSUMABLESgrid = $("#tabCONSUMABLES").datagrid({
             gridTitle: '消耗品入库登记列表',
             showToolbar: true,
             toolbarItem:  'add,save,|,cancel',

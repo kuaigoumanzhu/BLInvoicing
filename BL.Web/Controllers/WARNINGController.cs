@@ -32,13 +32,17 @@ namespace BL.Web.Controllers
         {
             IDictionary dic = new Hashtable();
 
-            if (!string.IsNullOrEmpty(Request.QueryString["FID"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["FWAREHOUSEID"]))
             {
-                dic["FID"] = Request.QueryString["FID"];
+                dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
             }
-            if (!string.IsNullOrEmpty(Request.QueryString["FNAME"]))
+            if (!string.IsNullOrEmpty(Request.QueryString["startDate"]))
             {
-                dic["FNAME"] = Request.QueryString["FNAME"];
+                dic["startDate"] = Request.QueryString["startDate"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["endDate"]))
+            {
+                dic["endDate"] = Request.QueryString["endDate"];
             }
             if (isDel)
             {

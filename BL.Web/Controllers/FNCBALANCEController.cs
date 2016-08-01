@@ -5,6 +5,7 @@ using BL.Service;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -82,18 +83,24 @@ namespace BL.Web.Controllers
         {
             var models = JsonHelper.Instance.Deserialize<List<T_FNCBALANCEDETAILSModel>>(json);
             var model = models[0];
-            if (string.IsNullOrEmpty(model.FGUID))
-            {
+            //if (string.IsNullOrEmpty(model.FGUID))
+            //{
                 model.FCREATEID = UserContext.CurrentUser.UserName;
                 model.FGUID = Guid.NewGuid().ToString();
                 model.FCREATETIME = DateTime.Now;
                 model.FPARENTID = Request.QueryString["FPARENTID"];
-                return JsonHelper.Instance.Serialize(fncbalancedetailsService.AddFNCBALANCEDETAILS(model));
-            }
-            else
-            {
-                return JsonHelper.Instance.Serialize(fncbalancedetailsService.EditFNCBALANCEDETAILS(model));
-            }
+                if (fncbalancedetailsService.AddFNCBALANCEDETAILS(models))
+                {
+                    return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "添加成功" });
+                }
+                else {
+                    return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "添加失败" });
+                }
+            //}
+            //else
+            //{
+            //    return JsonHelper.Instance.Serialize(fncbalancedetailsService.EditFNCBALANCEDETAILS(model));
+            //}
 
         }
 
@@ -121,6 +128,53 @@ namespace BL.Web.Controllers
             var lstSale = fncbalancedetailsService.GetSaleDayBook(dic);
             return JsonHelper.Instance.Serialize(new { list = lstSale });
 
+        }
+        public string SubmitFNCBALANCE(string fguid)
+        {
+            if (fncbalanceService.submitFNCBALANCE(fguid))
+            {
+                return "1";
+            }
+            else
+            {
+                return "0";
+            }
+        }
+        public string ExportInfo()
+        {
+            WareHoseService warehourseService = new WareHoseService();
+            IDictionary dic = new Hashtable();
+            dic["FPARENTID"] = Request.QueryString["FPARENTID"];
+            var lst = fncbalancedetailsService.GetAllFNCBALANCEInfo(dic);
+            DataTable dt = new DataTable();
+            dt.Columns.Add("序号");
+            dt.Columns.Add("销售仓库");
+            dt.Columns.Add("销售金额");
+            dt.Columns.Add("回款金额");
+            dt.Columns.Add("差异金额");
+            dt.Columns.Add("备注");
+            int i = 0;
+            foreach (var item in lst)
+            {
+                DataRow dr = dt.NewRow();
+                IDictionary dicware = new Hashtable();
+                dicware["FID"] = item.FWAREHOUSEID;
+                var warehouse = warehourseService.GetAllWareHoseInfo(dicware);
+                string ck = "";
+                if (warehouse.Count() > 0)
+                {
+                    ck = warehouse.First().FNAME;
+                }
+                dr["序号"] = (i + 1).ToString();
+                dr["销售仓库"] = ck;
+                dr["销售金额"] = item.FMARKETMONEY;
+                dr["回款金额"] = item.FBACKTMONEY;
+                dr["差异金额"] = item.FDIFFERMONEY;
+                dr["备注"] = item.FMEMO;
+                dt.Rows.Add(dr);
+            }
+            NPOIHelper.ExportByWeb(dt, "财务结算单", "财务结算单.xls");
+            return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "导出成功" });
         }
     }
 }

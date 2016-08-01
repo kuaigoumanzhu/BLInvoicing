@@ -2,7 +2,7 @@
 <div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center;">财务结算</td></tr>
+            <tr><td colspan="3" style="text-align:center;">消耗品出库单</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12"  /></td>
@@ -53,6 +53,7 @@
         });
         var gysList = LoadGYSDataForRowSel();
         var fstatus = '@Model.FSTATUS';
+        var jldw = LoadUnitDataForRowSel();
         ConsumablesOutDetailgrid = $("#tabConsumablesOutDetail").datagrid({
             gridTitle: '消耗品出库明细',
             toolbarCustom:
@@ -78,19 +79,25 @@
                     name: 'FGOODSID',
                     label: '商品编号',
                     align: 'center',
+                    eidt:false,
                     width: 80
                 },
                 {
                     name: 'FGOODSNAME',
                     label: '商品名称',
                     align: 'center',
+                    eidt: false,
                     width: 80
                 },
                 {
                     name: 'FUNIT',
                     label: '计量单位',
                     align: 'center',
-                    rule: 'number,required',
+                    eidt: false,
+                    type: 'select',
+                    items: function () {
+                        return jldw;
+                    },
                     width: 80
                 },
                 {
@@ -128,8 +135,11 @@
             height: '100%',
             showCheckboxcol: false
         });
-
-        $("#applay").click(function () {
+        $.CurrentNavtab.find("#export").click(function () {
+            //$("form").attr("enctype", "multipart/form-data");
+            window.open("/CONSUMABLES/ExportInfoOut?FPARENTID=" + fparentId);
+        })
+        $.CurrentNavtab.find("#applay").click(function () {
             submitConsumable();
         });
         function submitConsumable() {
@@ -154,6 +164,9 @@
                     break;
                 case "btnSave":
                     datas = []
+                    //$("#tabConsumablesOutDetail tbody tr").each(function (index) {
+                    //    ConsumablesOutDetailgrid.datagrid("selectedRows",index);
+                    //})
                     ConsumablesOutDetailgrid.datagrid("doSaveEditRow");
                     break;
                 case "btnDel":
