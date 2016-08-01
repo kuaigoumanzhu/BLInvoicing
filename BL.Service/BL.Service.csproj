@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="CommonService.cs" />
     <Compile Include="CONSUMABLESDETAILSService.cs" />
+    <Compile Include="PricesRegisterService.cs" />
     <Compile Include="CONSUMABLESService.cs" />
     <Compile Include="FNCBALANCEDETAILSService.cs" />
     <Compile Include="FNCBALANCEService.cs" />

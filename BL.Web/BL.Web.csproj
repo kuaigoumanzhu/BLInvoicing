@@ -131,6 +131,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PersonController.cs" />
+    <Compile Include="Controllers\PricesRegisterController.cs" />
     <Compile Include="Controllers\SUPPLIERController.cs" />
     <Compile Include="Controllers\WareHoseController.cs" />
     <Compile Include="Controllers\WARNINGController.cs" />
@@ -672,6 +673,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CONSUMABLES\CONSUMABLESHourseSearch.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\StorageRegister\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\StorageAudit\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ReturnRegister\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GoodsAllocation\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\PricesRegister\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
