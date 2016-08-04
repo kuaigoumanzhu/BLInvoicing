@@ -59,7 +59,7 @@
         Personmaingrid = $("#tabPerson").datagrid({
             gridTitle: '人员维护',
             showToolbar: true,
-            toolbarItem: 'add,save,|,cancel,del,edit',
+            toolbarItem: 'add,save,|,cancel,edit',
             toolbarCustom: function () {
                 return '<button id="Person_qiyong" class="btn btn-green">启用</button><button id="Person_jinyong" class="btn btn-red">禁用</button>';
             },
@@ -161,7 +161,7 @@
                 }
             ],
             editUrl: '/Person/EditPERSON',
-            delUrl: '/Person/DelPERSON',
+            //delUrl: '/Person/DelPERSON',
             delConfirm: true,
             beforeEdit: function (value, value1) {
                 if (value1 != undefined&&value1.length>0)

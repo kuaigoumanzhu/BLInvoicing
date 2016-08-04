@@ -82,7 +82,7 @@ namespace BL.Web.Controllers
                     model.FCREATEID = UserContext.CurrentUser.UserName;
                     model.FGUID = Guid.NewGuid().ToString();
                     model.FCREATETIME = DateTime.Now;
-                    model.FSTATUS = "1";
+                    model.FSTATUS = "2";
                     if (model.FSTATUS == "2")
                     {
                         model.FSTARTTIME = DateTime.Now;
