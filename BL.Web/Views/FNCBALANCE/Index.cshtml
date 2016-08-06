@@ -121,12 +121,14 @@
             height: '100%',
             showCheckboxcol: false,
             onDblClickRow: function (rowData, index) {
-                var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
-                var jsonStr = JSON.stringify(rowData);
-                $(this).navtab({
-                    id: 'FncbalanceDetail', url: '/FNCBALANCE/FncbalanceDetail', title: '财务结算明细',
-                    data: { rowData: jsonStr, outWare: outWare }, fresh: true
-                });
+                if (rowData["FGUID"] != "") {
+                    var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                    var jsonStr = JSON.stringify(rowData);
+                    $(this).navtab({
+                        id: 'FncbalanceDetail', url: '/FNCBALANCE/FncbalanceDetail', title: '财务结算明细',
+                        data: { rowData: jsonStr, outWare: outWare }, fresh: true
+                    });
+                }
             }
         });
     });

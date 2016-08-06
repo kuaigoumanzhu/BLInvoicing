@@ -116,6 +116,8 @@
                     name: 'FMONEY',
                     label: '金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '金额合计',
                     width: 110
                 },
                 {
@@ -127,7 +129,9 @@
             ],
             contextMenuB: true,
             editUrl: '/CONSUMABLES/EditConsumablesOutDetail?FPARENTID=' + fparentId,
+            delUrl: '/CONSUMABLES/DelCONSUMABLES',
             editMode: 'inline',
+            showTfoot: true,
             inlineEditMult:true,
             fullGrid: true,
             showLinenumber: true,
@@ -174,12 +178,12 @@
                     break;
             }
         })
-
+        var curFGUID='@Model.FGUID';
         function Add() {
             datas = [];
             $(this).dialog({
                 id: 'ConsumablesOutDetail',
-                url: '/CONSUMABLES/selectOutGoods?FWAREHOUSEID=' + outWare,
+                url: '/CONSUMABLES/selectOutGoods?FWAREHOUSEID=' + outWare + "&FGUID=" + curFGUID,
                 title: '选择商品',
                 width: 840,
                 mask: true,
