@@ -33,7 +33,14 @@ namespace BL.Web.Controllers
             {
                 sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
             }
-            return sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            if (result.Count() > 0)
+            {
+                return sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            }
+            else
+            {
+                return sb.ToString() + "]";
+            }
         }
         /// <summary>
         /// 分仓库存表数据带回
