@@ -91,7 +91,8 @@ namespace BL.Web.Controllers
                 {
                     model.FGUID = Guid.NewGuid().ToString();
                     model.FCREATETIME = DateTime.Now;
-                    model.FSTATUS = "1";
+                    model.FSTATUS = "2";
+                    model.FSTARTTIME = DateTime.Now;
                     var result = wareHose.AddWareHoseInfo(model);
                     return JsonHelper.Instance.Serialize(result);
                 }

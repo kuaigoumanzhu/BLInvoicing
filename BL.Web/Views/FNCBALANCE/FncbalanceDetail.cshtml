@@ -78,7 +78,7 @@
                     name: 'FWAREHOUSEID',
                     label: '销售仓库',
                     align: 'center',
-                    edit:false,
+                    edit: false,
                     type: 'select',
                     items: function () {
                         return wareHouseLst;
@@ -89,6 +89,8 @@
                     name: 'FMARKETMONEY',
                     label: '销售金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '销售金额合计',
                     edit:false,
                     width: 80
                 },
@@ -96,6 +98,8 @@
                     name: 'FBACKTMONEY',
                     label: '回款金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '回款金额合计',
                     rule: 'number,required',
                     width: 80
                 },
@@ -103,6 +107,8 @@
                     name: 'FDIFFERMONEY',
                     label: '差异金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '差异金额合计',
                     edit:false,
                     width: 80
                 },
@@ -119,6 +125,7 @@
             inlineEditMult:true,
             fullGrid: true,
             showLinenumber: true,
+            showTfoot:true,
             paging: false,
             height: '100%',
             showCheckboxcol: false,
@@ -129,9 +136,23 @@
                     for(var i=0;i<response.list.length;i++)
                     {
                         FNCBALANCEDetailgrid.datagrid("doEditRow", i);
-                        FNCBALANCEDetailgrid.datagrid("selectedRows", i);
+                        var curIndex = i;
+                        $("#tabFNCBALANCEDetail tr:eq(" + curIndex + ")").find("input").focus(function () {
+                            FNCBALANCEDetailgrid.datagrid("selectedRows", curIndex);
+                        });
                     }
-
+                    $("input[name='FBACKTMONEY']").keyup(function () {
+                        var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
+                        if (trdata.length > 0) {
+                            var xsje = trdata[0].FMARKETMONEY;
+                            var hkje = $(this).val();
+                            var differMoney = trdata[0].FMARKETMONEY - parseFloat($(this).val());
+                            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });                            
+                            FNCBALANCEDetailgrid.datagrid("doCancelEditRow", trdata[0].gridIndex);
+                            FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+                            SumCalc();
+                        }
+                    })
                 }
             }
         });
@@ -155,22 +176,59 @@
                 }
             });
         }
-    });
-    $(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {
-        //改为只监听数字键
-        if (event.keyCode != "13")
-            return;
-        $(this).trigger("keyCodeEnter");
-        var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
-        if (trdata.length > 0) {
-            if ($(this).attr("Name") == "FBACKTMONEY") {
-                var differMoney = trdata[0].FMARKETMONEY - $(this).val();
-                FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
-                //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
-                //    $(trdata[0]).removeClass("datagrid-edit-tr");
-            }
-            FNCBALANCEDetailgrid.datagrid("doSaveEditRow");
-            //FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+
+        function SumCalc()
+        {
+            var xsjeSum = 0;
+            var hkjeSum = 0;
+            var cyjeSum = 0;
+            $("#tabFNCBALANCEDetail tbody tr").each(function (i) {
+                var tds = $(this).find("td");
+                var xsje = 0;
+                if ($(tds[3]).find("div").length > 0) {
+                    xsje = $($(tds[3]).find("div")[0]).html();
+                } else {
+                    xsje = $(tds[3]).html();
+                }
+                var hkje = 0;
+                if ($(tds[4]).find("input").length > 0) {
+                    hkje = $($(tds[4]).find("input")[0]).val();
+                } else {
+                    hkje = $(tds[4]).html();
+                }
+                var cyje = 0;
+                if ($(tds[5]).find("div").length > 0) {
+                    cyje = $($(tds[5]).find("div")[0]).html();
+                } else {
+                    cyje = $(tds[5]).html();
+                }
+                xsjeSum += parseFloat(xsje);
+                hkjeSum += parseFloat(hkje);
+                cyjeSum += parseFloat(cyje);
+            })
+            var ths = $("div.datagrid-box-f").find("table").find("th");
+            
+            $(ths[3]).html('<div><div class="datagrid-calcbox">合计</div>' + xsjeSum + '</div>');
+            $(ths[4]).html('<div><div class="datagrid-calcbox">合计</div>' + hkjeSum + '</div>');
+            $(ths[5]).html('<div><div class="datagrid-calcbox">合计</div>' + cyjeSum + '</div>');
         }
-    })
+    });
+    //$(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {
+    //    //改为只监听数字键
+    //    //if (event.keyCode != "13")
+    //    //    return;
+    //    //$(this).trigger("keyCodeEnter");
+    //    $(this).trigger("blur");
+    //    var trdata = $('#tabFNCBALANCEDetail').data('selectedDatas');
+    //    if (trdata.length > 0) {
+    //        if ($(this).attr("Name") == "FBACKTMONEY") {
+    //            var differMoney = trdata[0].FMARKETMONEY - $(this).val();
+    //            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });
+    //            //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+    //            //    $(trdata[0]).removeClass("datagrid-edit-tr");
+    //        }
+    //        //FNCBALANCEDetailgrid.datagrid("doSaveEditRow");
+    //        //FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+    //    }
+    //})
 </script>

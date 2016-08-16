@@ -154,6 +154,20 @@ where FGUID=@FGUID ";
                 }
             }
         }
+        /// <summary>
+        /// 判断编号是否已存在
+        /// </summary>
+        /// <param name="FGUID"></param>
+        /// <param name="FID"></param>
+        /// <returns></returns>
+        public bool IsExistsFID(string PFGUID,string FGUID, string FID)
+        {
+            string sql = "select * from T_CONSUMABLESDETAILS where FPARENTID=@PFGUID and  FGUID!=@FGUID and FGOODSID=@FID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_GOODSModel>(sql, new {PFGUID=PFGUID, FGUID = FGUID, FID = FID }).Count() > 0;
+            }
+        }
         public int DelCONSUMABLESDETAILS(string FGUID)
         {
 
@@ -172,6 +186,12 @@ where FGUID=@FGUID ";
             {
                 whereStr += " and c.FWAREHOUSEID=@FWAREHOUSEID";
                 dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
+
+            }
+            if (paraDic.Contains("FGUID") && paraDic["FGUID"].ToString().Trim() != "")
+            {
+                whereStr += " and d.FGOODSID not in(select FGOODSID from T_CONSUMABLESDETAILS where FPARENTID=@FGUID)";
+                dp.Add("@FGUID", paraDic["FGUID"].ToString());
 
             }
             string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum from T_CONSUMABLES c

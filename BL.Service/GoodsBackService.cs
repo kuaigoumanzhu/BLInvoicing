@@ -25,7 +25,9 @@ namespace BL.Service
             using (IDbConnection db = OpenConnection())
             {
                 var result=db.QueryMultiple("sp_SplitPage_GetList", dp, null,null,CommandType.StoredProcedure);
-                total = result.Read<int>().Single();
+                total = result.Read<int>().SingleOrDefault();
+                if (total == 0)
+                    return new List<ViewGOODSBACKModel>();
                 return result.Read<ViewGOODSBACKModel>();
             }
         }

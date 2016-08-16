@@ -30,10 +30,10 @@ namespace BL.Framework
         public static void ExportEasy(DataTable dtSource, string strFileName)
         {
             HSSFWorkbook workbook = new HSSFWorkbook();
-            Sheet sheet = workbook.CreateSheet();
+            var sheet = workbook.CreateSheet();
 
             //填充表头
-            Row dataRow = sheet.CreateRow(0);
+            var dataRow = sheet.CreateRow(0);
             foreach (DataColumn column in dtSource.Columns)
             {
                 dataRow.CreateCell(column.Ordinal).SetCellValue(column.ColumnName);
@@ -64,8 +64,8 @@ namespace BL.Framework
                     fs.Flush();
                 }
             }
-            sheet.Dispose();
-            workbook.Dispose();
+            //sheet.Dispose();
+            //workbook.Dispose();
         }
 
 
@@ -77,7 +77,7 @@ namespace BL.Framework
         public static MemoryStream Export(DataTable dtSource, string strHeaderText)
         {
             HSSFWorkbook workbook = new HSSFWorkbook();
-            Sheet sheet = workbook.CreateSheet();
+            var sheet = workbook.CreateSheet();
 
             #region 右击文件 属性信息
             {
@@ -97,8 +97,8 @@ namespace BL.Framework
             }
             #endregion
 
-            CellStyle dateStyle = workbook.CreateCellStyle();
-            DataFormat format = workbook.CreateDataFormat();
+            ICellStyle dateStyle = workbook.CreateCellStyle();
+            IDataFormat format = workbook.CreateDataFormat();
             dateStyle.DataFormat = format.GetFormat("yyyy-mm-dd");
 
             //取得列宽
@@ -135,13 +135,13 @@ namespace BL.Framework
 
                     #region 表头及样式
                     {
-                        Row headerRow = sheet.CreateRow(0);
+                        IRow headerRow = sheet.CreateRow(0);
                         headerRow.HeightInPoints = 25;
                         headerRow.CreateCell(0).SetCellValue(strHeaderText);
 
-                        CellStyle headStyle = workbook.CreateCellStyle();
-                        headStyle.Alignment = HorizontalAlignment.CENTER;// CellHorizontalAlignment.CENTER;
-                        Font font = workbook.CreateFont();
+                        ICellStyle headStyle = workbook.CreateCellStyle();
+                        headStyle.Alignment = HorizontalAlignment.Center;// CellHorizontalAlignment.CENTER;
+                        IFont font = workbook.CreateFont();
                         font.FontHeightInPoints = 20;
                         font.Boldweight = 700;
                         headStyle.SetFont(font);
@@ -156,12 +156,12 @@ namespace BL.Framework
 
                     #region 列头及样式
                     {
-                        Row headerRow = sheet.CreateRow(1);
+                        IRow headerRow = sheet.CreateRow(1);
 
 
-                        CellStyle headStyle = workbook.CreateCellStyle();
-                        headStyle.Alignment = HorizontalAlignment.CENTER;// headStyle.CellHorizontalAlignment.CENTER;
-                        Font font = workbook.CreateFont();
+                        ICellStyle headStyle = workbook.CreateCellStyle();
+                        headStyle.Alignment = HorizontalAlignment.Center;// headStyle.CellHorizontalAlignment.CENTER;
+                        IFont font = workbook.CreateFont();
                         font.FontHeightInPoints = 10;
                         font.Boldweight = 700;
                         headStyle.SetFont(font);
@@ -186,10 +186,10 @@ namespace BL.Framework
 
 
                 #region 填充内容
-                Row dataRow = sheet.CreateRow(rowIndex);
+                IRow dataRow = sheet.CreateRow(rowIndex);
                 foreach (DataColumn column in dtSource.Columns)
                 {
-                    Cell newCell = dataRow.CreateCell(column.Ordinal);
+                    ICell newCell = dataRow.CreateCell(column.Ordinal);
 
                     string drValue = row[column].ToString();
 
@@ -314,21 +314,21 @@ namespace BL.Framework
             {
                 hssfworkbook = new HSSFWorkbook(file);
             }
-            Sheet sheet = hssfworkbook.GetSheetAt(0);
+            ISheet sheet = hssfworkbook.GetSheetAt(0);
             System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
 
-            Row headerRow = sheet.GetRow(0);
+            IRow headerRow = sheet.GetRow(0);
             int cellCount = headerRow.LastCellNum;
 
             for (int j = 0; j < cellCount; j++)
             {
-                Cell cell = headerRow.GetCell(j);
+                ICell cell = headerRow.GetCell(j);
                 dt.Columns.Add(cell.ToString());
             }
 
             for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
             {
-                Row row = sheet.GetRow(i);
+                IRow row = sheet.GetRow(i);
                 DataRow dataRow = dt.NewRow();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
@@ -368,11 +368,11 @@ namespace BL.Framework
         public static DataTable Import(Stream ExcelFileStream, string SheetName, int HeaderRowIndex)
         {
             HSSFWorkbook workbook = new HSSFWorkbook(ExcelFileStream);
-            Sheet sheet = workbook.GetSheet(SheetName);
+            ISheet sheet = workbook.GetSheet(SheetName);
 
             DataTable table = new DataTable();
 
-            Row headerRow = sheet.GetRow(HeaderRowIndex);
+            IRow headerRow = sheet.GetRow(HeaderRowIndex);
             int cellCount = headerRow.LastCellNum;
 
             for (int i = headerRow.FirstCellNum; i < cellCount; i++)
@@ -385,7 +385,7 @@ namespace BL.Framework
 
             for (int i = (sheet.FirstRowNum + 1); i < sheet.LastRowNum; i++)
             {
-                Row row = sheet.GetRow(i);
+                IRow row = sheet.GetRow(i);
                 DataRow dataRow = table.NewRow();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
@@ -401,11 +401,11 @@ namespace BL.Framework
         public static DataTable Import(Stream ExcelFileStream, int SheetIndex, int HeaderRowIndex)
         {
             HSSFWorkbook workbook = new HSSFWorkbook(ExcelFileStream);
-            Sheet sheet = workbook.GetSheetAt(SheetIndex);
+            ISheet sheet = workbook.GetSheetAt(SheetIndex);
 
             DataTable table = new DataTable();
 
-            Row headerRow = sheet.GetRow(HeaderRowIndex);
+            IRow headerRow = sheet.GetRow(HeaderRowIndex);
             int cellCount = headerRow.LastCellNum;
 
             for (int i = headerRow.FirstCellNum; i < cellCount; i++)
@@ -418,7 +418,7 @@ namespace BL.Framework
 
             for (int i = (sheet.FirstRowNum + 1); i < sheet.LastRowNum; i++)
             {
-                Row row = sheet.GetRow(i);
+                IRow row = sheet.GetRow(i);
                 DataRow dataRow = table.NewRow();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
@@ -442,11 +442,11 @@ namespace BL.Framework
             {
                 workbook = new HSSFWorkbook(file);
             }
-            Sheet sheet = workbook.GetSheetAt(SheetIndex);
+            ISheet sheet = workbook.GetSheetAt(SheetIndex);
 
             DataTable table = new DataTable();
 
-            Row headerRow = sheet.GetRow(HeaderRowIndex);
+            IRow headerRow = sheet.GetRow(HeaderRowIndex);
             int cellCount = headerRow.LastCellNum;
 
             for (int i = headerRow.FirstCellNum; i < cellCount; i++)
@@ -459,7 +459,7 @@ namespace BL.Framework
 
             for (int i = (sheet.FirstRowNum + 1 + HeaderRowIndex); i <= sheet.LastRowNum; i++)
             {
-                Row row = sheet.GetRow(i);
+                IRow row = sheet.GetRow(i);
                 DataRow dataRow = table.NewRow();
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)

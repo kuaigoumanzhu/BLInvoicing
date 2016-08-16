@@ -107,6 +107,8 @@
                     name: 'FMONEY',
                     label: '金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '金额合计',
                     width: 110
                 },
                 {
@@ -137,12 +139,14 @@
             delUrl: '/CONSUMABLES/DelConsumablesDetail',
             editMode: 'inline',
             delConfirm: true,
+            showTfoot: true,
             inlineEditMult:true,
             fullGrid: true,
             showLinenumber: true,
             paging: false,
             height: '100%',
-            showCheckboxcol: false
+            showCheckboxcol: false,
+            
         });
 
 
@@ -190,13 +194,15 @@
             return;
         $(this).trigger("keyCodeEnter");
         var trdata = $('#tabConsumablesInDetail').data('selectedDatas');
-        alert(trdata.length);
         if (trdata.length > 0) {
-            var differMoney = trdata[0].FMONEY / $(this).val();
-            ConsumablesInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
-            if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
-                $(trdata[0]).removeClass("datagrid-edit-tr");
-            ConsumablesInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+            if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
+                var differMoney = trdata[0].FMONEY / $(this).val();
+                ConsumablesInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
+                //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+                //    $(trdata[0]).removeClass("datagrid-edit-tr");
+                ConsumablesInDetailgrid.datagrid("doCancelEditRow", trdata[0].gridIndex);
+                ConsumablesInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+            }
         }
     })
 </script>

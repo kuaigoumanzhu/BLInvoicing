@@ -65,7 +65,7 @@
         WareHosemaingrid = $("#tabWareHose").datagrid({
             gridTitle: '仓库维护',
             showToolbar: true,
-            toolbarItem: 'add,save,|,cancel,del,edit',
+            toolbarItem: 'add,save,|,cancel,edit',
             toolbarCustom: '<button id="WareHose_qiyong" class="btn btn-green">启用</button><button id="WareHose_jinyong" class="btn btn-red">禁用</button>',
             addLocation: 'first',
             dataUrl: '/WareHose/GetAllWareHoseInfoJson',
@@ -147,7 +147,7 @@
             ],
             delPK: 'FGUID',
             editUrl: '/WareHose/EditWareHoseJson',
-            delUrl: '/WareHose/DelWareHoseJson',
+            //delUrl: '/WareHose/DelWareHoseJson',
             contextMenuB: true,
             editMode: 'inline',
             showLinenumber: true,

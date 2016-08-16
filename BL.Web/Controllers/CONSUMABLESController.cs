@@ -108,12 +108,18 @@ namespace BL.Web.Controllers
         {
             var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESDETAILSModel>>(json);
             var model = models[0];
-            model.FCREATEID = UserContext.CurrentUser.UserName;
-            model.FGUID = Guid.NewGuid().ToString();
-            model.FCREATETIME = DateTime.Now;
-            model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
-
+            if (consumablesDetailsService.IsExistsFID(Request.QueryString["FPARENTID"], model.FGUID, model.FGOODSID))
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = 300, message = "该编号已存在！" });
+            }
+            else
+            {
+                model.FCREATEID = UserContext.CurrentUser.UserName;
+                model.FGUID = Guid.NewGuid().ToString();
+                model.FCREATETIME = DateTime.Now;
+                model.FPARENTID = Request.QueryString["FPARENTID"];
+                return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
+            }
         }
 
         [JsonException]
@@ -193,6 +199,10 @@ namespace BL.Web.Controllers
             {
                 dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
             }
+            if (!string.IsNullOrEmpty(Request.QueryString["FGUID"]))
+            {
+                dic["FGUID"] = Request.QueryString["FGUID"];
+            }
             var lst = consumablesDetailsService.GetSelectOutGoods(dic);
             ViewBag.list = lst;
             return View();
@@ -205,7 +215,21 @@ namespace BL.Web.Controllers
             var lst = goodsService.GetGoodsInfo(dic);
             return View(lst);
         }
-
+        [JsonException]
+        [HttpPost]
+        public string DelCONSUMABLES(string json)
+        {
+            JArray t = (JArray)JsonConvert.DeserializeObject(json);
+            int rel = consumablesDetailsService.DelCONSUMABLESDETAILS(t[0]["FGUID"].ToString());
+            if (rel > 0)
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "删除成功" });
+            }
+            else
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "删除失败" });
+            }
+        }
         public ActionResult CONSUMABLESSearch()
         {
             return View();

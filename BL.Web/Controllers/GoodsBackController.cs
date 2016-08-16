@@ -67,6 +67,11 @@ namespace BL.Web.Controllers
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);
         }
+        /// <summary>
+        /// 商品回库明细列表
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         [JsonException]
         public string GetGoodsBackDetailsList(string parentId)
         {

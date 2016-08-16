@@ -15,12 +15,21 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        var wareHouseLst;
+        var wareHouseLst,inWareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
-            async:false,
+            url: "/Common/GetWareHoseJson?FCATEGORY=2",
+            async: false,
+            type:'get',
             callback: function (json) {
                 wareHouseLst = json;
+            }
+        });
+        $(this).bjuiajax("doAjax", {
+            url: '/Common/GetWareHoseJson?FCATEGORY=1',
+            type:'get',
+            async: false,
+            callback: function (json) {
+                inWareHouseLst = json;
             }
         });
         var url="";
@@ -64,7 +73,7 @@
                     align: 'center',
                     type: 'select',
                     items: function () {
-                        return wareHouseLst;
+                        return inWareHouseLst;
                     },
                     width: 100
                 },
