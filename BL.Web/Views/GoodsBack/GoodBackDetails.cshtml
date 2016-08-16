@@ -18,9 +18,10 @@
     <input type="hidden" id="GBDparentId" value="@Model.FGUID" />
 </div>
 <div class="bjui-pageContent">
+    <label for="goodsBackDetailCode" class="control-label">条码：</label><input class="form-control" type="text" id="goodsBackDetailCode" />
     <table id="tabGoodsBackDetails" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
-<div id="print">
+<div id="print" style="display:none">
         <img alt="barcode" id="printImg" width="100" height="30" src="/Common/GetBarCodeImage?text=12345" />
         <label>测试</label>
         <button type="button" id="startPrint">打印</button>
@@ -28,7 +29,7 @@
 <script type="text/javascript">
     $(function () {
         var outWare=@Model.FOUTWAREHOUSEID;
-        var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID";
+        var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID"+"&inWareHouse="+outWare;
         goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
             toolbarCustom: '<button type="button" id="btnGBDAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnGBDSave" data-icon="save" class="btn btn-default">保存</button>'+
@@ -139,12 +140,40 @@
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
-            showTfoot: true
+            showTfoot: true,
+            paging:false
         });
         var datas=[];
         var trdata=null;
         var clickTR=null;
         var parentId=$("#GBDparentId").val();
+        $(document).on("keypress","#goodsBackDetailCode",function(event){
+            if(event.keyCode=="13"){
+                var allData=goodsBackDetailGrid.data("bjui.datagrid").data;
+                var index=$.IndexOf($("#goodsBackDetailCode").val(),allData,"FBARCODE");
+                var rowData=allData[index];
+                var rindex=rowData.gridIndex;
+                var quantity=rowData.FACTUALQUANTITY+1;
+                var differQuantity=rowData.FQUANTITY-quantity;
+                var differMoney=toDecimal(differQuantity*rowData.FPRICE);
+                goodsBackDetailGrid.datagrid("updateRow", rindex,{"FACTUALQUANTITY":quantity,"FDIFFERQUANTITY":differQuantity,"FDIFFERMONEY":differMoney});  
+                var ths = $("div.datagrid-box-f").find("table").find("th");
+                var sumMoney=0;
+                var newData=goodsBackDetailGrid.data("bjui.datagrid").data;
+                for(var i=0,l=newData.length;i<l;i++){
+                    console.log(newData[i]);
+                    sumMoney+=newData[i].FDIFFERMONEY;
+                }
+                $(ths[11]).html('<div><div class="datagrid-calcbox">合计</div>' + sumMoney + '</div>');
+            }
+        })
+        function toDecimal(x){
+            var f=parseFloat(x);
+            if(isNaN(f))
+                return;
+            f=Math.round(x*100)/100;
+            return f;
+        }
         $(document).on("click","#btnGBDAdd,#btnGBDSave,#btnGBDApplay,#btnGBDPrint",function(){
             var btn = $(this).attr("id");
             switch(btn){

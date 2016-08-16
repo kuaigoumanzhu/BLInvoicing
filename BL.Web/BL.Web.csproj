@@ -691,6 +691,9 @@
     <Content Include="Views\RepertoryCheck\RepertoryCheckList.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\OtherOut\OtherOutDetails.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Views\StorageRegister\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
