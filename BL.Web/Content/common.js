@@ -99,6 +99,22 @@ function LoadDataForRowSel(categoryId)
                 }
             }
         }
+    };
+    //hpf 2015 11 用来查找菜单数据item要查找字段值，lst菜单数据，name要查找字段名字
+    $.IndexOf = function (item, lst, name) {
+        if (!lst)
+            return -1;
+        var isObj = typeof (item) == "object";
+        for (var i = 0, l = lst.length; i < l; i++) {
+            if (isObj) {
+                if (lst[i] == item)
+                    return i;
+            } else {
+                if (lst[i][name] && lst[i][name].toString().toUpperCase() == item.toString().toUpperCase())
+                    return i;
+            }
+        }
+        return -1;
     }
 })(jQuery);
 //hpf 局部打印

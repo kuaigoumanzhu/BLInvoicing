@@ -12,7 +12,7 @@
     $(function () {
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             async: false,
             callback: function (json) {
                 wareHouseLst = json;
@@ -74,11 +74,19 @@
                 }
             ],
             linenumberAll: true,
-            editUrl: '/GoodsBack/EditGoodsBackJson',
+            editUrl: '/OtherOut/EditOtherOutJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
-            inlineEditMult: false
+            inlineEditMult: false,
+            onDblClickRow: function (rowData, index) {
+                var ware = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                var jsonStr = JSON.stringify(rowData);
+                $(this).navtab({
+                    id: 'otherOutDetails', url: '/OtherOut/OtherOutDetails', title: '其他出库明细',
+                    data: { rowData: jsonStr, ware: ware }, fresh: true
+                });
+            }
         });
     })
 </script>

@@ -1,0 +1,102 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <table class="table">
+        <tbody>
+            <tr><td colspan="3" style="text-align:center">商品回库明细</td></tr>
+            <tr>
+                <td><label>仓库：</label><label id="GBDFOUTWAREHOUSEID">@ViewBag.ware</label></td>
+                <td><label>日期：</label><input type="text" id="date" value="" data-toggle="datepicker" size="12" /></td>
+                <td><label>单据编号：</label><label id="GBDfcode">@Model.FCODE</label></td>
+            </tr>
+            <tr>
+                <td><label>领用人：</label><label id="GBDfcode">@Model.FCODE</label></td>
+                <td><label>制单人：</label><label id="GBDuserName">@ViewBag.userName</label></td>
+                <td><label>摘要：</label><label id="GBDfmemo">@Model.FMEMO</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="hidden" id="GBDparentId" value="@Model.FGUID" />
+</div>
+<div class="bjui-pageContent">
+    <table id="tabOtherOutDetails" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
+            gridTitle: '其他出库单明细',
+            showToolbar: true,
+            toolbarItem: 'add,save,del,cancel',
+            addLocation: 'first',
+            dataUrl: url,
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add: false
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add: false
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false
+                },
+                {
+                    name: 'FQUANTITY',
+                    label: '数量',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false
+                },
+                {
+                    name: 'FMONEY',
+                    label: '金额',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false,
+                    calc: 'sum',
+                    calcTit: '合计',
+                    calcDecimal: 2
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add: false
+                }
+            ],
+            editUrl: '/GoodsBack/EditGoodsBackDetailsJson',
+            delUrl: '/GoodsBack/DelGoodsBackDetailJson',
+            contextMenuB: true,
+            editMode: 'inline',
+            height: '100%',
+            showTfoot: true,
+            paging: false
+        });
+    })
+</script>

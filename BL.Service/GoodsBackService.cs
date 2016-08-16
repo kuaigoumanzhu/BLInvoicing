@@ -26,8 +26,6 @@ namespace BL.Service
             {
                 var result=db.QueryMultiple("sp_SplitPage_GetList", dp, null,null,CommandType.StoredProcedure);
                 total = result.Read<int>().SingleOrDefault();
-                if (total == 0)
-                    return new List<ViewGOODSBACKModel>();
                 return result.Read<ViewGOODSBACKModel>();
             }
         }
@@ -76,14 +74,35 @@ namespace BL.Service
         /// <summary>
         /// 获取商品回库明细表（根据主表主键）
         /// </summary>
-        /// <param name="parentId"></param>
+        /// <param name="parentId">商品回库主表</param>
+        /// <param name="inWareHouse">商品分仓库</param>
         /// <returns></returns>
-        public IEnumerable<T_GOODSBACKDETAILSModel> GetAllGoodsBackDetailsInfo(string parentId)
+        public IEnumerable<T_GOODSBACKDETAILSModel> GetAllGoodsBackDetailsInfo(string parentId,string inWareHouse)
         {
             string sql = "select * from T_GOODSBACKDETAILS where FPARENTID=@parentId";
+            string sqlWareHouse = "select * from T_REPERTORYCHILD with(nolock) where FINWAREHOUSEID=@inWareHouse";
             using (IDbConnection db = OpenConnection())
             {
-                return db.Query<T_GOODSBACKDETAILSModel>(sql, new { parentId = parentId });
+                var goodsWareHouse = db.Query<T_REPERTORYCHILDModel>(sqlWareHouse, new { inWareHouse = inWareHouse });
+                IList<T_GOODSBACKDETAILSModel> details = new List<T_GOODSBACKDETAILSModel>();
+                foreach(var model in goodsWareHouse)
+                {
+                    T_GOODSBACKDETAILSModel detail = new T_GOODSBACKDETAILSModel();
+                    detail.FACTUALQUANTITY = 0;
+                    detail.FBARCODE = model.FBARCODE;
+                    detail.FBATCH = model.FBATCH;
+                    detail.FDIFFERMONEY = model.FSURPLUS*model.FPRICE;//差异金额
+                    detail.FDIFFERQUANTITY = model.FSURPLUS;//差异数量
+                    detail.FGOODSID = model.FGOODSID;
+                    detail.FGOODSNAME = model.FGOODSNAME;
+                    detail.FMARKETPRICE = model.FMARKETPRICE;//销售单价
+                    detail.FPRICE = model.FPRICE;//单价
+                    detail.FQUANTITY = model.FSURPLUS;//账存数量，剩余数量
+                    detail.FUNIT = model.FUNIT;//单位
+                    details.Add(detail);
+                }
+                return details;
+                //return db.Query<T_GOODSBACKDETAILSModel>(sql, new { parentId = parentId });
             }
         }
         /// <summary>

@@ -73,9 +73,9 @@ namespace BL.Web.Controllers
         /// <param name="parentId"></param>
         /// <returns></returns>
         [JsonException]
-        public string GetGoodsBackDetailsList(string parentId)
+        public string GetGoodsBackDetailsList(string parentId, string inWareHouse)
         {
-            var lst = goodsBack.GetAllGoodsBackDetailsInfo(parentId);
+            var lst = goodsBack.GetAllGoodsBackDetailsInfo(parentId,inWareHouse);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = lst.Count() });
         }
 
