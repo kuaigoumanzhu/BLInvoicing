@@ -51,7 +51,10 @@
   <ItemGroup>
     <Compile Include="CommonService.cs" />
     <Compile Include="CONSUMABLESDETAILSService.cs" />
-    <Compile Include="PricesRegisterService.cs" />
+    <Compile Include="GOODSALLOTDETAILSService.cs" />
+    <Compile Include="GOODSALLOTService.cs" />
+    <Compile Include="GUIDANCEDETAILSService.cs" />
+    <Compile Include="GUIDANCEService.cs" />
     <Compile Include="CONSUMABLESService.cs" />
     <Compile Include="FNCBALANCEDETAILSService.cs" />
     <Compile Include="FNCBALANCEService.cs" />
@@ -60,6 +63,10 @@
     <Compile Include="DATADICTService.cs" />
     <Compile Include="OtherOutService.cs" />
     <Compile Include="PersonService.cs" />
+    <Compile Include="PURCHASEBACKDETAILSService.cs" />
+    <Compile Include="PURCHASEBACKService.cs" />
+    <Compile Include="PURCHASEDETAILSService.cs" />
+    <Compile Include="PURCHASEService.cs" />
     <Compile Include="RepertoryCheckService.cs" />
     <Compile Include="SUPPLIERService.cs" />
     <Compile Include="WareHoseService.cs" />

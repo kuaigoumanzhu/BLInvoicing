@@ -10,9 +10,9 @@ using System.Text;
 
 namespace BL.Service
 {
-    public class PricesRegisterService : DBContext
+    public class GUIDANCEService : DBContext
     {
-        public IEnumerable<T_GUIDANCEModel> GetAllPricesRegisterInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
+        public IEnumerable<T_GUIDANCEModel> GetAllGUIDANCEInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " 1=1 ";
@@ -46,17 +46,17 @@ namespace BL.Service
             }
         }
 
-        public T_CONSUMABLESModel AddCONSUMABLES(T_CONSUMABLESModel model)
+        public T_GUIDANCEModel AddGUIDANCE(T_GUIDANCEModel model)
         {
 
-            string sql = @"insert into  T_CONSUMABLES(FGUID, FCREATEID, FCREATETIME, FTYPE, FDATE, FNUMBER, FCODE, FPERSONID, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
+            string sql = @"insert into  T_GUIDANCE(FGUID, FCREATEID, FCREATETIME, FTYPE, FDATE, FNUMBER, FCODE, FPERSONID, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
 ) values(@FGUID, @FCREATEID, @FCREATETIME, @FTYPE, @FDATE, @FNUMBER, @FCODE, @FPERSONID, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME
 )";
             using (IDbConnection db = OpenConnection())
             {
                 if (db.Execute(sql, model) > 0)
                 {
-                    var res = db.QuerySingle<T_CONSUMABLESModel>("select * from T_CONSUMABLES with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+                    var res = db.QuerySingle<T_GUIDANCEModel>("select * from T_GUIDANCE with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
                     res.closeCurrent = true;
                     res.message = "添加成功";
                     return res;
@@ -71,7 +71,7 @@ namespace BL.Service
             }
         }
 
-        public IEnumerable<object> SearchCONSUMABLES(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
+        public IEnumerable<object> SearchGUIDANCE(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " c.FSTATUS='2' ";
@@ -102,8 +102,8 @@ namespace BL.Service
             using (IDbConnection db = OpenConnection())
             {
                 DynamicParameters dp = new DynamicParameters();
-                dp.Add("@tblName", @"T_CONSUMABLES c
-inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID");
+                dp.Add("@tblName", @"T_GUIDANCE c
+inner join T_GUIDANCEDETAILS d on c.FGUID=d.FPARENTID");
                 dp.Add("@strWhere", whereStr);
                 dp.Add("@fldName", "c.*,d.FGOODSID,d.FGOODSNAME,d.FUNIT,d.FQUANTITY,d.FPRICE,d.FMONEY");
                 dp.Add("@strOrder", " c.FCREATETIME desc");
@@ -118,7 +118,7 @@ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID");
             }
         }
 
-        public IEnumerable<object> SearchCONSUMABLESHourse(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
+        public IEnumerable<object> SearchGUIDANCEHourse(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
             //string sql = "select * from T_GOODS";
             string whereStr = " c.FSTATUS='2' ";
@@ -135,8 +135,8 @@ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID");
             {
                 DynamicParameters dp = new DynamicParameters();
                 dp.Add("@tblName", @"(select d.FGOODSID,d.FGOODSNAME,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) syCou,
-d.FUNIT,d.FPRICE,SUM(case when c.FTYPE='1' then d.FMONEY else 0 end)-SUM(case when c.FTYPE='2' then d.FMONEY else 0 end) FMONEY from T_CONSUMABLES c
-inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID where "+whereStr+@"
+d.FUNIT,d.FPRICE,SUM(case when c.FTYPE='1' then d.FMONEY else 0 end)-SUM(case when c.FTYPE='2' then d.FMONEY else 0 end) FMONEY from T_GUIDANCE c
+inner join T_GUIDANCEDETAILS d on c.FGUID=d.FPARENTID where "+whereStr+@"
 group by d.FGOODSID,d.FGOODSNAME,d.FUNIT,d.FPRICE) cd");
                 dp.Add("@strWhere", "");
                 dp.Add("@fldName", "*");
@@ -152,9 +152,9 @@ group by d.FGOODSID,d.FGOODSNAME,d.FUNIT,d.FPRICE) cd");
             }
         }
 
-        public bool submitConsumables(string FGUID)
+        public bool submitGUIDANCE(string FGUID)
         {
-            string sql = @"update  T_CONSUMABLES set   FSTATUS='2'
+            string sql = @"update  T_GUIDANCE set   FSTATUS='2'
 where FGUID=@FGUID ";
             using (IDbConnection db = OpenConnection())
             {

@@ -134,14 +134,18 @@
     <Compile Include="Controllers\DATADICTController.cs" />
     <Compile Include="Controllers\DICTCategoryController.cs" />
     <Compile Include="Controllers\FNCBALANCEController.cs" />
+    <Compile Include="Controllers\GOODSALLOTController.cs" />
     <Compile Include="Controllers\GoodsBackController.cs" />
     <Compile Include="Controllers\GOODSController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\OtherOutController.cs" />
     <Compile Include="Controllers\PersonController.cs" />
+    <Compile Include="Controllers\PURCHASEAuditController.cs" />
+    <Compile Include="Controllers\PURCHASEBACKController.cs" />
+    <Compile Include="Controllers\PURCHASEController.cs" />
     <Compile Include="Controllers\RepertoryCheckController.cs" />
-    <Compile Include="Controllers\PricesRegisterController.cs" />
+    <Compile Include="Controllers\GUIDANCEController.cs" />
     <Compile Include="Controllers\SUPPLIERController.cs" />
     <Compile Include="Controllers\WareHoseController.cs" />
     <Compile Include="Controllers\WARNINGController.cs" />
@@ -694,19 +698,28 @@
     <Content Include="Views\OtherOut\OtherOutDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\StorageRegister\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\StorageAudit\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ReturnRegister\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\GoodsAllocation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\PricesRegister\Index.cshtml" />
+    <Content Include="Views\GOODSALLOT\GOODSALLOTDetail.cshtml" />
+    <Content Include="Views\GOODSALLOT\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\PURCHASEAudit\Index.cshtml" />
+    <Content Include="Views\PURCHASEAudit\PURCHASEAuditDetail.cshtml" />
+    <Content Include="Views\PURCHASEBACK\Index.cshtml" />
+    <Content Include="Views\PURCHASEBACK\PURCHASEBACKDetail.cshtml" />
+    <Content Include="Views\PURCHASE\Index.cshtml" />
+    <Content Include="Views\PURCHASE\PURCHASEInDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GUIDANCE\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\GUIDANCE\GUIDANCEDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\ReleaseConfig.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

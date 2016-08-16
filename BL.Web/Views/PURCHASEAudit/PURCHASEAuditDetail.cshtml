@@ -2,7 +2,7 @@
 <div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center;">消耗品入库单</td></tr>
+            <tr><td colspan="3" style="text-align:center;">采购入库审核列表</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12" /></td>
@@ -20,7 +20,7 @@
     </table>
 </div>
 <div class="bjui-pageContent">
-    <table id="tabPURCHASEInDetail" data-height="100%" class="table table-bordered table-striped"></table>
+    <table id="tabPURCHASEAuditInDetail" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -55,8 +55,8 @@
         });
         var gysList = LoadGYSDataForRowSel();
         var fstatus='@Model.FSTATUS';
-        PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
-            gridTitle: '消耗品入库登记明细',
+        PURCHASEInDetailgrid = $("#tabPURCHASEAuditInDetail").datagrid({
+            gridTitle: '采购入库审核明细',
             toolbarCustom:
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
            '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
@@ -184,12 +184,12 @@
         }
     });
 
-    $(document).on('keypress', "#tabPURCHASEInDetail input", function (event) {
+    $(document).on('keypress', "#tabPURCHASEAuditInDetail input", function (event) {
         //改为只监听数字键
         if (event.keyCode != "13")
             return;
         $(this).trigger("keyCodeEnter");
-        var trdata = $('#tabPURCHASEInDetail').data('selectedDatas');
+        var trdata = $('#tabPURCHASEAuditInDetail').data('selectedDatas');
         alert(trdata.length);
         if (trdata.length > 0) {
             var differMoney = trdata[0].FMONEY / $(this).val();

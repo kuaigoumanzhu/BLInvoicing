@@ -1,8 +1,8 @@
-﻿@model BL.Models.T_PURCHASEModel
+﻿    @model BL.Models.T_PURCHASEModel
 <div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center;">消耗品入库单</td></tr>
+            <tr><td colspan="3" style="text-align:center;">采购入库单</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12"  /></td>
@@ -56,7 +56,7 @@
         var gysList = LoadGYSDataForRowSel();
         var fstatus='@Model.FSTATUS';
         PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
-            gridTitle: '消耗品入库登记明细',
+            gridTitle: '采购入库登记明细',
             toolbarCustom:
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
            '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),

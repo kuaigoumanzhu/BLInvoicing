@@ -1,11 +1,9 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
-    
+
     <label class="control-label">日期</label>
-    <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />  
+    <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />
     <label class="control-label">单据编号</label>
-    <input type="text" id="txtNo"  size="15"/>
-    <label class="control-label">采购人</label>
-    <input type="text" id="txtPerson"  size="15"/>
+    <input type="text" id="txtNo" size="15" />
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
@@ -14,13 +12,13 @@
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
-    <table id="tabCONSUMABLES" data-height="100%" class="table table-bordered table-striped"></table>
+    <table id="tabGUIDANCE" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
         $("#btnSearch").click(function () {
-            var url = '/CONSUMABLES/GetAllCONSUMABLESJson?FType=1&FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FPERSONID=" + $("#txtPerson").val() + "&FStatus=" + $("#selState").val();
-            maingrid.datagrid("reload", {dataUrl:url});
+            var url = '/GUIDANCE/GetAllGUIDANCEJson?FType=1&FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+            maingrid.datagrid("reload", { dataUrl: url });
         });
 
         var wareHouseLst;
@@ -30,12 +28,12 @@
                 wareHouseLst = json;
             }
         });
-        maingrid = $("#tabCONSUMABLES").datagrid({
-            gridTitle: '消耗品入库登记列表',
+        maingrid = $("#tabGUIDANCE").datagrid({
+            gridTitle: '日销售价格登记列表',
             showToolbar: true,
-            toolbarItem:  'add,save,|,cancel',
+            toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
-            dataUrl: '/CONSUMABLES/GetAllCONSUMABLESJson?FType=1',
+            dataUrl: '/GUIDANCE/GetAllGUIDANCEJson?FType=1',
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -43,7 +41,7 @@
                     name: 'FGUID',
                     label: 'FGUID',
                     align: 'center',
-                    hide:true,
+                    hide: true,
                     width: 50
 
                 },
@@ -53,7 +51,7 @@
                     type: 'date',
                     align: 'center',
                     width: 110,
-                    pattern:'yyyy-MM-dd'
+                    pattern: 'yyyy-MM-dd'
                 },
                 {
                     name: 'FCODE',
@@ -69,13 +67,6 @@
                     items: function () {
                         return wareHouseLst;
                     },
-                    align: 'center',
-                    width: 80,
-                    render: $.datagrid.renderItem
-                },
-                {
-                    name: 'FPERSONID',
-                    label: '采购人',
                     align: 'center',
                     width: 80,
                     render: $.datagrid.renderItem
@@ -103,7 +94,7 @@
                 {
                     name: 'FSTATUS',
                     label: '表单状态',
-                    type:'select',
+                    type: 'select',
                     items: [{ '1': '未提交' }, { '2': '已提交' }],
                     add: false,
                     align: 'center',
@@ -112,7 +103,7 @@
                 }
             ],
             contextMenuB: true,
-            editUrl: '/CONSUMABLES/EditCONSUMABLES?FType=1',
+            editUrl: '/GUIDANCE/EditCONSUMABLES?FType=1',
             editMode: 'inline',
             fullGrid: true,
             showLinenumber: true,
@@ -123,7 +114,7 @@
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
-                    id: 'ConsumablesInDetail', url: '/CONSUMABLES/ConsumablesInDetail', title: '消耗品入库登记明细',
+                    id: 'GUIDANCEDetail', url: '/GUIDANCE/GUIDANCEDetail', title: '日销售价格登记明细',
                     data: { rowData: jsonStr, outWare: outWare }, fresh: true
                 });
             }

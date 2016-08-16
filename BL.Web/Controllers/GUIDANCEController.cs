@@ -13,12 +13,12 @@ using System.Web.Mvc;
 
 namespace BL.Web.Controllers
 {
-    public class PricesRegisterController : Controller
+    public class GUIDANCEController : Controller
     {
         //
-        // GET: /CONSUMABLES/
-        PricesRegisterService pricesRegister = new PricesRegisterService();
-        CONSUMABLESDETAILSService consumablesDetailsService = new CONSUMABLESDETAILSService();
+        // GET: /GUIDANCE/
+        GUIDANCEService GUIDANCE = new GUIDANCEService();
+        GUIDANCEDETAILSService GUIDANCEDetailsService = new GUIDANCEDETAILSService();
         GoodsService goodsService = new GoodsService();
         CommonService common = new CommonService();
         #region 消耗品入库主表
@@ -32,7 +32,7 @@ namespace BL.Web.Controllers
             return View();
         }
         [JsonException]
-        public string GetAllPricesRegisterJson(int pageCurrent = 1, int pageSize = 10)
+        public string GetAllGUIDANCEJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
             if (!string.IsNullOrEmpty(Request.QueryString["FDate"]))
@@ -56,12 +56,12 @@ namespace BL.Web.Controllers
                 dic["FStatus"] = "1";
             }
             int totalPage = 0;
-            var lst = pricesRegister.GetAllPricesRegisterInfo(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = GUIDANCE.GetAllGUIDANCEInfo(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
 
         [JsonException]
-        public string EditCONSUMABLES(string json)
+        public string EditGUIDANCE(string json)
         {
             int id = 3;
             if (Request.QueryString["FType"] == "1")
@@ -72,11 +72,11 @@ namespace BL.Web.Controllers
             {
                 id = 4;
             }
-            var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESModel>>(json);
+            var models = JsonHelper.Instance.Deserialize<List<T_GUIDANCEModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FGUID = Guid.NewGuid().ToString();
-            model.FTYPE = Request.QueryString["FType"];
+            //model.FTYPE = Request.QueryString["FType"];
             int number = 0;
             model.FCODE = common.GetNumberAndCodeById(id, out number);
             model.FNUMBER = number;
@@ -84,34 +84,34 @@ namespace BL.Web.Controllers
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(pricesRegister.AddCONSUMABLES(model));
+            return JsonHelper.Instance.Serialize(GUIDANCE.AddGUIDANCE(model));
 
         }
         #endregion
 
         #region 消耗品入库明细
-        public ActionResult ConsumablesInDetail(string rowData, string outWare)
+        public ActionResult GUIDANCEDetail(string rowData, string outWare)
         {
-            var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
+            var model = JsonHelper.Instance.Deserialize<T_GUIDANCEModel>(rowData);
             ViewBag.outWare = outWare;
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);
         }
         [JsonException]
-        public string EditConsumablesInDetail(string json)
+        public string EditGUIDANCEDetail(string json)
         {
-            var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESDETAILSModel>>(json);
+            var models = JsonHelper.Instance.Deserialize<List<T_GUIDANCEDETAILSModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
+            return JsonHelper.Instance.Serialize(GUIDANCEDetailsService.AddFNCBALANCEDETAILS(model));
 
         }
 
         [JsonException]
-        public string GetAllCONSUMABLESDetailJson()
+        public string GetAllGUIDANCEDetailJson()
         {
             IDictionary dic = new Hashtable();
 
@@ -119,37 +119,37 @@ namespace BL.Web.Controllers
             {
                 dic["FPARENTID"] = Request.QueryString["FPARENTID"];
             }
-            var lst = consumablesDetailsService.GetAllCONSUMABLESDETAILSInfo(dic);
+            var lst = GUIDANCEDetailsService.GetAllGUIDANCEDETAILSInfo(dic);
             return JsonHelper.Instance.Serialize(new { list = lst });
         }
         #endregion
 
         #region 消耗品出库明细
-        public ActionResult ConsumablesOutDetail(string rowData, string outWare)
+        public ActionResult GUIDANCEOutDetail(string rowData, string outWare)
         {
-            var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
+            var model = JsonHelper.Instance.Deserialize<T_GUIDANCEModel>(rowData);
             ViewBag.outWare = outWare;
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);
         }
         [JsonException]
-        public string EditConsumablesOutDetail(string json)
+        public string EditGUIDANCEOutDetail(string json)
         {
-            var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESDETAILSModel>>(json);
+            var models = JsonHelper.Instance.Deserialize<List<T_GUIDANCEDETAILSModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(consumablesDetailsService.AddFNCBALANCEDETAILS(model));
+            return JsonHelper.Instance.Serialize(GUIDANCEDetailsService.AddFNCBALANCEDETAILS(model));
 
         }
         [JsonException]
         [HttpPost]
-        public string DelConsumablesDetail(string json)
+        public string DelGUIDANCEDetail(string json)
         {
             JArray t = (JArray)JsonConvert.DeserializeObject(json);
-            int rel = consumablesDetailsService.DelCONSUMABLESDETAILS(t[0]["FGUID"].ToString());
+            int rel = GUIDANCEDetailsService.DelGUIDANCEDETAILS(t[0]["FGUID"].ToString());
             if (rel > 0)
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "删除成功" });
@@ -163,7 +163,7 @@ namespace BL.Web.Controllers
 
         public string SubmitConsumable(string fguid)
         {
-            if (pricesRegister.submitConsumables(fguid))
+            if (GUIDANCE.submitGUIDANCE(fguid))
             {
                 return "1";
             }
@@ -181,25 +181,25 @@ namespace BL.Web.Controllers
             {
                 dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
             }
-            var lst = consumablesDetailsService.GetSelectOutGoods(dic);
+            var lst = GUIDANCEDetailsService.GetSelectOutGoods(dic);
             ViewBag.list = lst;
             return View();
         }
         public ActionResult selectInGoods()
         {
             IDictionary dic = new Hashtable();
-            dic["FISCONSUMABLES"] = "1";
+            dic["FISGUIDANCE"] = "1";
             dic["FSTATUS"] = "2";
             var lst = goodsService.GetGoodsInfo(dic);
             return View(lst);
         }
 
-        public ActionResult CONSUMABLESSearch()
+        public ActionResult GUIDANCESearch()
         {
             return View();
         }
         [JsonException]
-        public string GetCONSUMABLESSearchJson(int pageCurrent = 1, int pageSize = 10)
+        public string GetGUIDANCESearchJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
             if (!string.IsNullOrEmpty(Request.QueryString["FType"]))
@@ -225,17 +225,17 @@ namespace BL.Web.Controllers
             dic["FStatus"] = "2";
 
             int totalPage = 0;
-            var lst = pricesRegister.SearchCONSUMABLES(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = GUIDANCE.SearchGUIDANCE(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         }
 
 
-        public ActionResult CONSUMABLESHourseSearch()
+        public ActionResult GUIDANCEHourseSearch()
         {
             return View();
         }
         [JsonException]
-        public string GetCONSUMABLESHourseJson(int pageCurrent = 1, int pageSize = 10)
+        public string GetGUIDANCEHourseJson(int pageCurrent = 1, int pageSize = 10)
         {
             IDictionary dic = new Hashtable();
             if (!string.IsNullOrEmpty(Request.QueryString["FGoodsCode"]))
@@ -248,7 +248,7 @@ namespace BL.Web.Controllers
             }
 
             int totalPage = 0;
-            var lst = pricesRegister.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);
+            var lst = GUIDANCE.SearchGUIDANCEHourse(dic, ref totalPage, pageCurrent, pageSize);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = totalPage });
         } 
 

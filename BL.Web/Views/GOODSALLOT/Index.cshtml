@@ -29,7 +29,7 @@
             }
         });
         maingrid = $("#tabGOODSALLOT").datagrid({
-            gridTitle: '采购入库登记列表',
+            gridTitle: '商品调拨列表',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
@@ -61,8 +61,8 @@
                     width: 100,
                 },
                 {
-                    name: 'FWAREHOUSEID',
-                    label: '仓库',
+                    name: 'FOUTWAREHOUSEID',
+                    label: '调出仓库',
                     type: 'select',
                     items: function () {
                         return wareHouseLst;
@@ -72,8 +72,8 @@
                     render: $.datagrid.renderItem
                 },
                  {
-                     name: 'FPERSONID',
-                     label: '采购人',
+                     name: 'FINWAREHOUSEID',
+                     label: '调入仓库',
                      align: 'center',
                      width: 80,
                      render: $.datagrid.renderItem
@@ -121,7 +121,7 @@
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
-                    id: 'GOODSALLOTDetail', url: '/GOODSALLOT/GOODSALLOTDetail', title: '采购入库登记明细',
+                    id: 'GOODSALLOTDetail', url: '/GOODSALLOT/GOODSALLOTDetail', title: '商品调拨明细',
                     data: { rowData: jsonStr, outWare: outWare }, fresh: true
                 });
             }

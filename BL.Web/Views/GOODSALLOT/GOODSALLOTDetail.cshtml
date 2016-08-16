@@ -2,14 +2,14 @@
 <div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center;">消耗品入库单</td></tr>
+            <tr><td colspan="3" style="text-align:center;">商品调拨单</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12" /></td>
                 <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
             </tr>
             <tr>
-                <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
+                @*<td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>*@
                 <td></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
             </tr>
@@ -43,7 +43,7 @@
         //    }
         //});
         var fparentId = '@Model.FGUID';
-        var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
+        var FINWAREHOUSEID = '@Model.FINWAREHOUSEID';
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
@@ -54,12 +54,12 @@
             }
         });
         var gysList = LoadGYSDataForRowSel();
-        var fstatus='@Model.FSTATUS';
+        var fstatus = '@Model.FSTATUS';
         GOODSALLOTInDetailgrid = $("#tabGOODSALLOTInDetail").datagrid({
-            gridTitle: '消耗品入库登记明细',
+            gridTitle: '商品调拨明细',
             toolbarCustom:
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
+           '<button id="export" type="button" class="btn btn-red">导出</button>' + (fstatus == '2' ? '' : '<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
             toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
             addLocation: 'first',
@@ -71,7 +71,7 @@
                     name: 'FGUID',
                     label: 'FGUID',
                     align: 'center',
-                    hide:true,
+                    hide: true,
                     width: 50
 
                 },
@@ -98,8 +98,26 @@
                     width: 80
                 },
                 {
+                    name: 'FCALCTYPE',
+                    label: '计量方式',
+                    align: 'center',
+                    width: 80
+                },
+                 {
+                     name: 'FBATCH',
+                     label: '批次',
+                     align: 'center',
+                     width: 80
+                 },
+                {
                     name: 'FQUANTITY',
                     label: '数量',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
                     align: 'center',
                     width: 80
                 },
@@ -110,14 +128,20 @@
                     width: 110
                 },
                 {
-                    name: 'FPRICE',
-                    label: '单价',
+                    name: 'FMARKETPRICE',
+                    label: '销售单价',
                     align: 'center',
                     width: 110
                 },
                 {
-                    name: 'FSUPPLIERID',
-                    label: '供应商',
+                    name: 'FMARKETMONEY',
+                    label: '销售金额',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FBARCODE',
+                    label: '条码',
                     align: 'center',
                     type: 'select',
                     items: function () {
@@ -137,7 +161,7 @@
             delUrl: '/GOODSALLOT/DelGOODSALLOTDetail',
             editMode: 'inline',
             delConfirm: true,
-            inlineEditMult:true,
+            inlineEditMult: true,
             fullGrid: true,
             showLinenumber: true,
             paging: false,
@@ -150,7 +174,7 @@
             //$("form").attr("enctype", "multipart/form-data");
             window.open("/GOODSALLOT/ExportInfoIn?FPARENTID=" + fparentId);
         })
-        var outWare = '@Model.FWAREHOUSEID';
+        @*var outWare = '@Model.FWAREHOUSEID';*@
 
         $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
             var btn = $(this).attr("id");
@@ -174,8 +198,7 @@
             $(this).bjuiajax("doAjax", {
                 url: "/GOODSALLOT/SubmitConsumable?fguid=" + fparentId,
                 callback: function (json) {
-                    if (json == '1')
-                    {
+                    if (json == '1') {
                         $(this).alertmsg("ok", "提交成功");
                         $(this).navtab('closeTab', "GOODSALLOTInDetail");
                     }

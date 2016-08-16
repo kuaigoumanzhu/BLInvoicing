@@ -121,7 +121,7 @@
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
-                    id: 'PURCHASEDetail', url: '/PURCHASE/PURCHASEDetail', title: '采购入库登记明细',
+                    id: 'PURCHASEInDetail', url: '/PURCHASE/PURCHASEInDetail', title: '采购入库登记明细',
                     data: { rowData: jsonStr, outWare: outWare }, fresh: true
                 });
             }

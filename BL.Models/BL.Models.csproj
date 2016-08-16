@@ -47,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="T_GOODSALLOTDETAILSModel.cs" />
+    <Compile Include="T_GOODSALLOTModel.cs" />
+    <Compile Include="T_GUIDANCEDETAILSModel.cs" />
     <Compile Include="T_GUIDANCEModel .cs" />
     <Compile Include="T_FNCBALANCEDETAILSModel.cs" />
     <Compile Include="T_FNCBALANCEModel.cs" />
@@ -63,6 +66,10 @@
     <Compile Include="T_OTHEROUTDETAILSModel.cs" />
     <Compile Include="T_OTHEROUTModel.cs" />
     <Compile Include="T_PERSONModel.cs" />
+    <Compile Include="T_PURCHASEBACKDETAILSModel.cs" />
+    <Compile Include="T_PURCHASEBACKModel.cs" />
+    <Compile Include="T_PURCHASEDETAILSModel.cs" />
+    <Compile Include="T_PURCHASEModel.cs" />
     <Compile Include="T_SUPPLIERModel.cs" />
     <Compile Include="T_VIPINFOModel.cs" />
     <Compile Include="T_WAREHOUSEModel.cs" />

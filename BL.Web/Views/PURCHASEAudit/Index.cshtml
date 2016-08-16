@@ -29,7 +29,7 @@
             }
         });
         maingrid = $("#tabPURCHASEAudit").datagrid({
-            gridTitle: '采购入库登记列表',
+            gridTitle: '采购入库审核',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
@@ -121,7 +121,7 @@
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
-                    id: 'PURCHASEDetail', url: '/PURCHASEAudit/PURCHASEDetail', title: '采购入库登记明细',
+                    id: 'PURCHASEAuditDetail', url: '/PURCHASEAudit/PURCHASEAuditDetail', title: '采购入库登记明细',
                     data: { rowData: jsonStr, outWare: outWare }, fresh: true
                 });
             }
