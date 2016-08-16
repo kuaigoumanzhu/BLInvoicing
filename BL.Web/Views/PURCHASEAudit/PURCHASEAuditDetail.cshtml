@@ -1,0 +1,202 @@
+﻿@model BL.Models.T_PURCHASEModel
+<div class="bjui-pageHeader" style="background:#FFF;">
+    <table class="table">
+        <tbody>
+            <tr><td colspan="3" style="text-align:center;">消耗品入库单</td></tr>
+            <tr>
+                <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
+                <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12" /></td>
+                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
+            </tr>
+            <tr>
+                <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
+                <td></td>
+                <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
+            </tr>
+            <tr>
+                <td colspan="3"><label>摘要：</label><label id="fmemo">@Model.FAPPLYID</label></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabPURCHASEInDetail" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //$("#btnSearch").click(function () {
+        //    var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
+        //    maingrid.datagrid("reload", {dataUrl:url});
+        //});
+
+        //$("#saledateTime").blur(function () {
+        //    if($("#selWarehose").val()!="")
+        //    {
+        //        var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+        //        maingrid.datagrid("reload", { dataUrl: url });
+        //    }
+        //});
+        //$("#selWarehose").change(function () {
+        //    if ($("#saledateTime").val() != "") {
+        //        var url = '/FNCBALANCE/getSaleDayBook?Fdate=' + $("#saledateTime").val() + "&FINWAREHOUSEID=" + $("#selWarehose").val();
+        //        maingrid.datagrid("reload", { dataUrl: url });
+        //    }
+        //});
+        var fparentId = '@Model.FGUID';
+        var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
+        var jldw = LoadUnitDataForRowSel();
+        var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        var gysList = LoadGYSDataForRowSel();
+        var fstatus='@Model.FSTATUS';
+        PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
+            gridTitle: '消耗品入库登记明细',
+            toolbarCustom:
+           '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
+           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
+            showToolbar: true,
+            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
+            addLocation: 'first',
+            dataUrl: '/PURCHASEAudit/GetAllPURCHASEDetailJson?FPARENTID=' + fparentId,
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:true,
+                    width: 50
+
+                },
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return jldw;
+                    },
+                    width: 80
+                },
+                {
+                    name: 'FQUANTITY',
+                    label: '数量',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMONEY',
+                    label: '金额',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FSUPPLIERID',
+                    label: '供应商',
+                    align: 'center',
+                    type: 'select',
+                    items: function () {
+                        return gysList;
+                    },
+                    width: 110
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 110
+                }
+            ],
+            contextMenuB: true,
+            editUrl: '/PURCHASEAudit/EditPURCHASEInDetail?FPARENTID=' + fparentId,
+            delUrl: '/PURCHASEAudit/DelPURCHASEDetail',
+            editMode: 'inline',
+            delConfirm: true,
+            inlineEditMult:true,
+            fullGrid: true,
+            showLinenumber: true,
+            paging: false,
+            height: '100%',
+            showCheckboxcol: false
+        });
+
+
+        $.CurrentNavtab.find("#export").click(function () {
+            //$("form").attr("enctype", "multipart/form-data");
+            window.open("/PURCHASEAudit/ExportInfoIn?FPARENTID=" + fparentId);
+        })
+        var outWare = '@Model.FWAREHOUSEID';
+
+        $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
+            var btn = $(this).attr("id");
+            switch (btn) {
+                case "btnAdd":
+                    Add();
+                    break;
+                case "btnSave":
+                    datas = []
+                    PURCHASEInDetailgrid.datagrid("doSaveEditRow");
+                    break;
+                case "btnDel":
+                    PURCHASEInDetailgrid.datagrid("delRows", goodsBackDetailGrid.data('selectedDatas'));
+                    break;
+            }
+        })
+        $.CurrentNavtab.find("#applay").click(function () {
+            submitConsumable();
+        });
+        function submitConsumable() {
+            $(this).bjuiajax("doAjax", {
+                url: "/PURCHASEAudit/SubmitConsumable?fguid=" + fparentId,
+                callback: function (json) {
+                    if (json == '1')
+                    {
+                        $(this).alertmsg("ok", "提交成功");
+                        $(this).navtab('closeTab', "PURCHASEInDetail");
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('keypress', "#tabPURCHASEInDetail input", function (event) {
+        //改为只监听数字键
+        if (event.keyCode != "13")
+            return;
+        $(this).trigger("keyCodeEnter");
+        var trdata = $('#tabPURCHASEInDetail').data('selectedDatas');
+        alert(trdata.length);
+        if (trdata.length > 0) {
+            var differMoney = trdata[0].FMONEY / $(this).val();
+            PURCHASEInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
+            if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+                $(trdata[0]).removeClass("datagrid-edit-tr");
+            PURCHASEInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+        }
+    })
+</script>

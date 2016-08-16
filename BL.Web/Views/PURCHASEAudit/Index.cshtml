@@ -1,0 +1,130 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+
+    <label class="control-label">日期</label>
+    <input type="text" name="dateTime" id="startdateTime" value="" data-toggle="datepicker" size="13" />
+    <label class="control-label">单据编号</label>
+    <input type="text" id="txtNo" size="15" />
+    <label class="control-label">表单状态</label>
+    <select id="selState" data-toggle="selectpicker">
+        <option value="1" selected="selected">未提交</option>
+        <option value="2">已提交</option>
+    </select>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabPURCHASEAudit" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSearch").click(function () {
+            var url = '/PURCHASEAudit/GetAllPURCHASEJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+            maingrid.datagrid("reload", { dataUrl: url });
+        });
+
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
+        maingrid = $("#tabPURCHASEAudit").datagrid({
+            gridTitle: '采购入库登记列表',
+            showToolbar: true,
+            toolbarItem: 'add,save,|,cancel',
+            addLocation: 'first',
+            dataUrl: '/PURCHASEAudit/GetAllPURCHASEJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide: true,
+                    width: 50
+
+                },
+                {
+                    name: 'FDATE',
+                    label: '日期',
+                    type: 'date',
+                    align: 'center',
+                    width: 110,
+                    pattern: 'yyyy-MM-dd'
+                },
+                {
+                    name: 'FCODE',
+                    label: '单据编号',
+                    add: false,
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FWAREHOUSEID',
+                    label: '仓库',
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                },
+                 {
+                     name: 'FPERSONID',
+                     label: '采购人',
+                     align: 'center',
+                     width: 80,
+                     render: $.datagrid.renderItem
+                 },
+                {
+                    name: 'FMEMO',
+                    label: '摘要',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FCREATEID',
+                    label: '填表人',
+                    add: false,
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FCREATETIME',
+                    label: '填表日期',
+                    add: false,
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FSTATUS',
+                    label: '表单状态',
+                    type: 'select',
+                    items: [{ '1': '未提交' }, { '2': '已提交' }],
+                    add: false,
+                    align: 'center',
+                    width: 80,
+                    render: $.datagrid.renderItem
+                }
+            ],
+            contextMenuB: true,
+            editUrl: '/PURCHASEAudit/EditPURCHASE',
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: true,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false,
+            onDblClickRow: function (rowData, index) {
+                var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                var jsonStr = JSON.stringify(rowData);
+                $(this).navtab({
+                    id: 'PURCHASEDetail', url: '/PURCHASEAudit/PURCHASEDetail', title: '采购入库登记明细',
+                    data: { rowData: jsonStr, outWare: outWare }, fresh: true
+                });
+            }
+        });
+    });
+</script>
