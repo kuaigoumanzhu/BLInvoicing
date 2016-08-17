@@ -68,6 +68,7 @@
     <Compile Include="PURCHASEDETAILSService.cs" />
     <Compile Include="PURCHASEService.cs" />
     <Compile Include="RepertoryCheckService.cs" />
+    <Compile Include="REPERTORYService.cs" />
     <Compile Include="SUPPLIERService.cs" />
     <Compile Include="WareHoseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
