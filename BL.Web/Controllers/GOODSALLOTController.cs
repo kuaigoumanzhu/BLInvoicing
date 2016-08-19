@@ -64,20 +64,12 @@ namespace BL.Web.Controllers
         [JsonException]
         public string EditGOODSALLOT(string json)
         {
-            int id = 3;
-            if (Request.QueryString["FType"] == "1")
-            {
-                id = 3;
-            }
-            else
-            {
-                id = 4;
-            }
+            int id = 5;
             var models = JsonHelper.Instance.Deserialize<List<T_GOODSALLOTModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FGUID = Guid.NewGuid().ToString();
-            //model.FTYPE = Request.QueryString["FType"];
+            
             int number = 0;
             model.FCODE = common.GetNumberAndCodeById(id, out number);
             model.FNUMBER = number;
@@ -91,10 +83,11 @@ namespace BL.Web.Controllers
         #endregion
 
         #region 消耗品入库明细
-        public ActionResult GOODSALLOTDetail(string rowData, string outWare)
+        public ActionResult GOODSALLOTDetail(string rowData, string outWare, string inWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_GOODSALLOTModel>(rowData);
             ViewBag.outWare = outWare;
+            ViewBag.inWare = inWare;
             ViewBag.userName = common.GetNameById(model.FCREATEID);
             return View(model);
         }
@@ -107,8 +100,15 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(model));
-
+            //return JsonHelper.Instance.Serialize(GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(models));
+            if (GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(models))
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "添加成功" });
+            }
+            else
+            {
+                return JsonHelper.Instance.Serialize(new { statusCode = "300", message = "添加失败" });
+            }
         }
 
         [JsonException]
@@ -188,6 +188,10 @@ namespace BL.Web.Controllers
             if (!string.IsNullOrEmpty(Request.QueryString["FWAREHOUSEID"]))
             {
                 dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
+            } 
+            if (!string.IsNullOrEmpty(Request.QueryString["FDATE"]))
+            {
+                dic["FDATE"] = Request.QueryString["FDATE"];
             }
             var lst = GOODSALLOTDetailsService.GetSelectOutGoods(dic);
             ViewBag.list = lst;

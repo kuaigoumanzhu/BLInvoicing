@@ -53,8 +53,8 @@ namespace BL.Service
         public T_GOODSALLOTModel AddGOODSALLOT(T_GOODSALLOTModel model)
         {
 
-            string sql = @"insert into  T_GOODSALLOT(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME,FCHECKID,FCHECKTIME
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME, @FCHECKID, @FCHECKTIME
+            string sql = @"insert into  T_GOODSALLOT(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FOUTWAREHOUSEID,FINWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FOUTWAREHOUSEID,@FINWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME
 )";
             using (IDbConnection db = OpenConnection())
             {
@@ -155,15 +155,27 @@ inner join T_GOODSALLOTDETAILS d on c.FGUID=d.FPARENTID");
         public bool submitGOODSALLOT(string FGUID)
         {
             string sql = @"update  T_GOODSALLOT set   FSTATUS='2'
-where FGUID=@FGUID ";
+where FGUID=@FGUID; ";
+            sql += "update T_REPERTORY set T_REPERTORY.FSURPLUS=T_REPERTORY.FSURPLUS-a.qcou from (select sum(g.FQUANTITY) qcou,g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID from T_GOODSALLOTDETAILS g inner join T_GOODSALLOT p on p.FGUID=g.FPARENTID where p.FGUID=@FGUID group by g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID)a where T_REPERTORY.FBATCH=a.FBATCH and T_REPERTORY.FWAREHOUSEID=a.FOUTWAREHOUSEID and T_REPERTORY.FGOODSID=a.FGOODSID";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                //if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                //{
+                //    return true;
+                //}
+                //else
+                //{
+                //    return false;
+                //}
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, new { FGUID = FGUID }, trans) > 0)
                 {
+                    trans.Commit();
                     return true;
                 }
                 else
                 {
+                    trans.Rollback();
                     return false;
                 }
             }

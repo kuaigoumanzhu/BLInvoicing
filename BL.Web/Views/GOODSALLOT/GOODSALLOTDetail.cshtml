@@ -4,14 +4,14 @@
         <tbody>
             <tr><td colspan="3" style="text-align:center;">商品调拨单</td></tr>
             <tr>
-                <td><label>仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12" /></td>
-                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
+                <td><label>调出仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
+                <td><label>调入仓库：</label><label id="FINWAREHOUSEID">@ViewBag.inWare&nbsp;</label></td>
             </tr>
             <tr>
-                @*<td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>*@
-                <td></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
+                <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
+                <td></td>
             </tr>
             <tr>
                 <td colspan="3"><label>摘要：</label><label id="fmemo">@Model.FAPPLYID</label></td>
@@ -43,7 +43,9 @@
         //    }
         //});
         var fparentId = '@Model.FGUID';
+        var FOUTWAREHOUSEID = '@Model.FOUTWAREHOUSEID';
         var FINWAREHOUSEID = '@Model.FINWAREHOUSEID';
+        var FDATE='@Model.FDATE'
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
@@ -57,11 +59,11 @@
         var fstatus = '@Model.FSTATUS';
         GOODSALLOTInDetailgrid = $("#tabGOODSALLOTInDetail").datagrid({
             gridTitle: '商品调拨明细',
-            toolbarCustom:
-           '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button>' + (fstatus == '2' ? '' : '<button type="button" id="applay" class="btn btn-red">提交</button>'),
+            toolbarCustom: (fstatus == '2' ? '' : '<button type="button" id="btnGoodsAllotAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnGoodsAllotSave" data-icon="save" class="btn btn-default">保存</button>') +
+           '<button type="button" id="GoodsAllotprint" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
+           '<button id="GoodsAllotexport" type="button" class="btn btn-red">导出</button>' + (fstatus == '2' ? '' : '<button type="button" id="GoodsAllotapplay" class="btn btn-red">提交</button><button type="button" id="GoodsAllotCreateMark" class="btn btn-red">打印条码</button>'),
             showToolbar: true,
-            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
+            toolbarItem: (fstatus == '2' ? '' : 'del'),
             addLocation: 'first',
             dataUrl: '/GOODSALLOT/GetAllGOODSALLOTDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',
@@ -78,18 +80,21 @@
                 {
                     name: 'FGOODSID',
                     label: '商品编号',
+                    eidt: false,
                     align: 'center',
                     width: 80
                 },
                 {
                     name: 'FGOODSNAME',
                     label: '商品名称',
+                    eidt: false,
                     align: 'center',
                     width: 80
                 },
                 {
                     name: 'FUNIT',
                     label: '计量单位',
+                    eidt: false,
                     align: 'center',
                     type: 'select',
                     items: function () {
@@ -97,15 +102,10 @@
                     },
                     width: 80
                 },
-                {
-                    name: 'FCALCTYPE',
-                    label: '计量方式',
-                    align: 'center',
-                    width: 80
-                },
                  {
                      name: 'FBATCH',
                      label: '批次',
+                     eidt: false,
                      align: 'center',
                      width: 80
                  },
@@ -117,13 +117,15 @@
                 },
                 {
                     name: 'FPRICE',
-                    label: '单价',
+                    label: '成本单价',
+                    eidt: false,
                     align: 'center',
                     width: 80
                 },
                 {
                     name: 'FMONEY',
-                    label: '金额',
+                    label: '成本金额',
+                    eidt: false,
                     align: 'center',
                     width: 110
                 },
@@ -137,6 +139,8 @@
                     name: 'FMARKETMONEY',
                     label: '销售金额',
                     align: 'center',
+                    calc: 'sum',
+                    calcTit: '金额合计',
                     width: 110
                 },
                 {
@@ -176,22 +180,36 @@
         })
         @*var outWare = '@Model.FWAREHOUSEID';*@
 
-        $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
+        $(document).on("click", "#btnGoodsAllotAdd,#btnGoodsAllotSave,#btnDel,#GoodsAllotCreateMark", function () {
             var btn = $(this).attr("id");
             switch (btn) {
-                case "btnAdd":
+                case "btnGoodsAllotAdd":
                     Add();
                     break;
-                case "btnSave":
+                case "btnGoodsAllotSave":
                     datas = []
                     GOODSALLOTInDetailgrid.datagrid("doSaveEditRow");
                     break;
                 case "btnDel":
                     GOODSALLOTInDetailgrid.datagrid("delRows", goodsBackDetailGrid.data('selectedDatas'));
                     break;
+                case "GoodsAllotCreateMark":
+
+                    break;
             }
         })
-        $.CurrentNavtab.find("#applay").click(function () {
+        function createSelectedRowMark()
+        {
+            var selectedDatas = GOODSALLOTInDetailgrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '未选中任何行');
+                return false;
+            }
+            var data = selectedDatas[0];
+            var markText = "@ViewBag.outWare" + " " + data.FGOODSID + " " + data.FMARKETPRICE + " " + data.FQUANTITY;
+        }
+
+        $.CurrentNavtab.find("#GoodsAllotapplay").click(function () {
             submitConsumable();
         });
         function submitConsumable() {
@@ -206,6 +224,36 @@
             });
         }
     });
+    var curFGUID = '@Model.FGUID';
+    function Add() {
+        datas = [];
+        $(this).dialog({
+            id: 'GOODSALLOTOutDetail',
+            url: '/GOODSALLOT/selectOutGoods?FWAREHOUSEID=' + FOUTWAREHOUSEID + "&FGUID=" + curFGUID + "&FDATE=" + FDATE,
+            title: '选择商品',
+            width: 840,
+            mask: true,
+            beforeClose: function ($dialog) {
+                var $checked = $dialog.find('input[name="child"]:checked');
+                if ($checked.length == 0)
+                    return true;
+                $checked.each(function () {
+                    var goods = JSON.parse($(this).val());
+                    delete goods.FGUID;
+                    //delete goods.
+                    //goods.FPARENTID = parentId;
+                    datas.unshift(goods);
+                    GOODSALLOTInDetailgrid.datagrid("add", "last", goods);
+                });
+                GOODSALLOTInDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
+                $checked.each(function (i) {
+                    GOODSALLOTInDetailgrid.datagrid("doEditRow", i);
+                });
+                //trClick();
+                return true;
+            }
+        })
+    };
 
     $(document).on('keypress', "#tabGOODSALLOTInDetail input", function (event) {
         //改为只监听数字键

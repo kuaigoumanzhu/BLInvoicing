@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="BL.Service" Label="BL.Service" Category="项目" />
+    <Node Id="NPOI 2.2.1" Label="NPOI 2.2.1" Category="包" />
+    <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="包" />
+    <Node Id="ZXing.Net 0.14.0.1" Label="ZXing.Net 0.14.0.1" Category="包" />
+    <Node Id="BL.Models" Label="BL.Models" Category="项目" />
+    <Node Id="NPOI 2.2.1" Label="NPOI 2.2.1" Category="包" />
+    <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="包" />
+    <Node Id="ZXing.Net 0.14.0.1" Label="ZXing.Net 0.14.0.1" Category="包" />
+    <Node Id="BL.Framework" Label="BL.Framework" Category="项目" />
+    <Node Id="NPOI 2.2.1" Label="NPOI 2.2.1" Category="包" />
+    <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="包" />
+    <Node Id="ZXing.Net 0.14.0.1" Label="ZXing.Net 0.14.0.1" Category="包" />
+    <Node Id="BL.MVC" Label="BL.MVC" Category="项目" />
+    <Node Id="NPOI 2.2.1" Label="NPOI 2.2.1" Category="包" />
+    <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="包" />
+    <Node Id="ZXing.Net 0.14.0.1" Label="ZXing.Net 0.14.0.1" Category="包" />
+    <Node Id="BL.Web" Label="BL.Web" Category="项目" />
+    <Node Id="NPOI 2.2.1" Label="NPOI 2.2.1" Category="包" />
+    <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="包" />
+    <Node Id="ZXing.Net 0.14.0.1" Label="ZXing.Net 0.14.0.1" Category="包" />
+  </Nodes>
+  <Links>
+    <Link Source="NPOI 2.2.1" Target="SharpZipLib 0.86.0" Category="程序包依赖项" />
+    <Link Source="BL.Service" Target="NPOI 2.2.1" Category="安装的程序包" />
+    <Link Source="BL.Service" Target="ZXing.Net 0.14.0.1" Category="安装的程序包" />
+    <Link Source="NPOI 2.2.1" Target="SharpZipLib 0.86.0" Category="程序包依赖项" />
+    <Link Source="BL.Models" Target="NPOI 2.2.1" Category="安装的程序包" />
+    <Link Source="BL.Models" Target="ZXing.Net 0.14.0.1" Category="安装的程序包" />
+    <Link Source="NPOI 2.2.1" Target="SharpZipLib 0.86.0" Category="程序包依赖项" />
+    <Link Source="BL.Framework" Target="NPOI 2.2.1" Category="安装的程序包" />
+    <Link Source="BL.Framework" Target="ZXing.Net 0.14.0.1" Category="安装的程序包" />
+    <Link Source="NPOI 2.2.1" Target="SharpZipLib 0.86.0" Category="程序包依赖项" />
+    <Link Source="BL.MVC" Target="NPOI 2.2.1" Category="安装的程序包" />
+    <Link Source="BL.MVC" Target="ZXing.Net 0.14.0.1" Category="安装的程序包" />
+    <Link Source="NPOI 2.2.1" Target="SharpZipLib 0.86.0" Category="程序包依赖项" />
+    <Link Source="BL.Web" Target="NPOI 2.2.1" Category="安装的程序包" />
+    <Link Source="BL.Web" Target="ZXing.Net 0.14.0.1" Category="安装的程序包" />
+  </Links>
+  <Categories>
+    <Category Id="项目" />
+    <Category Id="包" />
+  </Categories>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="项目" ValueLabel="True">
+      <Condition Expression="HasCategory('项目')" />
+      <Setter Property="Background" Value="Blue" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="程序包依赖项" ValueLabel="True">
+      <Condition Expression="HasCategory('程序包依赖项')" />
+      <Setter Property="Background" Value="Yellow" />
+    </Style>
+  </Styles>
+</DirectedGraph>

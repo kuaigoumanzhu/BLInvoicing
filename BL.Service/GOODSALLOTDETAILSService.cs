@@ -41,32 +41,75 @@ namespace BL.Service
         }
 
 
-
-        public T_GOODSALLOTDETAILSModel AddGOODSALLOTDETAILS(T_GOODSALLOTDETAILSModel model)
+        public bool AddGOODSALLOTDETAILS(List<T_GOODSALLOTDETAILSModel> list)
         {
 
-            string sql = @"insert into  T_GOODSALLOTDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FCALCTYPE, FQUANTITY, FMONEY, FPRICE, FSUPPLIERID, FMEMO
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FGOODSID, @FGOODSNAME, @FUNIT, @FCALCTYPE, @FQUANTITY, @FMONEY, @FPRICE, @FSUPPLIERID, @FMEMO
-)";
+            string sql = "";
+            var model = list[0];
+            DynamicParameters dp = new DynamicParameters();
+            for (int i = 0; i < list.Count(); i++)
+            {
+                sql += @"insert into  T_GOODSALLOTDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT,FCALCTYPE,FBATCH, FQUANTITY, FPRICE, FMONEY,FMARKETPRICE,FMARKETMONEY,FBARCODE, FMEMO
+) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FCALCTYPE" + i + ", @FBATCH" + i + ", @FQUANTITY" + i + ", @FPRICE" + i + ", @FMONEY" + i + ", @FMARKETPRICE" + i + ", @FMARKETMONEY" + i + ", @FBARCODE" + i + ", @FMEMO" + i + ");";
+                dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
+                dp.Add("@FCREATEID" + i, list[0].FCREATEID);
+                dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
+                dp.Add("@FPARENTID" + i, list[0].FPARENTID);
+                dp.Add("@FGOODSID" + i, list[i].FGOODSID);
+                dp.Add("@FGOODSNAME" + i, list[i].FGOODSNAME);
+                dp.Add("@FUNIT" + i, list[i].FUNIT);
+                dp.Add("@FCALCTYPE" + i, list[i].FCALCTYPE);
+                dp.Add("@FBATCH" + i, list[i].FBATCH);
+                dp.Add("@FQUANTITY" + i, list[i].FQUANTITY);
+                dp.Add("@FPRICE" + i, list[i].FPRICE);
+                dp.Add("@FMONEY" + i, list[i].FMONEY);
+                dp.Add("@FMARKETPRICE" + i, list[i].FMARKETPRICE);
+                dp.Add("@FMARKETMONEY" + i, list[i].FMARKETMONEY);
+                dp.Add("@FBARCODE" + i, list[i].FBARCODE);
+                dp.Add("@FMEMO" + i, list[i].FMEMO);
+
+            }
+            sql += "update T_REPERTORY set T_REPERTORY.FENABLE=T_REPERTORY.FENABLE-a.qcou from (select sum(g.FQUANTITY) qcou,g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID from T_GOODSALLOTDETAILS g inner join T_GOODSALLOT p on p.FGUID=g.FPARENTID where p.FGUID=@FPARENTID0 group by g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID)a where T_REPERTORY.FBATCH=a.FBATCH and T_REPERTORY.FWAREHOUSEID=a.FOUTWAREHOUSEID and T_REPERTORY.FGOODSID=a.FGOODSID";
             using (IDbConnection db = OpenConnection())
             {
-
-                if (db.Execute(sql, model) > 0)
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, dp, trans) > 0)
                 {
-                    var res = db.QuerySingle<T_GOODSALLOTDETAILSModel>("select * from T_GOODSALLOTDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
-                    res.closeCurrent = true;
-                    res.message = "添加成功";
-                    return res;
+                    trans.Commit();
+                    return true;
                 }
                 else
                 {
-                    model.closeCurrent = true;
-                    model.statusCode = "300";
-                    model.message = "添加失败";
-                    return model;
+                    trans.Rollback();
+                    return false;
                 }
             }
         }
+//        public T_GOODSALLOTDETAILSModel AddGOODSALLOTDETAILS(T_GOODSALLOTDETAILSModel model)
+//        {
+
+//            string sql = @"insert into  T_GOODSALLOTDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FCALCTYPE, FQUANTITY, FMONEY, FPRICE, FSUPPLIERID, FMEMO
+//) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FGOODSID, @FGOODSNAME, @FUNIT, @FCALCTYPE, @FQUANTITY, @FMONEY, @FPRICE, @FSUPPLIERID, @FMEMO
+//)";
+//            using (IDbConnection db = OpenConnection())
+//            {
+
+//                if (db.Execute(sql, model) > 0)
+//                {
+//                    var res = db.QuerySingle<T_GOODSALLOTDETAILSModel>("select * from T_GOODSALLOTDETAILS with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+//                    res.closeCurrent = true;
+//                    res.message = "添加成功";
+//                    return res;
+//                }
+//                else
+//                {
+//                    model.closeCurrent = true;
+//                    model.statusCode = "300";
+//                    model.message = "添加失败";
+//                    return model;
+//                }
+//            }
+//        }
 
         public T_GOODSALLOTDETAILSModel EditGOODSALLOTDETAILS(T_GOODSALLOTDETAILSModel model)
         {
@@ -101,22 +144,33 @@ where FGUID=@FGUID ";
                 return db.Execute(sql, new { FGUID = FGUID });
             }
         }
-        public IEnumerable<Object> GetSelectOutGoods(IDictionary paraDic)
+        public IEnumerable<object> GetSelectOutGoods(IDictionary paraDic)
         {
             string whereStr = " ";
             DynamicParameters dp = new DynamicParameters();
             if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
             {
-                whereStr += " and c.FWAREHOUSEID=@FWAREHOUSEID";
+                whereStr += " and FWAREHOUSEID=@FWAREHOUSEID";
                 dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
 
             }
-            string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum from T_CONSUMABLES c
- inner join T_GOODSALLOTDETAILS d on c.FGUID=d.FPARENTID where c.FSTATUS='2' " + whereStr + "  group by c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT having SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end)>0";
+            if (paraDic.Contains("FDATE") && paraDic["FDATE"].ToString().Trim() != "")
+            {
+                //whereStr += " and FWAREHOUSEID=@FDATE";
+                dp.Add("@FDATE", paraDic["FDATE"].ToString());
+
+            }
+            //string sqlstr = @"select * from T_REPERTORY where FSURPLUS>0";
+            string sqlstr = @"select r.*,a.MARKETPRICE from T_REPERTORY r
+inner join (
+select g.FDATE,g.FWAREHOUSEID,gd.* from T_GUIDANCE g
+inner join T_GUIDANCEDETAILS gd on g.FGUID=gd.FPARENTID
+where g.FDATE=@FDATE
+) a on r.FGOODSID=a.FGOODSID and a.FWAREHOUSEID=r.FWAREHOUSEID  where FSURPLUS>0 "+whereStr;
 
             using (IDbConnection db = OpenConnection())
             {
-                var result = db.Query<Object>(sqlstr, dp).AsList();
+                var result = db.Query<object>(sqlstr, dp).AsList();
                 return result;
             }
 

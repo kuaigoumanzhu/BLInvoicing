@@ -18,17 +18,24 @@
     $(function () {
         $("#btnSearch").click(function () {
             var url = '/GOODSALLOT/GetAllGOODSALLOTJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
-            maingrid.datagrid("reload", { dataUrl: url });
+            GOODSALLOTmaingrid.datagrid("reload", { dataUrl: url });
         });
 
-        var wareHouseLst;
+        var fenwareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=2",
             callback: function (json) {
-                wareHouseLst = json;
+                fenwareHouseLst = json;
             }
         });
-        maingrid = $("#tabGOODSALLOT").datagrid({
+        var zhuwareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
+            callback: function (json) {
+                zhuwareHouseLst = json;
+            }
+        });
+        GOODSALLOTmaingrid = $("#tabGOODSALLOT").datagrid({
             gridTitle: '商品调拨列表',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',
@@ -65,7 +72,7 @@
                     label: '调出仓库',
                     type: 'select',
                     items: function () {
-                        return wareHouseLst;
+                        return zhuwareHouseLst;
                     },
                     align: 'center',
                     width: 80,
@@ -74,6 +81,10 @@
                  {
                      name: 'FINWAREHOUSEID',
                      label: '调入仓库',
+                     type: 'select',
+                     items: function () {
+                         return fenwareHouseLst;
+                     },
                      align: 'center',
                      width: 80,
                      render: $.datagrid.renderItem
@@ -118,11 +129,12 @@
             height: '100%',
             showCheckboxcol: false,
             onDblClickRow: function (rowData, index) {
-                var outWare = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                var outWare = $(this).GetSelectText(zhuwareHouseLst, rowData.FOUTWAREHOUSEID);
+                var inWare = $(this).GetSelectText(fenwareHouseLst, rowData.FINWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
                     id: 'GOODSALLOTDetail', url: '/GOODSALLOT/GOODSALLOTDetail', title: '商品调拨明细',
-                    data: { rowData: jsonStr, outWare: outWare }, fresh: true
+                    data: { rowData: jsonStr, outWare: outWare, inWare: inWare }, fresh: true
                 });
             }
         });
