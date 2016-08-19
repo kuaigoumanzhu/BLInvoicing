@@ -23,6 +23,7 @@
     <table id="tabGOODSALLOTInDetail" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
+    var FDATE = '@Model.FDATE';
     $(function () {
         //$("#btnSearch").click(function () {
         //    var url = '/FNCBALANCE/GetAllFNCBALANCEJson?FID=' + $("#txtFID").val() + "&FNAME=" + $("#txtFNAME").val();
@@ -45,7 +46,6 @@
         var fparentId = '@Model.FGUID';
         var FOUTWAREHOUSEID = '@Model.FOUTWAREHOUSEID';
         var FINWAREHOUSEID = '@Model.FINWAREHOUSEID';
-        var FDATE='@Model.FDATE'
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;

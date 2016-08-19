@@ -150,7 +150,7 @@ where FGUID=@FGUID ";
             DynamicParameters dp = new DynamicParameters();
             if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
             {
-                whereStr += " and FWAREHOUSEID=@FWAREHOUSEID";
+                whereStr += " and r.FWAREHOUSEID=@FWAREHOUSEID";
                 dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
 
             }
