@@ -274,10 +274,12 @@ namespace BL.Web.Controllers
             dt.Columns.Add("商品编号");
             dt.Columns.Add("商品名称");
             dt.Columns.Add("计量单位");
+            dt.Columns.Add("批次");
             dt.Columns.Add("数量");
-            dt.Columns.Add("金额");
-            dt.Columns.Add("单价");
-            dt.Columns.Add("供应商");
+            dt.Columns.Add("成本单价");
+            dt.Columns.Add("成本金额");
+            dt.Columns.Add("销售单价");
+            dt.Columns.Add("销售金额");
             dt.Columns.Add("备注");
             int i = 0;
             foreach (var item in lst)
@@ -294,27 +296,29 @@ namespace BL.Web.Controllers
                     funit = jldw.First().FNAME;
                 }
                 //供应商
-                IDictionary dicgys = new Hashtable();
-                dicgys["FCATEGORY"] = "Unit";
-                //dicgys["FID"] = item.FSUPPLIERID;
-                var gys = dictService.GetAllDictInfo(dicgys);
-                string fsupplierid = "";
-                if (gys.Count() > 0)
-                {
-                    fsupplierid = gys.First().FNAME;
-                }
+                //IDictionary dicgys = new Hashtable();
+                //dicgys["FCATEGORY"] = "Unit";
+                ////dicgys["FID"] = item.FSUPPLIERID;
+                //var gys = dictService.GetAllDictInfo(dicgys);
+                //string fsupplierid = "";
+                //if (gys.Count() > 0)
+                //{
+                //    fsupplierid = gys.First().FNAME;
+                //}
                 dr["序号"] = (i + 1).ToString();
                 dr["商品编号"] = item.FGOODSID;
                 dr["商品名称"] = item.FGOODSNAME;
                 dr["计量单位"] = funit;
+                dr["批次"] = item.FBATCH;
                 dr["数量"] = item.FQUANTITY;
-                dr["金额"] = item.FMONEY;
-                dr["单价"] = item.FPRICE;
-                dr["供应商"] = fsupplierid;
+                dr["成本单价"] = item.FPRICE;
+                dr["成本金额"] = item.FMONEY;
+                dr["销售单价"] = item.FMARKETPRICE;
+                dr["销售金额"] = item.FMARKETMONEY;
                 dr["备注"] = item.FMEMO;
                 dt.Rows.Add(dr);
             }
-            NPOIHelper.ExportByWeb(dt, "消耗品入库单", "消耗品入库单.xls");
+            NPOIHelper.ExportByWeb(dt, "商品调拨单", "商品调拨单.xls");
             return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "导出成功" });
         }
         public string ExportInfoOut()
