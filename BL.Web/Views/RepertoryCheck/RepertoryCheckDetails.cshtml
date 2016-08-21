@@ -1,0 +1,164 @@
+﻿@model BL.Models.ViewREPERTORYCHECK
+<div class="bjui-pageHeader" style="background:#FFF;">
+    <table class="table">
+        <tbody>
+            <tr><td colspan="3" style="text-align:center">库存盘点明细</td></tr>
+            <tr>
+                <td><label>日期：</label><input type="text" id="date" value="" data-toggle="datepicker" size="12" /></td>
+                <td><label>仓库：</label><label id="GBDFOUTWAREHOUSEID">@ViewBag.ware</label></td>
+                <td><label>单据编号：</label><label id="GBDfcode">@Model.FCODE</label></td>
+            </tr>
+            <tr>
+                <td><label>制单人：</label><label id="GBDuserName">@ViewBag.userName</label></td>
+                <td colspan="2"><label>摘要：</label><label id="GBDfmemo">@Model.FMEMO</label></td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="hidden" id="RCparentId" value="@Model.FGUID" />
+</div>
+<div class="bjui-pageContent">
+    <table id="tabRepertoryCheckDetails" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var ware=@Model.FWAREHOUSEID;
+        var parentId='@Model.FGUID';
+        var url="/RepertoryCheck/GetRepertoryCheckDetailsList?parentId=@Model.FGUID"+"&ware="+ware;
+        var RepertoryCheckDetailGrid = $("#tabRepertoryCheckDetails").datagrid({
+            gridTitle: '库存盘点明细',
+            toolbarCustom: '<button type="button" id="btnRCSave" data-icon="save" class="btn btn-default">提交</button>'+
+            '<button id="btnRCExport" type="button" class="btn btn-red">导出</button>',
+            dataUrl: url,
+            showToolbar: true,
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FBARCODE',
+                    label: '商品条码',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add:false
+                },
+                {
+                    name: 'FGOODSID',
+                    label: '商品编号',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add:false
+                },
+                {
+                    name: 'FGOODSNAME',
+                    label: '商品名称',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add:false
+                },
+                {
+                    name: 'FUNIT',
+                    label: '计量单位',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add:false
+                },
+                {
+                    name: 'FQUANTITY',
+                    label: '账存数量',
+                    align: 'center',
+                    width: 80,
+                    edit: false,
+                    add:false
+                },
+                {
+                    name: 'FREALQUANTITY',
+                    label: '实盘数量',
+                    align: 'center',
+                    width: 80,
+                    type:'spinner',
+                    attrs:{max:100000},
+                    rule:"required,integer"
+                },
+                {
+                    name: 'FDIFFERQUANTITY',
+                    label: '差异数量',
+                    align: 'center',
+                    width: 100,
+                    edit: false,
+                    add:false,
+                    calc:'sum',
+                    calcTit:'合计',
+                    calcDecimal:2
+                },
+                {
+                    name: 'FMEMO',
+                    label: '备注',
+                    align: 'center',
+                    width: 180
+                },
+            ],
+            editUrl: '/test/test',
+            contextMenuB: true,
+            editMode: 'inline',
+            height: '100%',
+            showTfoot: true,
+            paging:false,
+            onLoaded:function(data){
+                for(var i=0,l=data.list.length;i<l;i++){
+                    RepertoryCheckDetailGrid.datagrid("doEditRow", i);
+                }
+                trClick();
+            }
+        });
+        var trdata=null;
+        var clickTR=null;
+        $(document).on('keypress',"#tabRepertoryCheckDetails input",function(event){
+            //改为只监听数字键
+            if(event.keyCode!="13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if(trdata!=null){
+                var differQuantity= trdata.FQUANTITY-$(this).val();
+                RepertoryCheckDetailGrid.datagrid("updateRow", trdata.gridIndex,{"FREALQUANTITY":$(this).val(),"FDIFFERQUANTITY":differQuantity});
+                if(clickTR!=null&&clickTR.hasClass("datagrid-edit-tr"))
+                    clickTR.removeClass("datagrid-edit-tr");
+                RepertoryCheckDetailGrid.datagrid("doEditRow", trdata.gridIndex);
+                //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                $($(RepertoryCheckDetailGrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input').eq(0)).focus();
+                var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
+                var sumCount=0;
+                var newData=RepertoryCheckDetailGrid.data("bjui.datagrid").data;
+                for(var i=0,l=newData.length;i<l;i++){
+                    sumCount+=newData[i].FDIFFERQUANTITY;
+                }
+                $(ths[7]).html('<div><div class="datagrid-calcbox">合计</div>' + sumCount + '</div>');
+            }
+        })
+        function trClick(){
+            var that=RepertoryCheckDetailGrid.data("bjui.datagrid");
+            that.$tbody.find('> tr').on('keyCodeEnter',function(){
+                trdata=that.data[$(this).index()];
+                clickTR=$(this);
+            });
+        };
+        $(document).on("click","#btnRCSave",function(){
+            var datas=RepertoryCheckDetailGrid.data("bjui.datagrid").data;
+            $(this).bjuiajax("doAjax",{
+                url: "/RepertoryCheck/AddRepertoryCheckDetailsJson",
+                data: { details:JSON.stringify(datas),parentId:parentId,wareId:ware },
+                confirmMsg: "确认提交？",
+                callback: function (json) {
+                    if (json.statusCode!="200") {
+                        //maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME:json.time});
+                        $(this).alertmsg("warn", json.message);
+                    } else {
+                        $(this).alertmsg("ok", "禁用失败");
+                    }
+                }
+            });
+        })
+    })
+</script>

@@ -1,14 +1,14 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     <table class="table">
         <tbody>
-            <tr><td colspan="3" style="text-align:center">商品回库明细</td></tr>
+            <tr><td colspan="3" style="text-align:center">其他出库明细</td></tr>
             <tr>
                 <td><label>仓库：</label><label id="GBDFOUTWAREHOUSEID">@ViewBag.ware</label></td>
                 <td><label>日期：</label><input type="text" id="date" value="" data-toggle="datepicker" size="12" /></td>
                 <td><label>单据编号：</label><label id="GBDfcode">@Model.FCODE</label></td>
             </tr>
             <tr>
-                <td><label>领用人：</label><label id="GBDfcode">@Model.FCODE</label></td>
+                <td><label>领用人：</label><label id="GBDfcode"></label></td>
                 <td><label>制单人：</label><label id="GBDuserName">@ViewBag.userName</label></td>
                 <td><label>摘要：</label><label id="GBDfmemo">@Model.FMEMO</label></td>
             </tr>
@@ -21,10 +21,13 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
+        var parentId = '@Model.FGUID';
+        var wareId=@ViewBag.wareId;
+        var url = "/OtherOut/GetAllOtherOutDetailsJson?parentId=" + parentId;
+        var otherOutDetailGrid = $("#tabOtherOutDetails").datagrid({
             gridTitle: '其他出库单明细',
             showToolbar: true,
-            toolbarItem: 'add,save,del,cancel',
+            toolbarItem: 'add,save,cancel',
             addLocation: 'first',
             dataUrl: url,
             dataType: 'json',
@@ -35,8 +38,14 @@
                     label: '商品编号',
                     align: 'center',
                     width: 100,
-                    edit: false,
-                    add: false
+                    rule: "required"
+                },
+                {
+                    name: 'FBATCH',
+                    label: '批次号',
+                    align: 'center',
+                    width: 100,
+                    rule: "required"
                 },
                 {
                     name: 'FGOODSNAME',
@@ -55,7 +64,7 @@
                     add: false
                 },
                 {
-                    name: 'FQUANTITY',
+                    name: 'FSURPLUS',
                     label: '数量',
                     align: 'center',
                     width: 80,
@@ -85,18 +94,86 @@
                     name: 'FMEMO',
                     label: '备注',
                     align: 'center',
-                    width: 80,
-                    edit: false,
-                    add: false
+                    width: 180
                 }
             ],
-            editUrl: '/GoodsBack/EditGoodsBackDetailsJson',
+            editUrl: '/OtherOut/EditOtherOutDetailsJson?wareId='+wareId,
             delUrl: '/GoodsBack/DelGoodsBackDetailJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
             showTfoot: true,
-            paging: false
+            inlineEditMult:false,
+            paging: false,
+            afterSave:function(){
+                otherOutDetailGrid.datagrid("reload",{dataUrl:url});
+            }
         });
+        $(document).on('keypress', "#tabOtherOutDetails input", function (event) {
+            //改为只监听数字键
+            if (event.keyCode != "13")
+                return;
+            var goodsId = $("#tabOtherOutDetails").find("input[name=FGOODSID]").val();
+            if (goodsId == "") {
+                $(this).alertmsg("warn", "请输入商品编号");
+                return false;
+            }
+            var batch = $("#tabOtherOutDetails").find("input[name=FBATCH]").val();
+            if (batch == "") {
+                 $(this).alertmsg("warn", "请输入批次号");
+                 return false;
+             }
+             //var differQuantity = trdata.FQUANTITY - $(this).val();
+             //RepertoryCheckDetailGrid.datagrid("updateRow", trdata.gridIndex, { "FREALQUANTITY": $(this).val(), "FDIFFERQUANTITY": differQuantity });
+
+            $(this).bjuiajax("doAjax", {
+                url: "/OtherOut/GetGoodsInfoByIdAndBatchWareJson",
+                data: { goodsId: goodsId, batch: batch, wareId: wareId },
+                callback: function (json) {
+                    if(json.length==0){
+                        $(this).alertmsg("warn", "没有商品信息！");
+                    }else{
+                        var info=json[0];
+                        var otherOutInfo={};
+                        otherOutInfo.FPARENTID=parentId;
+                        //otherOutInfo.wareId=wareId;
+                        otherOutInfo.FGOODSID=info.FGOODSID;
+                        otherOutInfo.FBATCH=batch;
+                        otherOutInfo.FGOODSNAME=info.FGOODSNAME;
+                        otherOutInfo.FSURPLUS=info.FSURPLUS;
+                        otherOutInfo.FUNIT=info.FUNIT;
+                        otherOutInfo.FQUANTITY=info.FQUANTITY;
+                        otherOutInfo.FPRICE=info.FPRICE;
+                        otherOutInfo.FMONEY=toDecimal(info.FPRICE*info.FQUANTITY);
+                        otherOutDetailGrid.datagrid("add",0,otherOutInfo);  
+                        var trs=[];
+                        trs.push(otherOutInfo);
+                        otherOutDetailGrid.data("bjui.datagrid").tools.createTrs(trs,true);
+                        otherOutDetailGrid.datagrid("doEditRow",0);
+                        $("#tabOtherOutDetails").find("input[name=FGOODSID]").val(goodsId);
+                        $("#tabOtherOutDetails").find("input[name=FBATCH]").val(batch);
+                    }
+                }
+            });
+            
+
+             //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+             //var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
+             //var sumCount = 0;
+             //var newData = otherOutDetailGrid.data("bjui.datagrid").data;
+             //console.log(newData);
+             //for (var i = 0, l = newData.length; i < l; i++) {
+             //    sumCount += newData[i].FMONEY;
+             //}
+             //$(ths[6]).html('<div><div class="datagrid-calcbox">合计</div>' + sumCount + '</div>');
+        })
+        function toDecimal(x){
+            var f=parseFloat(x);
+            if(isNaN(f))
+                return;
+            f=Math.round(x*100)/100;
+            return f;
+        }
+
     })
 </script>

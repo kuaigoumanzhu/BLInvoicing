@@ -69,5 +69,53 @@ namespace BL.Service
                 }
             }
         }
+
+        public IEnumerable<T_OTHEROUTDETAILSModel> GetAllOtherOutDetailsByParentId(string parentId)
+        {
+            string sql = @"select * from T_OTHEROUTDETAILS with(nolock) where FPARENTID=@parentId";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_OTHEROUTDETAILSModel>(sql, new { parentId = parentId });
+            }
+        }
+
+        public IEnumerable<T_REPERTORYModel> GetGoodsInfoByIdAndBatchWare(string goodsId, string batch, string ware)
+        {
+            string sql = @"select * from T_REPERTORY with(nolock) where FGOODSID=@FGOODSID and FBATCH=@FBATCH and FWAREHOUSEID=@FWAREHOUSEID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query< T_REPERTORYModel>(sql, new { FGOODSID = goodsId, FBATCH = batch, FWAREHOUSEID = ware });
+            }
+        }
+
+        public UiResponse AddOtherOutDetailInfo(T_OTHEROUTDETAILSModel model,string wareId)
+        {
+            string sql = @"insert into T_OTHEROUTDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FBATCH,FGOODSID,FGOODSNAME,FUNIT,FQUANTITY,FPRICE,FMONEY,FMEMO)
+                        values(@FGUID,@FCREATEID,@FCREATETIME,@FPARENTID,@FBATCH,@FGOODSID,@FGOODSNAME,@FUNIT,@FQUANTITY,@FPRICE,@FMONEY,@FMEMO)";
+            string updateSql = @"update T_REPERTORY set FSURPLUS=@FSURPLUS,FENABLE=@FENABLE where FGOODSID=@FGOODSID and FWAREHOUSEID=@FWAREHOUSEID and FBATCH=@FBATCH";
+            using (IDbConnection db = OpenConnection())
+            {
+                IDbTransaction transaction = db.BeginTransaction();
+                try
+                {
+                    db.Execute(updateSql, new { FSURPLUS = 0, FENABLE = 0, FGOODSID = model.FGOODSID, FWAREHOUSEID = wareId, FBATCH = model.FBATCH },transaction);
+                    if (db.Execute(sql, model,transaction) > 0)
+                    {
+                        transaction.Commit();
+                        return new UiResponse { statusCode = "200", message = "添加成功" };
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        return new UiResponse { statusCode = "300", message = "添加失败" };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
     }
 }

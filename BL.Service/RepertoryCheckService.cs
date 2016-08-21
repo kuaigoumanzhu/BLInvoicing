@@ -28,7 +28,7 @@ namespace BL.Service
             }
         }
 
-        public ViewREPERTORYCHECK AddRepertoryCheck(ViewREPERTORYCHECK model,int id,int number,CommonService service)
+        public ViewREPERTORYCHECK AddRepertoryCheck(ViewREPERTORYCHECK model, int id, int number, CommonService service)
         {
             string sql = @"insert into T_REPERTORYCHECK (FGUID,FCREATEID,FCREATETIME,FDATE,FCODE,
                                     FWAREHOUSEID,FMEMO,FSTATUS,
@@ -60,6 +60,73 @@ namespace BL.Service
                         model.message = "新增流水号已被占用，请重新保存！";
                         return null;
                     }
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
+
+        public IEnumerable<T_REPERTORYCHECKDETAILSModel> GetAllRepertoryCheckDetailsInfo(string parentId, string wareHouse)
+        {
+            string sql = "select * from T_REPERTORY with(nolock) where FWAREHOUSEID=@wareHouse and FSURPLUS>0";
+            using (IDbConnection db = OpenConnection())
+            {
+                var goodsWareHouse = db.Query<T_REPERTORYModel> (sql, new { wareHouse = wareHouse });
+                IList<T_REPERTORYCHECKDETAILSModel> details = new List<T_REPERTORYCHECKDETAILSModel>();
+                foreach (var model in goodsWareHouse)
+                {
+                    T_REPERTORYCHECKDETAILSModel detail = new T_REPERTORYCHECKDETAILSModel();
+                    detail.FGOODSID = model.FGOODSID;
+                    detail.FGOODSNAME = model.FGOODSNAME;
+                    detail.FPARENTID = parentId;
+                    detail.FQUANTITY = (float)model.FSURPLUS;
+                    detail.FREALQUANTITY = (float)model.FSURPLUS;
+                    detail.FUNIT = model.FUNIT;
+                    detail.FDIFFERQUANTITY = detail.FQUANTITY - detail.FREALQUANTITY;
+                    details.Add(detail);
+                }
+                return details;
+            }
+        }
+        /// <summary>
+        /// 添加库存明细
+        /// </summary>
+        /// <param name="details">明细</param>
+        /// <param name="parentId">主表</param>
+        /// <param name="userId">当前用户</param>
+        /// <param name="wareId">仓库</param>
+        /// <returns></returns>
+        public UiResponse AddRepertoryCheckDetails(List<T_REPERTORYCHECKDETAILSModel> details,string parentId,string userId,string wareId)
+        {
+            string sql = @"insert into T_REPERTORYCHECKDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FBARCODE,FGOODSID,FGOODSNAME,FUNIT,FQUANTITY,FREALQUANTITY,FDIFFERQUANTITY,FMEMO)
+                            values(@FGUID,@FCREATEID,@FCREATETIME,@FPARENTID,@FBARCODE,@FGOODSID,@FGOODSNAME,@FUNIT,@FQUANTITY,@FREALQUANTITY,@FDIFFERQUANTITY,@FMEMO)";
+            string updateSql = @"update T_REPERTORY set FSURPLUS=@FSURPLUS where FGOODSID=@FGOODSID and FWAREHOUSEID=@FWAREHOUSEID";
+            string updateParent = @"update T_REPERTORYCHECK set FSTATUS=2,FAPPLYID=@FAPPLYID,FAPPLYTIME=@FAPPLYTIME";
+            using (IDbConnection db = OpenConnection())
+            {
+                IDbTransaction transaction = db.BeginTransaction();
+                try
+                {
+                    foreach(var model in details)
+                    {
+                        model.FGUID = Guid.NewGuid().ToString();
+                        model.FCREATEID = userId;
+                        model.FCREATETIME = DateTime.Now;
+                        model.FPARENTID = parentId;
+                        var bol = db.Execute(sql, model, transaction) > 0;
+                        if(!bol)
+                        {
+                            transaction.Rollback();
+                            return new UiResponse {statusCode="300" ,message = "保存失败", closeCurrent = true };
+                        }
+                        db.Execute(updateSql, new { FSURPLUS = model.FREALQUANTITY, FGOODSID=model.FGOODSID, FWAREHOUSEID = wareId }, transaction);
+                    }
+                    db.Execute(updateParent, new { FAPPLYID = userId, FAPPLYTIME = DateTime.Now });
+                    transaction.Commit();
+                    return new UiResponse { statusCode = "200", message = "保存成功", closeCurrent = true };
                 }
                 catch (Exception ex)
                 {

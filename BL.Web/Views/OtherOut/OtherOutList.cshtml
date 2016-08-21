@@ -84,7 +84,7 @@
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
                     id: 'otherOutDetails', url: '/OtherOut/OtherOutDetails', title: '其他出库明细',
-                    data: { rowData: jsonStr, ware: ware }, fresh: true
+                    data: { rowData: jsonStr, ware: ware, wareId: rowData.FWAREHOUSEID }, fresh: true
                 });
             }
         });

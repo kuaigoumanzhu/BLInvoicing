@@ -27,6 +27,10 @@ namespace BL.Models
         /// </summary>
         public string FPARENTID { get; set; }
         /// <summary>
+        /// 批次号
+        /// </summary>
+        public string FBATCH { get; set; }
+        /// <summary>
         /// 商品编号:T_GOODS(商品表)表中FID
         /// </summary>
         public string FGOODSID { get; set; }

@@ -49,12 +49,42 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(result);
         }
 
-        public ActionResult OtherOutDetails(string rowData, string ware)
+        public ActionResult OtherOutDetails(string rowData, string ware,string wareId)
         {
             var model = JsonHelper.Instance.Deserialize<ViewOTHEROUTModel>(rowData);
             ViewBag.ware = ware;
+            ViewBag.wareId = wareId;
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);
+        }
+        [JsonException]
+        public string GetAllOtherOutDetailsJson(string parentId)
+        {
+            var lst=otherOut.GetAllOtherOutDetailsByParentId(parentId);
+            return JsonHelper.Instance.Serialize(new {list=lst, pageSize=lst.Count() });
+        }
+        /// <summary>
+        /// 获取商品信息
+        /// </summary>
+        /// <param name="goodsId">商品编号</param>
+        /// <param name="batch">批次号</param>
+        /// <param name="ware">仓库号</param>
+        /// <returns></returns>
+        [JsonException]
+        public string GetGoodsInfoByIdAndBatchWareJson(string goodsId,string batch,string wareId)
+        {
+            return JsonHelper.Instance.Serialize(otherOut.GetGoodsInfoByIdAndBatchWare(goodsId, batch, wareId));
+        }
+        [JsonException]
+        public string EditOtherOutDetailsJson(string json,string wareId)
+        {
+            var models = JsonHelper.Instance.Deserialize<List<T_OTHEROUTDETAILSModel>>(json);
+            var model = models[0];
+            model.FGUID = Guid.NewGuid().ToString();
+            model.FCREATEID = UserContext.CurrentUser.UserName;
+            model.FCREATETIME = DateTime.Now;
+            var res= otherOut.AddOtherOutDetailInfo(model,wareId);
+            return JsonHelper.Instance.Serialize(res);
         }
     }
 }

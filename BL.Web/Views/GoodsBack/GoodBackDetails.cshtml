@@ -28,9 +28,9 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        var outWare=@Model.FOUTWAREHOUSEID;
+        var outWare='@Model.FOUTWAREHOUSEID';
         var url = "/GoodsBack/GetGoodsBackDetailsList?parentId=@Model.FGUID"+"&inWareHouse="+outWare;
-        goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
+        var goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
             toolbarCustom: '<button type="button" id="btnGBDAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnGBDSave" data-icon="save" class="btn btn-default">保存</button>'+
             '<button type="button" id="btnGBDPrint" class="btn btn-green">打印</button><button type="button" id="btnGBDPreview" class="btn btn-red">预览</button>'+

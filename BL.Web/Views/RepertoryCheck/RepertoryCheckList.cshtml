@@ -19,7 +19,7 @@
     $(function () {
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             async: false,
             callback: function (json) {
                 wareHouseLst = json;
@@ -83,9 +83,11 @@
                 {
                     name: 'FSTATUS',
                     label: '表单状态',
+                    defaultVal:1,
                     type: 'select',
                     items: [{ '1': '未提交' }, { '2': '已提交' }],
                     align: 'center',
+                    add:false,
                     width: 80,
                     render: $.datagrid.renderItem
                 }
@@ -95,7 +97,15 @@
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',
-            inlineEditMult: false
+            inlineEditMult: false,
+            onDblClickRow: function (rowData, index) {
+                var ware = $(this).GetSelectText(wareHouseLst, rowData.FWAREHOUSEID);
+                var jsonStr = JSON.stringify(rowData);
+                $(this).navtab({
+                    id: 'RepertoryCheckDetails', url: '/RepertoryCheck/RepertoryCheckDetails', title: '库存盘点明细',
+                    data: { rowData: jsonStr, ware: ware}, fresh: true
+                });
+            }
         });
     })
 </script>
