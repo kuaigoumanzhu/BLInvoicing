@@ -1,10 +1,12 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     <label class="control-label">日期</label>
-    <input type="text" name="dateTime" id="dateTime" value="" data-toggle="datepicker" size="13" />
+    <input type="text" name="dateTime" id="repertoryCheckdateTime" value="" data-toggle="datepicker" size="13" />
     <label class="control-label">单据编号</label>
-    <input type="text" id="fCode" size="15" />
+    <input type="text" id="repertoryCheckfCode" size="15" />
+    <label class="control-label">仓库</label>
+    <select id="repertoryCheckWarehose" data-toggle="selectpicker"></select>
     <label class="control-label">表单状态</label>
-    <select name="fStatus" data-toggle="selectpicker">
+    <select id="repertoryCheckStatus" name="fStatus" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
         <option value="2">已提交</option>
     </select>
@@ -23,7 +25,8 @@
                 wareHouseLst = json;
             }
         });
-        otherOutGrid = $("#tabRepertoryCheck").datagrid({
+        LoadWareHose('repertoryCheckWarehose', '');
+        var repertoryCheckGrid = $("#tabRepertoryCheck").datagrid({
             gridTitle: '库存盘点',
             showToolbar: true,
             toolbarItem: 'add,save,cancel',
@@ -88,7 +91,7 @@
                 }
             ],
             linenumberAll: true,
-            editUrl: '/GoodsBack/EditGoodsBackJson',
+            editUrl: '/RepertoryCheck/EditRepertoryCheckJson',
             contextMenuB: true,
             editMode: 'inline',
             height: '100%',

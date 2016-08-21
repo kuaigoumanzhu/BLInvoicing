@@ -55,7 +55,7 @@ namespace BL.Models
         /// </summary>
         public DateTime FAPPLYTIME { get; set; }
     }
-    public class ViewREPERTORYCHECK
+    public class ViewREPERTORYCHECK:UiResponse
     {
         /// <summary>
         /// 主键
@@ -68,11 +68,11 @@ namespace BL.Models
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime FCREATETIME { get; set; }
+        public DateTime? FCREATETIME { get; set; }
         /// <summary>
         /// 日期
         /// </summary>
-        public DateTime FDATE { get; set; }
+        public DateTime? FDATE { get; set; }
         /// <summary>
         /// 流水号:用于计算自增序号
         /// </summary>
@@ -104,6 +104,6 @@ namespace BL.Models
         /// <summary>
         /// 提交时间
         /// </summary>
-        public DateTime FAPPLYTIME { get; set; }
+        public DateTime? FAPPLYTIME { get; set; }
     }
 }

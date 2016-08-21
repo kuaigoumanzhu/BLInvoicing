@@ -27,5 +27,46 @@ namespace BL.Service
                 return result.Read<ViewREPERTORYCHECK>();
             }
         }
+
+        public ViewREPERTORYCHECK AddRepertoryCheck(ViewREPERTORYCHECK model,int id,int number,CommonService service)
+        {
+            string sql = @"insert into T_REPERTORYCHECK (FGUID,FCREATEID,FCREATETIME,FDATE,FCODE,
+                                    FWAREHOUSEID,FMEMO,FSTATUS,
+                                    FAPPLYID,FAPPLYTIME) values(@FGUID,@FCREATEID,@FCREATETIME,@FDATE,@FCODE,
+                                    @FWAREHOUSEID,@FMEMO,@FSTATUS,
+                                    @FAPPLYID,@FAPPLYTIME)";
+            string getSql = @"select a.*,b.FNAME as FAPPLYName from T_REPERTORYCHECK a with(nolock)
+                            left join T_Person b with(nolock) on a.FAPPLYID=b.FID
+                            where a.FGUID=@FGUID";
+            using (IDbConnection db = OpenConnection())
+            {
+                IDbTransaction transaction = db.BeginTransaction();
+                try
+                {
+                    if (service.UpdateNumberById(db, transaction, id, number))
+                    {
+                        db.Execute(sql, model, transaction);
+                        var res = db.QuerySingle<ViewREPERTORYCHECK>(getSql, new { FGUID = model.FGUID }, transaction);
+                        transaction.Commit();
+                        res.closeCurrent = true;
+                        res.message = "添加成功";
+                        return res;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        model.closeCurrent = true;
+                        model.statusCode = "300";
+                        model.message = "新增流水号已被占用，请重新保存！";
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
+        }
     }
 }
