@@ -53,8 +53,8 @@ namespace BL.Service
         public T_PURCHASEModel AddPURCHASE(T_PURCHASEModel model)
         {
 
-            string sql = @"insert into  T_PURCHASE(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME,FCHECKID,FCHECKTIME
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME, @FCHECKID, @FCHECKTIME
+            string sql = @"insert into  T_PURCHASE(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID,FPERSONID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME,FCHECKID,FCHECKTIME
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID,@FPERSONID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME, @FCHECKID, @FCHECKTIME
 )";
             using (IDbConnection db = OpenConnection())
             {
@@ -152,13 +152,38 @@ inner join T_PURCHASEDETAILS d on c.FGUID=d.FPARENTID");
             }
         }
 
-        public bool submitPURCHASE(string FGUID)
+        public bool submitPURCHASE(string FGUID,string userName,DateTime dt)
         {
-            string sql = @"update  T_PURCHASE set   FSTATUS='2'
+            string sql = @"update  T_PURCHASE set   FSTATUS='3',FCHECKID=@FCHECKID,FCHECKTIME=@FCHECKTIME
 where FGUID=@FGUID ";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                if (db.Execute(sql, new
+                {
+                    FCHECKID = userName,
+                    FCHECKTIME=dt,
+                    FGUID = FGUID,
+            }) > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+
+        public bool submitPURCHASE(string FGUID)
+        {
+            string sql = @"update  T_PURCHASE set   FSTATUS='2' where FGUID=@FGUID ";
+            using (IDbConnection db = OpenConnection())
+            {
+                if (db.Execute(sql, new
+                {
+                    FGUID = FGUID
+                }) > 0)
                 {
                     return true;
                 }

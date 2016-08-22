@@ -10,7 +10,7 @@
             </tr>
             <tr>
                 <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
-                <td></td>
+                <td><label>审核人：</label><label id="FCHECKID">@Model.FCHECKID</label></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
             </tr>
             <tr>
@@ -59,9 +59,9 @@
             gridTitle: '采购入库审核明细',
             toolbarCustom:
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
+           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">审核</button>'),
             showToolbar: true,
-            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
+            toolbarItem: (fstatus == '2' ? '' : ''),
             addLocation: 'first',
             dataUrl: '/PURCHASEAudit/GetAllPURCHASEDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',

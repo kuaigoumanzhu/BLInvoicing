@@ -160,7 +160,7 @@ namespace BL.Web.Controllers
 
         public string SubmitConsumable(string fguid)
         {
-            if (PURCHASEService.submitPURCHASE(fguid))
+            if (PURCHASEService.submitPURCHASE(fguid, UserContext.CurrentUser.UserName,DateTime.Now))
             {
                 return "1";
             }
