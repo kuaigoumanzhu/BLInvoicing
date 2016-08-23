@@ -41,7 +41,7 @@ namespace BL.Service
         }
 
 
-        public bool AddGOODSALLOTDETAILS(List<T_GOODSALLOTDETAILSModel> list)
+        public bool AddGOODSALLOTDETAILS(List<T_GOODSALLOTDETAILSModel> list, string FINWAREHOUSEID)
         {
 
             string sql = "";
@@ -62,10 +62,10 @@ namespace BL.Service
                 dp.Add("@FBATCH" + i, list[i].FBATCH);
                 dp.Add("@FQUANTITY" + i, list[i].FQUANTITY);
                 dp.Add("@FPRICE" + i, list[i].FPRICE);
-                dp.Add("@FMONEY" + i, list[i].FMONEY);
+                dp.Add("@FMONEY" + i, list[i].FQUANTITY * list[i].FPRICE);//list[i].FMONEY
                 dp.Add("@FMARKETPRICE" + i, list[i].FMARKETPRICE);
-                dp.Add("@FMARKETMONEY" + i, list[i].FMARKETMONEY);
-                dp.Add("@FBARCODE" + i, list[i].FBARCODE);
+                dp.Add("@FMARKETMONEY" + i, list[i].FQUANTITY * list[i].FMARKETPRICE);//list[i].FMARKETMONEY
+                dp.Add("@FBARCODE" + i, FINWAREHOUSEID+" "+list[i].FGOODSID.ToString() + " " + list[i].FMARKETPRICE.ToString() + " " + list[i].FQUANTITY.ToString());//list[i].FBARCODE
                 dp.Add("@FMEMO" + i, list[i].FMEMO);
 
             }
