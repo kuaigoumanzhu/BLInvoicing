@@ -156,22 +156,67 @@ inner join T_PURCHASEDETAILS d on c.FGUID=d.FPARENTID");
         {
             string sql = @"update  T_PURCHASE set   FSTATUS='3',FCHECKID=@FCHECKID,FCHECKTIME=@FCHECKTIME
 where FGUID=@FGUID ";
+            sql += @"insert into T_REPERTORY(
+       [FCREATEID]
+      ,[FCREATETIME]
+      ,[FBATCH]
+      ,[FSUPPLIERID]
+      ,[FWAREHOUSEID]
+      ,[FPERSONID]
+      ,[FGOODSID]
+      ,[FGOODSNAME]
+      ,[FUNIT]
+      ,[FCALCTYPE]
+      ,[FQUANTITY]
+      ,[FSURPLUS]
+      ,[FENABLE]
+      ,[FPRICE]
+      ,[FMEMO])
+      select
+      a.FCREATEID,
+      a.FCREATETIME,
+      a.FCODE,
+      b.FSUPPLIERID,
+      a.FWAREHOUSEID,
+      a.FPERSONID,
+      b.FGOODSID,
+      b.FGOODSNAME,
+      b.FUNIT,
+      b.FCALCTYPE,
+      b.FQUANTITY,
+      b.FQUANTITY,
+      b.FQUANTITY,
+      b.FPRICE,
+      b.FMEMO
+      from T_PURCHASE a inner join T_PURCHASEDETAILS b on a.FGUID= b.FPARENTID where a.FGUID= @FGUID";
             using (IDbConnection db = OpenConnection())
             {
+                //if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                //{
+                //    return true;
+                //}
+                //else
+                //{
+                //    return false;
+                //}
+                var trans = db.BeginTransaction();
                 if (db.Execute(sql, new
                 {
                     FCHECKID = userName,
-                    FCHECKTIME=dt,
-                    FGUID = FGUID,
-            }) > 0)
+                    FCHECKTIME = dt,
+                    FGUID = FGUID
+                }, trans) > 0)
                 {
+                    trans.Commit();
                     return true;
                 }
                 else
                 {
+                    trans.Rollback();
                     return false;
                 }
             }
+                
         }
 
 
@@ -189,6 +234,34 @@ where FGUID=@FGUID ";
                 }
                 else
                 {
+                    return false;
+                }
+            }
+        }
+        public bool submitGOODSALLOT(string FGUID)
+        {
+            string sql = @"update  T_GOODSALLOT set   FSTATUS='2'
+where FGUID=@FGUID; ";
+            sql += "update T_REPERTORY set T_REPERTORY.FSURPLUS=T_REPERTORY.FSURPLUS-a.qcou from (select sum(g.FQUANTITY) qcou,g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID from T_GOODSALLOTDETAILS g inner join T_GOODSALLOT p on p.FGUID=g.FPARENTID where p.FGUID=@FGUID group by g.FBATCH,g.FGOODSID,p.FOUTWAREHOUSEID)a where T_REPERTORY.FBATCH=a.FBATCH and T_REPERTORY.FWAREHOUSEID=a.FOUTWAREHOUSEID and T_REPERTORY.FGOODSID=a.FGOODSID";
+            using (IDbConnection db = OpenConnection())
+            {
+                //if (db.Execute(sql, new { FGUID = FGUID }) > 0)
+                //{
+                //    return true;
+                //}
+                //else
+                //{
+                //    return false;
+                //}
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, new { FGUID = FGUID }, trans) > 0)
+                {
+                    trans.Commit();
+                    return true;
+                }
+                else
+                {
+                    trans.Rollback();
                     return false;
                 }
             }
