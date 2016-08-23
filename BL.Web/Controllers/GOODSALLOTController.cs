@@ -100,8 +100,9 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
+            string FINWAREHOUSEID = Request.QueryString["FINWAREHOUSEID"];
             //return JsonHelper.Instance.Serialize(GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(models));
-            if (GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(models))
+            if (GOODSALLOTDetailsService.AddGOODSALLOTDETAILS(models, FINWAREHOUSEID))
             {
                 return JsonHelper.Instance.Serialize(new { statusCode = "200", message = "添加成功" });
             }
