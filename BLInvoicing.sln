@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL.Service", "BL.Service\BL.Service.csproj", "{7F641F07-A443-48B4-9D46-1B70B7F180E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{295E1EF5-BDB3-4210-9D47-75CE78F5122A}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\Administrator\Desktop\进销存doc\进销售管理系统（需求设计）2016年7月18日212622.xlsx = C:\Users\Administrator\Desktop\进销存doc\进销售管理系统（需求设计）2016年7月18日212622.xlsx
+		C:\Users\Administrator\Desktop\进销存doc\进销存管理系统（库表设计）2016年7月18日212734.docx = C:\Users\Administrator\Desktop\进销存doc\进销存管理系统（库表设计）2016年7月18日212734.docx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

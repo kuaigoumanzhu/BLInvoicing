@@ -86,6 +86,7 @@
     <Compile Include="T_PURCHASEDETAILSModel.cs" />
     <Compile Include="T_PURCHASEModel.cs" />
     <Compile Include="T_REPERTORYModel.cs" />
+    <Compile Include="T_SALEDAYBOOKModel.cs" />
     <Compile Include="T_SUPPLIERModel.cs" />
     <Compile Include="T_VIPINFOModel.cs" />
     <Compile Include="T_WAREHOUSEModel.cs" />
