@@ -71,6 +71,11 @@ namespace BL.Service
                 whereStr += " and FCATEGORY = @FCATEGORY";
                 dp.Add("@FCATEGORY", paraDic["FCATEGORY"].ToString());
             }
+            if (paraDic.Contains("FSTATUS") && paraDic["FSTATUS"].ToString().Trim() != "")
+            {
+                whereStr += " and FSTATUS = @FSTATUS";
+                dp.Add("@FSTATUS", paraDic["FSTATUS"].ToString());
+            }
             using (IDbConnection db = OpenConnection())
             {
                 return db.Query<T_WAREHOUSEModel>(sql+whereStr,dp);

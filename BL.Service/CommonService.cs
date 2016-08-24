@@ -63,6 +63,11 @@ namespace BL.Service
                 whereStr += " and FCATEGORY = @FCATEGORY";
                 dp.Add("@FCATEGORY", paraDic["FCATEGORY"].ToString());
             }
+            if (paraDic.Contains("FSTATUS") && paraDic["FSTATUS"].ToString().Trim() != "")
+            {
+                whereStr += " and FSTATUS = @FSTATUS";
+                dp.Add("@FSTATUS", paraDic["FSTATUS"].ToString());
+            }
             string sql = "select FID,FNAME from T_WAREHOUSE with(nolock)";
             using (IDbConnection db = OpenConnection())
             {

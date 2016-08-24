@@ -106,7 +106,8 @@ namespace BL.Web.Controllers
         [JsonException]
         public string EditConsumablesInDetail(string json)
         {
-            var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESDETAILSModel>>(json);
+            var reJson = json.Replace("\"FPRICE\":\"\"", "\"FPRICE\":\"0\"");
+            var models = JsonHelper.Instance.Deserialize<List<T_CONSUMABLESDETAILSModel>>(reJson);
             var model = models[0];
             if (consumablesDetailsService.IsExistsFID(Request.QueryString["FPARENTID"], model.FGUID, model.FGOODSID))
             {
