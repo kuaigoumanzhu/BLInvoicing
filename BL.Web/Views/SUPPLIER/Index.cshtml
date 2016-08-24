@@ -19,7 +19,7 @@
         });
 
         $(document).on("click", "#SUPPLIER_qiyong,#SUPPLIER_jinyong", function () {
-            var selectedDatas = maingrid.data('selectedDatas');
+            var selectedDatas = SUPPLIERmaingrid.data('selectedDatas');
             if (selectedDatas == undefined || selectedDatas.length == 0) {
                 $(this).alertmsg('warn', '未选中任何行');
                 return false;

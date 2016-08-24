@@ -37,9 +37,9 @@ function LoadDictCategory(selectID, CategoryID)
     });
 }
 function LoadWareHose(selectID, CategoryID) {
-    var url = "/WareHose/GetAllWareHoseJson";
+    var url = "/WareHose/GetAllWareHoseJson?FSTATUS=2";
     if (CategoryID != "" && CategoryID != undefined) {
-        url += "?FCATEGORY=" + CategoryID;
+        url += "&FCATEGORY=" + CategoryID;
     }
     $(this).bjuiajax("doAjax", {
         url: url,
@@ -86,6 +86,46 @@ function LoadDataForRowSel(categoryId)
         }
     });
     return rel;
+}
+function LoadSupplierForRowSel()
+{
+    var rel;
+    var url = "/SUPPLIER/GetSupplierJson";
+    $(this).bjuiajax("doAjax", {
+        url: url,
+        async: false,
+        callback: function (json) {
+            rel = json;
+        }
+    });
+    return rel;
+}
+function LoadPersonForRowSel() {
+    var rel;
+    var url = "/Person/GetPersonJson";
+    $(this).bjuiajax("doAjax", {
+        url: url,
+        async: false,
+        callback: function (json) {
+            rel = json;
+        }
+    });
+    return rel;
+}
+function LoadPerson(selectID) {
+    var url = "/Person/GetPersonJsonInfo";
+    $(this).bjuiajax("doAjax", {
+        url: url,
+        async: false,
+        callback: function (json) {
+            $.CurrentNavtab.find("#" + selectID).html('');
+            var _html = "<option value=''>全部</option>";
+            for (var i = 0; i < json.length; i++) {
+                _html += "<option value='" + json[i].FID + "'>" + json[i].FNAME + "</option>"
+            }
+            $.CurrentNavtab.find("#" + selectID).html(_html);
+        }
+    });
 }
 //hpf 表格下来列表根据value获得text
 (function ($) {

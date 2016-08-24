@@ -63,6 +63,10 @@ namespace BL.Web.Controllers
             {
                 dic["FCATEGORY"] = Request.QueryString["FCATEGORY"];
             }
+            if (!string.IsNullOrEmpty(Request.QueryString["FSTATUS"]))
+            {
+                dic["FSTATUS"] = Request.QueryString["FSTATUS"];
+            }
             var lst = wareHose.GetAllWareHoseInfo(dic);
             return Json(lst);
         }

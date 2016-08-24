@@ -30,7 +30,7 @@ namespace BL.Service
             }
             if (paraDic.Contains("FPERSONID") && paraDic["FPERSONID"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
+                whereStr += string.Format(" and FPERSONID='{0}'", paraDic["FPERSONID"].ToString());
             }
             if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
             {

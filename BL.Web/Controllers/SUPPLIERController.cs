@@ -119,5 +119,24 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(new { result = supplierService.SetSUPPLIERStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
         }
 
+        [JsonException]
+        public string GetSupplierJson()
+        {
+            IDictionary dic = new Hashtable();
+            dic["FSTATUS"] = 2;
+            var lst = supplierService.GetSupplierInfo(dic);
+            string result = "[]";
+            if (lst.Count() > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("[");
+                foreach (T_SUPPLIERModel item in lst)
+                {
+                    sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
+                }
+                result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            }
+            return result;
+        }
     }
 }

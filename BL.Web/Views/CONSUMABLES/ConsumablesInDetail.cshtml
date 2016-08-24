@@ -53,7 +53,7 @@
                 wareHouseLst = json;
             }
         });
-        var gysList = LoadGYSDataForRowSel();
+        var gysList = LoadSupplierForRowSel();
         var fstatus='@Model.FSTATUS';
         ConsumablesInDetailgrid = $("#tabConsumablesInDetail").datagrid({
             gridTitle: '消耗品入库登记明细',
@@ -101,12 +101,14 @@
                     name: 'FQUANTITY',
                     label: '数量',
                     align: 'center',
+                    rule: 'digits',
                     width: 80
                 },
                 {
                     name: 'FMONEY',
                     label: '金额',
                     align: 'center',
+                    rule: 'number',
                     calc: 'sum',
                     calcTit: '金额合计',
                     width: 110
@@ -115,6 +117,9 @@
                     name: 'FPRICE',
                     label: '单价',
                     align: 'center',
+                    defaultVal:0,
+                    add: false,
+                    edit:false,
                     width: 110
                 },
                 {
@@ -156,11 +161,14 @@
         })
         var outWare = '@Model.FWAREHOUSEID';
 
-        $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
+        $(document).on("click", "#cidgAdd", function () {
+            alert('d');
             var btn = $(this).attr("id");
             switch (btn) {
-                case "btnAdd":
-                    Add();
+                case "cidgAdd": 
+                    ConsumablesInDetailgrid.datagrid("add");
+                    trClick();
+                    //Add();
                     break;
                 case "btnSave":
                     datas = []
@@ -186,23 +194,65 @@
                 }
             });
         }
+
+        var datas = [];
+        var trdata = null;
+        var clickTR = null;
+        $(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
+            //改为只监听数字键
+            if (event.keyCode != "13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if ($(this).attr("name") == "FMONEY" && $(this).val() != "")
+            {
+                var quant = $(this).parent().prev().find("input").val();
+                $(this).parent().next().html(parseFloat($(this).val())/parseFloat(quant));
+            }
+            //if (trdata != null) {
+            //    if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
+            //        var differMoney = trdata.FMONEY / $(this).val();
+            //        ConsumablesInDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
+            //        //var differQuantity = trdata.FENABLE - $(this).val();
+            //        //var differMoney = differQuantity * trdata.FMARKETPRICE;
+            //        //ConsumablesInDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FACTUALQUANTITY": $(this).val(), "FDIFFERQUANTITY": differQuantity, "FDIFFERMONEY": differMoney });
+            //        if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
+            //            clickTR.removeClass("datagrid-edit-tr");
+            //       // ConsumablesInDetailgrid.datagrid("doEditRow", trdata.gridIndex);
+            //        //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+            //       // $($(ConsumablesInDetailgrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
+            //    }
+            //}
+        })
+        function trClick() {
+            var that = ConsumablesInDetailgrid.data("bjui.datagrid");
+            that.$tbody.find('> tr').on('keyCodeEnter', function () {
+                trdata = that.data[$(this).index()];
+                clickTR = $(this);
+            });
+        }
     });
 
-    $(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
-        //改为只监听数字键
-        if (event.keyCode != "13")
-            return;
-        $(this).trigger("keyCodeEnter");
-        var trdata = $('#tabConsumablesInDetail').data('selectedDatas');
-        if (trdata.length > 0) {
-            if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
-                var differMoney = trdata[0].FMONEY / $(this).val();
-                ConsumablesInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
-                //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
-                //    $(trdata[0]).removeClass("datagrid-edit-tr");
-                ConsumablesInDetailgrid.datagrid("doCancelEditRow", trdata[0].gridIndex);
-                ConsumablesInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
-            }
-        }
-    })
+    //$(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
+    //    //改为只监听数字键
+    //    if (event.keyCode != "13")
+    //        return;
+    //    $(this).trigger("keyCodeEnter");
+    //    var trdata = ConsumablesInDetailgrid.data('selectedDatas');//$('#tabConsumablesInDetail')
+    //    if (trdata == undefined)
+    //    {
+    //        ConsumablesInDetailgrid.data("selectedRows",0, true);
+    //        trdata = ConsumablesInDetailgrid.data('selectedDatas');
+    //    }
+    //    alert(trdata.length)
+    //    if (trdata.length > 0) {
+    //        if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
+    //            var differMoney = trdata[0].FMONEY / $(this).val();
+    //            ConsumablesInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
+    //            //if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+    //            //    $(trdata[0]).removeClass("datagrid-edit-tr");
+    //            ConsumablesInDetailgrid.datagrid("doCancelEditRow", trdata[0].gridIndex);
+    //            ConsumablesInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+    //        }
+    //    }
+    //})
 </script>
