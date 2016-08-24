@@ -24,10 +24,17 @@
         });
 
         var wareHouseLst;
+        var personlst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
+            }
+        });
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetPersonJson?FSTATUS=2",
+            callback: function (json) {
+                personlst = json;
             }
         });
         maingrid = $("#tabPURCHASE").datagrid({
@@ -76,6 +83,10 @@
                  {
                      name: 'FPERSONID',
                      label: '采购人',
+                     type: 'select',
+                     items: function () {
+                         return personlst;
+                     },
                      align: 'center',
                      width: 80,
                      render: $.datagrid.renderItem
