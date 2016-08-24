@@ -46,6 +46,54 @@ namespace BL.Web.Controllers
                 return sb.ToString() + "]";
             }
         }
+        [JsonException]
+        public string GetPersonJson()
+        {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FSTATUS"]))
+            {
+                dic["FSTATUS"] = Request.QueryString["FSTATUS"];
+            }
+            var result = commonService.GetPersonSelect(dic);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach (var item in result)
+            {
+                sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
+            }
+            if (result.Count() > 0)
+            {
+                return sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            }
+            else
+            {
+                return sb.ToString() + "]";
+            }
+        }
+        [JsonException]
+        public string GetSupplierJson()
+        {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FSTATUS"]))
+            {
+                dic["FSTATUS"] = Request.QueryString["FSTATUS"];
+            }
+            var result = commonService.GetSupplierSelect(dic);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach (var item in result)
+            {
+                sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
+            }
+            if (result.Count() > 0)
+            {
+                return sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            }
+            else
+            {
+                return sb.ToString() + "]";
+            }
+        }
         /// <summary>
         /// 分仓库存表数据带回
         /// </summary>

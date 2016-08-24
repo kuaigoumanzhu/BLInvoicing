@@ -47,13 +47,20 @@
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
+        var gysList;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FSTATUS=2",
             callback: function (json) {
                 wareHouseLst = json;
             }
         });
-        var gysList = LoadGYSDataForRowSel();
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetSupplierJson?FSTATUS=2",
+            callback: function (json) {
+                gysList = json;
+            }
+        });
+        //var gysList = LoadGYSDataForRowSel();
         var fstatus='@Model.FSTATUS';
         PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
             gridTitle: '采购入库登记明细',

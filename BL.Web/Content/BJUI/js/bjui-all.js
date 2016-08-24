@@ -9521,14 +9521,16 @@
         //hpf 2016 07 21 初始化双击事件
         $trs.on('dblclick', function () {
             var $tr = $(this), index = $tr.index(), data;
+            if (that.isDom) data = $tr.data('initData') || that.tools.setDomData($tr)
+            else data = that.data[index]
+            if (data.FGUID==""||data.FGUID==null) {//hpf 2016 08 24 规避编辑时产生双击事件执行，修复需要在行上绑定编辑状态，而不是现在的datagrid上绑定
+                return;
+            }
             var dblClickRow = options.onDblClickRow;
             if (dblClickRow) {
                 if (typeof dblClickRow === 'function') {
                     index = that.tools.getNoChildDataIndex(index)
-                    if (that.isDom) data = $tr.data('initData') || that.tools.setDomData($tr)
-                    else data = that.data[index]
                     dblClickRow.call(that, data, index);
-
                 }
             }
         })
