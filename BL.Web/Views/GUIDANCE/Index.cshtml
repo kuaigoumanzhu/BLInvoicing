@@ -23,7 +23,7 @@
 
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
             }
@@ -33,7 +33,7 @@
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',
             addLocation: 'first',
-            dataUrl: '/GUIDANCE/GetAllGUIDANCEJson?FType=1',
+            dataUrl: '/GUIDANCE/GetAllGUIDANCEJson',
             dataType: 'json',
             filterThead: false,
             columns: [
@@ -103,7 +103,7 @@
                 }
             ],
             contextMenuB: true,
-            editUrl: '/GUIDANCE/EditCONSUMABLES?FType=1',
+            editUrl: '/GUIDANCE/EditGUIDANCE',
             editMode: 'inline',
             fullGrid: true,
             showLinenumber: true,

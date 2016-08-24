@@ -24,7 +24,7 @@ namespace BL.Web.Controllers
         CommonService common = new CommonService();
 
         DATADICTService dictService = new DATADICTService();
-        #region 采购入库主表
+        #region 采购退货主表
         public ActionResult Index()
         {
             return View();
@@ -40,10 +40,6 @@ namespace BL.Web.Controllers
             if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
             {
                 dic["FCode"] = Request.QueryString["FCode"];
-            }
-            if (!string.IsNullOrEmpty(Request.QueryString["FPERSONID"]))
-            {
-                dic["FPERSONID"] = Request.QueryString["FPERSONID"];
             }
             if (!string.IsNullOrEmpty(Request.QueryString["FStatus"]))
             {
@@ -61,7 +57,7 @@ namespace BL.Web.Controllers
         public string EditPURCHASEBACK(string json)
         {
 
-            int id = 6;
+            int id = 8;
 
             var models = JsonHelper.Instance.Deserialize<List<T_PURCHASEBACKModel>>(json);
             var model = models[0];
@@ -79,7 +75,7 @@ namespace BL.Web.Controllers
         }
         #endregion
 
-        #region 采购入库明细
+        #region 采购退货明细
         public ActionResult PURCHASEBACKDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_PURCHASEBACKModel>(rowData);

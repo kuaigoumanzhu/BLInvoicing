@@ -9,12 +9,12 @@
                 <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
             </tr>
             <tr>
-                <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
+                <td><label>摘要：</label><label id="fmemo">@Model.FAPPLYID</label></td>
                 <td></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
             </tr>
             <tr>
-                <td colspan="3"><label>摘要：</label><label id="fmemo">@Model.FAPPLYID</label></td>
+                <td colspan="3"></td>
             </tr>
         </tbody>
     </table>
@@ -47,13 +47,20 @@
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
+        var gysList;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
             }
         });
-        var gysList = LoadGYSDataForRowSel();
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetSupplierJson?FSTATUS=2",
+            callback: function (json) {
+                gysList = json;
+            }
+        });
+       // var gysList = LoadGYSDataForRowSel();
         var fstatus = '@Model.FSTATUS';
         PURCHASEBACKInDetailgrid = $("#tabPURCHASEBACKInDetail").datagrid({
             gridTitle: '采购退货登记明细',

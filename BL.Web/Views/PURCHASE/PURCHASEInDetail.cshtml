@@ -49,7 +49,7 @@
         var wareHouseLst;
         var gysList;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson?FSTATUS=2",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
             }
