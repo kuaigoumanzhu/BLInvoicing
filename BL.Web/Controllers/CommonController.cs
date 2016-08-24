@@ -26,6 +26,10 @@ namespace BL.Web.Controllers
             {
                 dic["FCATEGORY"] = Request.QueryString["FCATEGORY"];
             }
+            if (!string.IsNullOrEmpty(Request.QueryString["FSTATUS"]))
+            {
+                dic["FSTATUS"] = Request.QueryString["FSTATUS"];
+            }
             var result = commonService.GetWareHouseSelect(dic);
             StringBuilder sb = new StringBuilder();
             sb.Append("[");

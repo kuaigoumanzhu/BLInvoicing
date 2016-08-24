@@ -46,7 +46,7 @@
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FSTATUS=2",
             callback: function (json) {
                 wareHouseLst = json;
             }
