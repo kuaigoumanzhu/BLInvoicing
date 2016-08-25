@@ -7562,7 +7562,7 @@
                         that.$lockTableB && that.$lockTableB.initui()
                         
                         that.fixedHeight()
-                        
+                        that.$tbody.trigger("han.reload.loaded");//重绘完成
                         that.$boxM && that.$boxM.trigger('bjui.ajaxStop').hide()
                     }, datas.length + 1)
                 }
