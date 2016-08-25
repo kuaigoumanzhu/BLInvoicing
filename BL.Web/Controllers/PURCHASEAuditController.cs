@@ -170,7 +170,7 @@ namespace BL.Web.Controllers
             }
         }
 
-        public ActionResult selectOutGoods()
+        public ActionResult selectGoods()
         {
             IDictionary dic = new Hashtable();
 
@@ -178,7 +178,7 @@ namespace BL.Web.Controllers
             {
                 dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
             }
-            var lst = PURCHASEDetailsService.GetSelectOutGoods(dic);
+            var lst = PURCHASEDetailsService.GetSelectGoods(dic);
             ViewBag.list = lst;
             return View();
         }

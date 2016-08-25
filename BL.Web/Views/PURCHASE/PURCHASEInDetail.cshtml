@@ -163,7 +163,7 @@
             var btn = $(this).attr("id");
             switch (btn) {
                 case "btnAdd":
-                    Add();
+                    AddSelGoods();;
                     break;
                 case "btnSave":
                     datas = []
@@ -189,6 +189,65 @@
                 }
             });
         }
+        //var curFGUID = '@Model.FGUID';
+        function AddSelGoods() {
+            delete PURCHASEInDetailgrid.data("bjui.datagrid").options.dataUrl;
+            $(this).dialog({
+                id: 'PURCHASEInDetailgrid',
+                url: '/PURCHASE/selectGoods',
+                title: '选择商品',
+                width: 840,
+                mask: true,
+                beforeClose: function ($dialog) {
+                    datas = [];
+                    var $checked = $dialog.find('input[name="child"]:checked');
+                    if ($checked.length == 0)
+                        return true;
+                    console.log($checked.length);
+                    var currentDatas = PURCHASEInDetailgrid.data("bjui.datagrid").data;
+
+                    for (var i = 0, l = currentDatas.length; i < l; i++) {
+                        datas.push(currentDatas[i]);
+                    }
+                    var bol = false;
+                    var edits = [];
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            return true;
+                        }
+                        bol = true;
+                        delete goods.FGUID;
+                        //goods.FPARENTID = parentId;
+                        datas.push(goods);
+                        //ConsumablesOutDetailgrid.datagrid("add", 0, goods);
+                    });
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            edits.push(index);
+                        }
+                    });
+                    if ($checked.length > 0 && bol) {
+                        PURCHASEInDetailgrid.datagrid('reload', { local: 'local', data: datas });
+                    }
+                    PURCHASEInDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        for (var i = 0, l = edits.length; i < l; i++) {
+                            PURCHASEInDetailgrid.datagrid("doEditRow", edits[i]);
+                        }
+                    });
+
+                    //ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
+                    //datas.each(function (i) {
+                    //    ConsumablesOutDetailgrid.datagrid("doEditRow", i);
+                    //});
+                    //trClick();
+                    return true;
+                }
+            })
+        };
     });
 
     $(document).on('keypress', "#tabPURCHASEInDetail input", function (event) {
