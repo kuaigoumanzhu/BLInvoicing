@@ -101,18 +101,10 @@ where FGUID=@FGUID ";
                 return db.Execute(sql, new { FGUID = FGUID });
             }
         }
-        public IEnumerable<Object> GetSelectOutGoods(IDictionary paraDic)
+        public IEnumerable<Object> GetSelectGoods(IDictionary paraDic)
         {
-            string whereStr = " ";
             DynamicParameters dp = new DynamicParameters();
-            if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
-            {
-                whereStr += " and c.FWAREHOUSEID=@FWAREHOUSEID";
-                dp.Add("@FWAREHOUSEID", paraDic["FWAREHOUSEID"].ToString());
-
-            }
-            string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum from T_CONSUMABLES c
- inner join T_PURCHASEDETAILS d on c.FGUID=d.FPARENTID where c.FSTATUS='2' " + whereStr + "  group by c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT having SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end)>0";
+            string sqlstr = @"select FID,FNAME from T_goods where FSTATUS='2' and FISCONSUMABLES='0'";
 
             using (IDbConnection db = OpenConnection())
             {

@@ -737,6 +737,7 @@
     <None Include="Properties\PublishProfiles\ReleaseConfig.pubxml" />
     <Content Include="Views\GOODSALLOT\selectOutGoods.cshtml" />
     <Content Include="Views\RepertoryCheck\RepertoryCheckDetails.cshtml" />
+    <Content Include="Views\PURCHASE\selectGoods.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

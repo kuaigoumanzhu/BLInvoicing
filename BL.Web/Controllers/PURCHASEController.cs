@@ -170,15 +170,10 @@ namespace BL.Web.Controllers
             }
         }
 
-        public ActionResult selectOutGoods()
+        public ActionResult selectGoods()
         {
             IDictionary dic = new Hashtable();
-
-            if (!string.IsNullOrEmpty(Request.QueryString["FWAREHOUSEID"]))
-            {
-                dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
-            }
-            var lst = PURCHASEDetailsService.GetSelectOutGoods(dic);
+            var lst = PURCHASEDetailsService.GetSelectGoods(dic);
             ViewBag.list = lst;
             return View();
         }
