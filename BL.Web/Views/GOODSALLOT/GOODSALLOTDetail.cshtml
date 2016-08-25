@@ -5,8 +5,8 @@
             <tr><td colspan="3" style="text-align:center;">商品调拨单</td></tr>
             <tr>
                 <td><label>日期：</label><input type="text" id="date" value="@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")" data-toggle="datepicker" size="12" /></td>
-                <td><label>调出仓库：</label><label id="FOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
-                <td><label>调入仓库：</label><label id="FINWAREHOUSEID">@ViewBag.inWare&nbsp;</label></td>
+                <td><label>调出仓库：</label><label id="lblFOUTWAREHOUSEID">@ViewBag.outWare&nbsp;</label></td>
+                <td><label>调入仓库：</label><label id="lblFINWAREHOUSEID">@ViewBag.inWare&nbsp;</label></td>
             </tr>
             <tr>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
@@ -118,6 +118,7 @@
                 {
                     name: 'FPRICE',
                     label: '成本单价',
+                    add: false,
                     eidt: false,
                     align: 'center',
                     width: 80
@@ -125,6 +126,7 @@
                 {
                     name: 'FMONEY',
                     label: '成本金额',
+                    add: false,
                     eidt: false,
                     align: 'center',
                     width: 110
@@ -132,6 +134,7 @@
                 {
                     name: 'FMARKETPRICE',
                     label: '销售单价',
+                    add: false,
                     eidt: false,
                     align: 'center',
                     width: 110
@@ -139,6 +142,7 @@
                 {
                     name: 'FMARKETMONEY',
                     label: '销售金额',
+                    add: false,
                     eidt: false,
                     align: 'center',
                     calc: 'sum',
@@ -222,51 +226,120 @@
                 }
             });
         }
-    });
-    var curFGUID = '@Model.FGUID';
-    function Add() {
-        datas = [];
-        $(this).dialog({
-            id: 'GOODSALLOTOutDetail',
-            url: '/GOODSALLOT/selectOutGoods?FWAREHOUSEID=' + FOUTWAREHOUSEID + "&FGUID=" + curFGUID + "&FDATE=" + FDATE,
-            title: '选择商品',
-            width: 840,
-            mask: true,
-            beforeClose: function ($dialog) {
-                var $checked = $dialog.find('input[name="child"]:checked');
-                if ($checked.length == 0)
-                    return true;
-                $checked.each(function () {
-                    var goods = JSON.parse($(this).val());
-                    delete goods.FGUID;
-                    //delete goods.
-                    //goods.FPARENTID = parentId;
-                    datas.unshift(goods);
-                    GOODSALLOTInDetailgrid.datagrid("add", "last", goods);
-                });
-                GOODSALLOTInDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
-                $checked.each(function (i) {
-                    GOODSALLOTInDetailgrid.datagrid("doEditRow", i);
-                });
-                //trClick();
-                return true;
-            }
-        })
-    };
 
-    $(document).on('keypress', "#tabGOODSALLOTInDetail input", function (event) {
-        //改为只监听数字键
-        if (event.keyCode != "13")
-            return;
-        $(this).trigger("keyCodeEnter");
-        var trdata = $('#tabGOODSALLOTInDetail').data('selectedDatas');
-        alert(trdata.length);
-        if (trdata.length > 0) {
-            var differMoney = trdata[0].FMONEY / $(this).val();
-            GOODSALLOTInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
-            if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
-                $(trdata[0]).removeClass("datagrid-edit-tr");
-            GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+        var curFGUID = '@Model.FGUID';
+        function Add() {
+            datas = [];
+            $(this).dialog({
+                id: 'GOODSALLOTOutDetail',
+                url: '/GOODSALLOT/selectOutGoods?FWAREHOUSEID=' + FOUTWAREHOUSEID + '&FGUID=' + curFGUID + '&FDATE=' + FDATE,
+                title: '选择商品',
+                width: 840,
+                mask: true,
+                beforeClose: function ($dialog) {
+                    datas = [];
+                    var $checked = $dialog.find('input[name="child"]:checked');
+                    if ($checked.length == 0)
+                        return true;
+                    var currentDatas = GOODSALLOTInDetailgrid.data("bjui.datagrid").data;
+
+                    console.log(currentDatas);
+
+                    for (var i = 0, l = currentDatas.length; i < l; i++) {
+                        datas.push(currentDatas[i]);
+                    }
+                    var bol = false;
+                    var edits = [];
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            return true;
+                        }
+                        bol = true;
+                        delete goods.FGUID;
+                        //goods.FPARENTID = parentId;
+                        datas.push(goods);
+                        //ConsumablesOutDetailgrid.datagrid("add", 0, goods);
+                    });
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            edits.push(index);
+                        }
+                    });
+                    if ($checked.length > 0 && bol) {
+                        GOODSALLOTInDetailgrid.datagrid('reload', { local: 'local', data: datas });
+                    }
+                    GOODSALLOTInDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        for (var i = 0, l = edits.length; i < l; i++) {
+                            GOODSALLOTInDetailgrid.datagrid("doEditRow", edits[i]);
+                            trClick();
+                        }
+                    });
+                    //var $checked = $dialog.find('input[name="child"]:checked');
+                    //if ($checked.length == 0)
+                    //    return true;
+                    //$checked.each(function () {
+                    //    var goods = JSON.parse($(this).val());
+                    //    delete goods.FGUID;
+                    //    //delete goods.
+                    //    //goods.FPARENTID = parentId;
+                    //    datas.unshift(goods);
+                    //    GOODSALLOTInDetailgrid.datagrid("add", "last", goods);
+                    //});
+                    //GOODSALLOTInDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
+                    //$checked.each(function (i) {
+                    //    GOODSALLOTInDetailgrid.datagrid("doEditRow", i);
+                    //});
+                    //trClick();
+                    return true;
+                }
+            })
+        };
+
+        $(document).on('keypress', "#tabGOODSALLOTInDetail input", function (event) {
+            //改为只监听数字键
+            if (event.keyCode != "13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if (trdata != null) {
+                console.log(trdata);
+                if ($(this).attr("name") == "FQUANTITY" && $(this).val() != "") {
+                    var quant = $(this).val();
+                    GOODSALLOTInDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FQUANTITY": quant});
+                    if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
+                        clickTR.removeClass("datagrid-edit-tr");
+                    GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata.gridIndex);
+                    //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                    $($(GOODSALLOTInDetailgrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
+                }
+            }
+            //var trdata = $('#tabGOODSALLOTInDetail').data('selectedDatas');
+            //alert(trdata.length);
+            //if (trdata.length > 0) {
+            //    var differMoney = trdata[0].FMONEY / $(this).val();
+            //    GOODSALLOTInDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FMONEY": $(this).val(), "FPRICE": differMoney });
+            //    if (trdata[0] != null && $(trdata[0]).hasClass("datagrid-edit-tr"))
+            //        $(trdata[0]).removeClass("datagrid-edit-tr");
+            //    GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
+            //}
+        })
+        function trClick() {
+            var that = ConsumablesOutDetailgrid.data("bjui.datagrid");
+            that.$tbody.find('> tr').on('keyCodeEnter', function () {
+                trdata = that.data[$(this).index()];
+                clickTR = $(this);
+            });
         }
-    })
+        function toDecimal(x) {
+            var f = parseFloat(x);
+            if (isNaN(f))
+                return;
+            f = Math.round(x * 100) / 100;
+            return f;
+        }
+    });
+    
 </script>
