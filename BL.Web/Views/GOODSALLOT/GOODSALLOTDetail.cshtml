@@ -243,7 +243,6 @@
                         return true;
                     var currentDatas = GOODSALLOTInDetailgrid.data("bjui.datagrid").data;
 
-                    console.log(currentDatas);
 
                     for (var i = 0, l = currentDatas.length; i < l; i++) {
                         datas.push(currentDatas[i]);
@@ -273,6 +272,7 @@
                         GOODSALLOTInDetailgrid.datagrid('reload', { local: 'local', data: datas });
                     }
                     GOODSALLOTInDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        console.log(edits.length);
                         for (var i = 0, l = edits.length; i < l; i++) {
                             GOODSALLOTInDetailgrid.datagrid("doEditRow", edits[i]);
                             trClick();
@@ -308,7 +308,7 @@
                 console.log(trdata);
                 if ($(this).attr("name") == "FQUANTITY" && $(this).val() != "") {
                     var quant = $(this).val();
-                    GOODSALLOTInDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FQUANTITY": quant});
+                    GOODSALLOTInDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FQUANTITY": quant, "FPRICE": trdata.FPRICE, "FMONEY": toDecimal(parseFloat(quant) * parseFloat(trdata.FPRICE)), "FMARKETPRICE": trdata.FMARKETPRICE, "FMARKETMONEY": toDecimal(parseFloat(quant) * parseFloat(trdata.FMARKETPRICE)) });
                     if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
                         clickTR.removeClass("datagrid-edit-tr");
                     GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata.gridIndex);
@@ -326,8 +326,10 @@
             //    GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
             //}
         })
+        var trdata = null;
+        var clickTR = null;
         function trClick() {
-            var that = ConsumablesOutDetailgrid.data("bjui.datagrid");
+            var that = GOODSALLOTInDetailgrid.data("bjui.datagrid");
             that.$tbody.find('> tr').on('keyCodeEnter', function () {
                 trdata = that.data[$(this).index()];
                 clickTR = $(this);
