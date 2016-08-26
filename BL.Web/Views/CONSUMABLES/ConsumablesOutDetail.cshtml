@@ -105,6 +105,7 @@
                     label: '数量',
                     align: 'center',
                     rule: 'digits',
+                    messages:'required',
                     width: 80
                 },
                 {
@@ -112,6 +113,7 @@
                     label: '金额',
                     rule: 'number',
                     align: 'center',
+                    messages: 'required',
                     calc: 'sum',
                     calcTit: '金额合计',
                     width: 110
@@ -120,6 +122,7 @@
                     name: 'FPRICE',
                     label: '单价',
                     rule: 'number',
+                    messages: 'required',
                     align: 'center',
                     eidt:false,
                     width: 110
@@ -234,7 +237,8 @@
                             trClick();
                         }
                     });
-                    
+
+                    $(document).off('keypress', "#tabGOODSALLOTInDetail input");
                     //ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
                     //datas.each(function (i) {
                     //    ConsumablesOutDetailgrid.datagrid("doEditRow", i);
