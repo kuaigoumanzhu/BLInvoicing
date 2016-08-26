@@ -229,7 +229,7 @@
 
         var curFGUID = '@Model.FGUID';
         function Add() {
-            datas = [];
+            delete GOODSALLOTInDetailgrid.data("bjui.datagrid").options.dataUrl;
             $(this).dialog({
                 id: 'GOODSALLOTOutDetail',
                 url: '/GOODSALLOT/selectOutGoods?FWAREHOUSEID=' + FOUTWAREHOUSEID + '&FGUID=' + curFGUID + '&FDATE=' + FDATE,
