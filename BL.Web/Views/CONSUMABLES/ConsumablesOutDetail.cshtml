@@ -108,19 +108,20 @@
                     width: 80
                 },
                 {
-                    name: 'FPRICE',
-                    label: '单价',
-                    rule: 'number',
-                    align: 'center',
-                    width: 110
-                },
-                {
                     name: 'FMONEY',
                     label: '金额',
                     rule: 'number',
                     align: 'center',
                     calc: 'sum',
                     calcTit: '金额合计',
+                    width: 110
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    rule: 'number',
+                    align: 'center',
+                    eidt:false,
                     width: 110
                 },
                 {
@@ -230,6 +231,7 @@
                     ConsumablesOutDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
                         for (var i = 0, l = edits.length; i < l; i++) {
                             ConsumablesOutDetailgrid.datagrid("doEditRow", edits[i]);
+                            trClick();
                         }
                     });
                     
@@ -242,6 +244,41 @@
                 }
             })
         };
+        var trdata = null;
+        var clickTR = null;
+        $(document).on('keypress', "#tabConsumablesOutDetail input", function (event) {
+            //改为只监听数字键
+            if (event.keyCode != "13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if (trdata != null) {
+                if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
+                    var quant = $(this).parent().prev().find("input").val();
+                    var money = $(this).val();
+                    ConsumablesOutDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FMONEY": $(this).val(), "FQUANTITY": quant, "FPRICE": toDecimal(parseFloat(money) / parseFloat(quant)) });
+                    if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
+                        clickTR.removeClass("datagrid-edit-tr");
+                    ConsumablesOutDetailgrid.datagrid("doEditRow", trdata.gridIndex);
+                    //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                    $($(ConsumablesOutDetailgrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
+                }
+            }
+        })
+        function trClick() {
+            var that = ConsumablesOutDetailgrid.data("bjui.datagrid");
+            //console.log(that.$tbody.find('> tr').length);
+            that.$tbody.find('> tr').on('keyCodeEnter', function () {
+                trdata = that.data[$(this).index()];
+                clickTR = $(this);
+            });
+        }
+        function toDecimal(x) {
+            var f = parseFloat(x);
+            if (isNaN(f))
+                return;
+            f = Math.round(x * 100) / 100;
+            return f;
+        }
     });
     
    
