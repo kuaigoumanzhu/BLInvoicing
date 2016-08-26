@@ -146,20 +146,28 @@
         var datas=[];
         var trdata=null;
         var clickTR=null;
-        var parentId=$("#GBDparentId").val();
-        $(document).on("keypress","#goodsBackDetailCode",function(event){
-            if(event.keyCode=="13"){
-                var allData=goodsBackDetailGrid.data("bjui.datagrid").data;
+        var parentId = $("#GBDparentId").val();
+        $(document).off("keypress", "#goodsBackDetailCode");
+        $(document).on("keypress", "#goodsBackDetailCode", function (event) {
+            if (event.keyCode == "13") {
+                var grid = $("#tabGoodsBackDetails");
+                var allData = grid.data("bjui.datagrid").data;
+                var barCode = $("#goodsBackDetailCode").val().split(" ");
+                if (barCode.length != 4) {
+
+                    return false;
+                }
+                var goodsId = barCode[1];
                 var index=$.IndexOf($("#goodsBackDetailCode").val(),allData,"FBARCODE");
                 var rowData=allData[index];
                 var rindex=rowData.gridIndex;
                 var quantity=rowData.FACTUALQUANTITY+1;
-                var differQuantity=rowData.FQUANTITY-quantity;
+                var differQuantity = toDecimal(rowData.FQUANTITY - quantity);
                 var differMoney=toDecimal(differQuantity*rowData.FPRICE);
-                goodsBackDetailGrid.datagrid("updateRow", rindex,{"FACTUALQUANTITY":quantity,"FDIFFERQUANTITY":differQuantity,"FDIFFERMONEY":differMoney});  
+                grid.datagrid("updateRow", rindex, { "FACTUALQUANTITY": quantity, "FDIFFERQUANTITY": differQuantity, "FDIFFERMONEY": differMoney });
                 var ths = $("div.datagrid-box-f").find("table").find("th");
                 var sumMoney=0;
-                var newData=goodsBackDetailGrid.data("bjui.datagrid").data;
+                var newData = grid.data("bjui.datagrid").data;
                 for(var i=0,l=newData.length;i<l;i++){
                     console.log(newData[i]);
                     sumMoney+=newData[i].FDIFFERMONEY;

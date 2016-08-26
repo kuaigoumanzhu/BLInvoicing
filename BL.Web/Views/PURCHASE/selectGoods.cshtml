@@ -25,8 +25,8 @@
                     Newtonsoft.Json.Linq.JObject jarray = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(Json);
                     <tr>
                         <td>@i</td>
-                        <td>@jarray["FGOODSID"]</td>
-                        <td>@jarray["FGOODSNAME"]</td>
+                        <td>@jarray["FID"]</td>
+                        <td>@jarray["FNAME"]</td>
                         <td>@jarray["FUNIT"]</td>
                         <td><input type="checkbox" name="child" data-toggle="icheck" value="@Json"></td>
                     </tr>

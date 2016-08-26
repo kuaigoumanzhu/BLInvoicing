@@ -65,10 +65,11 @@
         PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
             gridTitle: '采购入库登记明细',
             toolbarCustom:
+           (fstatus=='2'?'':'<button type="button" id="btnPurGoodAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnPurGoodSave" data-icon="save" class="btn btn-default">保存</button>') +
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
            '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
-            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
+            toolbarItem: (fstatus == '2' ? '' : 'del'),
             addLocation: 'first',
             dataUrl: '/PURCHASE/GetAllPURCHASEDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',
@@ -159,13 +160,13 @@
         })
         var outWare = '@Model.FWAREHOUSEID';
 
-        $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
+        $(document).on("click", "#btnPurGoodAdd,#btnPurGoodSave,#btnDel", function () {
             var btn = $(this).attr("id");
             switch (btn) {
-                case "btnAdd":
+                case "btnPurGoodAdd":
                     AddSelGoods();;
                     break;
-                case "btnSave":
+                case "btnPurGoodSave":
                     datas = []
                     PURCHASEInDetailgrid.datagrid("doSaveEditRow");
                     break;
@@ -213,7 +214,7 @@
                     var edits = [];
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        var index = $.IndexOf(goods.FID, datas, "FID");
                         if (index != -1) {
                             return true;
                         }
@@ -225,7 +226,7 @@
                     });
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        var index = $.IndexOf(goods.FID, datas, "FID");
                         if (index != -1) {
                             edits.push(index);
                         }
