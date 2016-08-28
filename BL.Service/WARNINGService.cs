@@ -20,7 +20,7 @@ namespace BL.Service
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<T_DATADICTModel> GetWarningInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
+        public IEnumerable<T_WARNINGModel> GetWarningInfo(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
             using (IDbConnection db = OpenConnection())
             {
@@ -46,7 +46,7 @@ namespace BL.Service
                 dp.Add("@PageIndex", pageIndex);
                 var result = db.QueryMultiple("sp_SplitPage_GetList", dp, null, null, CommandType.StoredProcedure);
                 var resultPage = result.Read<Int32>();
-                var resultGrid = result.Read<T_DATADICTModel>();
+                var resultGrid = result.Read<T_WARNINGModel>();
                 totalPage = resultPage.First();
                 return resultGrid;
             }
@@ -58,10 +58,13 @@ namespace BL.Service
             {
                 //开始事务
                 var trans = db.BeginTransaction();
-                var rows = db.Execute("delete from T_WARNING ",null, trans);
+                //var rows = db.Execute("delete from T_WARNING ",null, trans);
+                string sql = "delete from T_WARNING;";
+                sql += "insert into T_WARNING (FGUID,FCREATEID,FCREATETIME,FWAREHOUSEID,FGOODSID,FGOODSNAME,FENDTIME) select NEWID(),@FCREATEID,@FCREATETIME,FINWAREHOUSEID,FGOODSID,FGOODSNAME,(select max(FDATE) from T_SALEDAYBOOK where FPARENTID=T_REPERTORYCHILD.FGUID) from T_REPERTORYCHILD where FSURPLUS=0";
+                var rows = db.Execute(sql, new { FCREATEID = model.FCREATEID, FCREATETIME = model.FCREATETIME }, trans);
                 if (rows > 0)
                 {
-                    rows = db.Execute("insert into T_WARNING (FGUID,FCREATEID,FCREATETIME,FWAREHOUSEID,FGOODSID,FGOODSNAME,FENDTIME) select NEWID(),@FCREATEID,@FCREATETIME,FINWAREHOUSEID,FGOODSID,FGOODSNAME,(select max(FDATE) from T_SALEDAYBOOK where FPARENTID=T_REPERTORYCHILD.FGUID) from T_REPERTORYCHILD where FSURPLUS=0", new { FCREATEID = model.FCREATEID, FCREATETIME = model.FCREATETIME }, trans);
+                    
                     if (rows > 0) 
                         trans.Commit();
                     else

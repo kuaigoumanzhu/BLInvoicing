@@ -174,7 +174,7 @@ where FGUID=@FGUID ";
       ,[FMEMO])
       select
       a.FCREATEID,
-      a.FCREATETIME,
+      getdate(),
       a.FCODE,
       b.FSUPPLIERID,
       a.FWAREHOUSEID,

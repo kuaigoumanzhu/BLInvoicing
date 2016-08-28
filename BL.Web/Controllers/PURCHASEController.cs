@@ -96,7 +96,7 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(PURCHASEDetailsService.AddPURCHASEDETAILS(model));
+            return JsonHelper.Instance.Serialize(PURCHASEDetailsService.AddPURCHASEDETAILS(models));
 
         }
 

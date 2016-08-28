@@ -9,9 +9,10 @@
         <thead>
             <tr>
                 <th data-order-field="id">No.</th>
-                <th data-order-field="FID">商品编号</th>
-                <th data-order-field="FNAME">商品名称</th>
+                <th data-order-field="FGOODSID">商品编号</th>
+                <th data-order-field="FGOODSNAME">商品名称</th>
                 <th data-order-field="FUNIT">计量单位</th>
+                <th data-order-field="FCALCTYPE">计量方式</th>
                 <th width="28"><input type="checkbox" class="checkboxCtrl" data-group="child" data-toggle="icheck"></th>
             </tr>
         </thead>
@@ -25,9 +26,10 @@
                     Newtonsoft.Json.Linq.JObject jarray = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(Json);
                     <tr>
                         <td>@i</td>
-                        <td>@jarray["FID"]</td>
-                        <td>@jarray["FNAME"]</td>
+                        <td>@jarray["FGOODSID"]</td>
+                        <td>@jarray["FGOODSNAME"]</td>
                         <td>@jarray["FUNIT"]</td>
+                        <td>@jarray["FCALCTYPE"]</td>
                         <td><input type="checkbox" name="child" data-toggle="icheck" value="@Json"></td>
                     </tr>
                 }

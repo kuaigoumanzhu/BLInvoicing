@@ -51,7 +51,7 @@ namespace BL.Web.Controllers
             }
             else
             {
-                dic["FStatus"] = "1";
+                dic["FStatus"] = "2";
             }
             int totalPage = 0;
             var lst = PURCHASEService.GetAllPURCHASEInfo(dic, ref totalPage, pageCurrent, pageSize);

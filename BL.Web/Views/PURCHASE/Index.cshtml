@@ -18,8 +18,8 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/PURCHASE/GetAllPURCHASEJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/PURCHASE/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
 
@@ -37,7 +37,7 @@
                 personlst = json;
             }
         });
-        maingrid = $("#tabPURCHASE").datagrid({
+        maingrid = $.CurrentNavtab.find("#tabPURCHASE").datagrid({
             gridTitle: '采购入库登记列表',
             showToolbar: true,
             toolbarItem: 'add,save,|,cancel',

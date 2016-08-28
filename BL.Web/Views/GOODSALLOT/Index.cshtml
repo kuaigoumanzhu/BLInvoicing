@@ -16,8 +16,8 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/GOODSALLOT/GetAllGOODSALLOTJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/GOODSALLOT/GetAllGOODSALLOTJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
             GOODSALLOTmaingrid.datagrid("reload", { dataUrl: url });
         });
 
@@ -57,6 +57,7 @@
                     label: '日期',
                     type: 'date',
                     align: 'center',
+                    rule:'required',
                     width: 110,
                     pattern: 'yyyy-MM-dd'
                 },

@@ -36,6 +36,10 @@ namespace BL.Models
         /// </summary>
         public string FUNIT { get; set; }
         /// <summary>
+        /// 计量方式
+        /// </summary>
+        public string FCALCTYPE { get; set; }
+        /// <summary>
         /// 数量
         /// </summary>
         public decimal? FQUANTITY { get; set; }

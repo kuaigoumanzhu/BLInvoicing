@@ -106,6 +106,12 @@
                     width: 80
                 },
                 {
+                    name: 'FCALCTYPE',
+                    label: '计量方式',
+                    align: 'center',
+                    width: 80
+                },
+                {
                     name: 'FQUANTITY',
                     label: '数量',
                     align: 'center',
@@ -214,7 +220,7 @@
                     var edits = [];
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FID, datas, "FID");
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
                         if (index != -1) {
                             return true;
                         }
@@ -226,7 +232,7 @@
                     });
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FID, datas, "FID");
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
                         if (index != -1) {
                             edits.push(index);
                         }

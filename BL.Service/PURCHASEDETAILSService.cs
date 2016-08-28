@@ -67,7 +67,46 @@ namespace BL.Service
                 }
             }
         }
+        public bool AddPURCHASEDETAILS(List<T_PURCHASEDETAILSModel> list)
+        {
 
+            string sql = "";
+            var model = list[0];
+            DynamicParameters dp = new DynamicParameters();
+            for (int i = 0; i < list.Count(); i++)
+            {
+                sql += @"insert into  T_PURCHASEDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FCALCTYPE, FQUANTITY, FMONEY, FPRICE, FSUPPLIERID, FMEMO
+) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FCALCTYPE" + i + ", @FQUANTITY" + i + ", @FMONEY" + i + ",@FPRICE" + i + ", @FSUPPLIERID" + i + ", @FMEMO" + i + ");";
+                dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
+                dp.Add("@FCREATEID" + i, list[0].FCREATEID);
+                dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
+                dp.Add("@FPARENTID" + i, list[0].FPARENTID);
+                dp.Add("@FGOODSID" + i, list[i].FGOODSID);
+                dp.Add("@FGOODSNAME" + i, list[i].FGOODSNAME);
+                dp.Add("@FUNIT" + i, list[i].FUNIT);
+                dp.Add("@FCALCTYPE" + i, list[i].FCALCTYPE);
+                dp.Add("@FQUANTITY" + i, list[i].FQUANTITY);
+                dp.Add("@FPRICE" + i, list[i].FPRICE);
+                dp.Add("@FMONEY" + i, list[i].FMONEY);
+                dp.Add("@FSUPPLIERID" + i, list[i].FSUPPLIERID);
+                dp.Add("@FMEMO" + i, list[i].FMEMO);
+
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, dp, trans) > 0)
+                {
+                    trans.Commit();
+                    return true;
+                }
+                else
+                {
+                    trans.Rollback();
+                    return false;
+                }
+            }
+        }
         public T_PURCHASEDETAILSModel EditPURCHASEDETAILS(T_PURCHASEDETAILSModel model)
         {
 
@@ -104,7 +143,7 @@ where FGUID=@FGUID ";
         public IEnumerable<Object> GetSelectGoods(IDictionary paraDic)
         {
             DynamicParameters dp = new DynamicParameters();
-            string sqlstr = @"select FID,FNAME,FUNIT from T_goods where FSTATUS='2' and FISCONSUMABLES='0'";
+            string sqlstr = @"select FID as FGOODSID,FNAME as FGOODSNAME,FUNIT,FCALCTYPE from T_goods where FSTATUS='2' and FISCONSUMABLES='0'";
 
             using (IDbConnection db = OpenConnection())
             {
