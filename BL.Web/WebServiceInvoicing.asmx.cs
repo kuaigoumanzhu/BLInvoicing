@@ -53,12 +53,12 @@ namespace BL.Web
         /// 获取所有会员信息
         /// </summary>
         /// <returns></returns>s
-        [WebMethod]
-        public List<T_VIPINFOModel> GetMemberInfo()
-        {
-            IDictionary dic = new Hashtable();
-            return vipInfoService.GetVIPINFOInfo(dic).ToList();
-        }
+        //[WebMethod]
+        //public List<T_VIPINFOModel> GetMemberInfo()
+        //{
+        //    IDictionary dic = new Hashtable();
+        //    return vipInfoService.GetVIPINFOInfo(dic).ToList();
+        //}
         /// <summary>
         /// 获取所有场所信息
         /// </summary>
