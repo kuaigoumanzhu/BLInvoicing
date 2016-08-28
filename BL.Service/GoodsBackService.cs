@@ -79,7 +79,7 @@ namespace BL.Service
         /// <returns></returns>
         public IEnumerable<T_GOODSBACKDETAILSModel> GetAllGoodsBackDetailsInfo(string parentId,string inWareHouse, string wareHouse)
         {
-            string sql = "select * from T_GOODSBACKDETAILS where FPARENTID=@parentId";
+            string sql = "select * from T_GOODSBACK where FGUID=@parentId";
             string sqlWareHouse = @"select min(FOUTWAREHOUSEID) as FOUTWAREHOUSEID,min(FINWAREHOUSEID) FINWAREHOUSEID,min(FBARCODE) as FBARCODE,
             min(FGOODSID) as FGOODSID,min(FGOODSNAME) as FGOODSNAME,min(FUNIT) as FUNIT,SUM(FQUANTITY) as FQUANTITY,SUM(FSURPLUS) as FSURPLUS,
             SUM(FENABLE) as FENABLE,min(FPRICE) as FPRICE,
@@ -87,25 +87,33 @@ namespace BL.Service
             from T_REPERTORYCHILD c with(nolock) where FINWAREHOUSEID=@inWareHouse group by FBARCODE";
             using (IDbConnection db = OpenConnection())
             {
-                var goodsWareHouse = db.Query<T_REPERTORYCHILDModel>(sqlWareHouse, new { inWareHouse = inWareHouse,wareHouse=wareHouse });
-                IList<T_GOODSBACKDETAILSModel> details = new List<T_GOODSBACKDETAILSModel>();
-                foreach(var model in goodsWareHouse)
+                var goodsBack = db.QuerySingle<T_GOODSBACKModel>(sql, new { parentId = parentId });
+                if (goodsBack.FSTATUS != "1")
                 {
-                    T_GOODSBACKDETAILSModel detail = new T_GOODSBACKDETAILSModel();
-                    detail.FACTUALQUANTITY = 0;
-                    detail.FBARCODE = model.FBARCODE;
-                    detail.FBATCH = model.FBATCH;
-                    detail.FDIFFERMONEY = float.Parse((model.FSURPLUS*model.FPRICE).ToString("f2"));//差异金额
-                    detail.FDIFFERQUANTITY = model.FSURPLUS;//差异数量
-                    detail.FGOODSID = model.FGOODSID;
-                    detail.FGOODSNAME = model.FGOODSNAME;
-                    detail.FMARKETPRICE = model.FMARKETPRICE;//销售单价
-                    detail.FPRICE = model.FPRICE;//单价
-                    detail.FQUANTITY = model.FSURPLUS;//账存数量，剩余数量
-                    detail.FUNIT = model.FUNIT;//单位
-                    details.Add(detail);
+                    return db.Query<T_GOODSBACKDETAILSModel>("select * from T_GOODSBACKDETAILS where FPARENTID=@parentId", new { parentId = parentId });
                 }
-                return details;
+                else
+                {
+                    var goodsWareHouse = db.Query<T_REPERTORYCHILDModel>(sqlWareHouse, new { inWareHouse = inWareHouse, wareHouse = wareHouse });
+                    IList<T_GOODSBACKDETAILSModel> details = new List<T_GOODSBACKDETAILSModel>();
+                    foreach (var model in goodsWareHouse)
+                    {
+                        T_GOODSBACKDETAILSModel detail = new T_GOODSBACKDETAILSModel();
+                        detail.FACTUALQUANTITY = 0;
+                        detail.FBARCODE = model.FBARCODE;
+                        detail.FBATCH = model.FBATCH;
+                        detail.FDIFFERMONEY = float.Parse((model.FSURPLUS * model.FPRICE).ToString("f2"));//差异金额
+                        detail.FDIFFERQUANTITY = model.FSURPLUS;//差异数量
+                        detail.FGOODSID = model.FGOODSID;
+                        detail.FGOODSNAME = model.FGOODSNAME;
+                        detail.FMARKETPRICE = model.FMARKETPRICE;//销售单价
+                        detail.FPRICE = model.FPRICE;//单价
+                        detail.FQUANTITY = model.FSURPLUS;//账存数量，剩余数量
+                        detail.FUNIT = model.FUNIT;//单位
+                        details.Add(detail);
+                    }
+                    return details;
+                }
                 //return db.Query<T_GOODSBACKDETAILSModel>(sql, new { parentId = parentId });
             }
         }
@@ -129,11 +137,24 @@ namespace BL.Service
                 IDbTransaction transaction = db.BeginTransaction();
                 try
                 {
+                    var goodsBack=db.QuerySingle<T_GOODSBACKModel>("select * from T_GOODSBACK where FGUID=@parentId", new { parentId = parentId }, transaction);
+                    if(goodsBack.FSTATUS=="2")
+                    {
+                        //transaction.Rollback();
+                        throw new Exception("已经提交无法再保存！");
+                    }
+                    else if(goodsBack.FSTATUS=="3")
+                    {
+                        //transaction.Rollback();
+                        throw new Exception("已经保存无法再保存！");
+                    }
+
                     foreach(var model in lst)
                     {
                         model.FGUID = Guid.NewGuid().ToString();
                         model.FCREATEID = userId;
                         model.FCREATETIME = now;
+                        model.FPARENTID = parentId;
                         db.Execute(sql, model, transaction);
                         models.Add(db.QuerySingle<T_GOODSBACKDETAILSModel>(getsql, new { FGUID = model.FGUID },transaction));
                         //获取分仓库存可用数量
@@ -147,7 +168,7 @@ namespace BL.Service
                                 number = childModel.FENABLE - fenables;
                                 if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = number, FENABLE = childModel.FENABLE, FGUID=childModel.FGUID }, transaction) <= 0)
                                 {
-                                    transaction.Rollback();
+                                    //transaction.Rollback();
                                     throw new Exception("可用数量已被其他人修改过！请重新保存");
                                 }
                             }
@@ -156,7 +177,7 @@ namespace BL.Service
                                 fenables = fenables - childModel.FENABLE;//总数减去当前批次可用数量
                                 if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = 0, FENABLE = childModel.FENABLE, FGUID = childModel.FGUID }, transaction) <= 0)
                                 {
-                                    transaction.Rollback();
+                                    //transaction.Rollback();
                                     throw new Exception("可用数量已被其他人修改过！请重新保存");
                                 }
                             }

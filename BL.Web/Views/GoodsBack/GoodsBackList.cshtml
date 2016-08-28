@@ -126,7 +126,7 @@
             inlineEditMult: false,
             onDblClickRow: function (rowData, index) {
                 var outWare = $(this).GetSelectText(wareHouseLst, rowData.FOUTWAREHOUSEID);
-                var inWare = $(this).GetSelectText(wareHouseLst, rowData.FINWAREHOUSEID);
+                var inWare = $(this).GetSelectText(inWareHouseLst, rowData.FINWAREHOUSEID);
                 var jsonStr = JSON.stringify(rowData);
                 $(this).navtab({
                     id: 'goodsBackDetails', url: '/GoodsBack/GoodBackDetails', title: '商品回库明细',
