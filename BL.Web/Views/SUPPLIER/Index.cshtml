@@ -62,7 +62,7 @@
         LoadGYSCategory("selGYSCategory");
         var itemsData_sf = LoadProvinceDataForRowSel();
         console.log(itemsData_sf);
-        var itemsData_gyslb = LoadDataForRowSel();
+        var itemsData_gyslb = LoadGYSDataForRowSel();
 
         SUPPLIERmaingrid = $("#tabSUPPLIER").datagrid({
             gridTitle: '供应商维护',
@@ -103,7 +103,7 @@
                     width: 80
                 },
                 {
-                    name: 'FNAME',
+                    name: 'FTEL',
                     label: '电话',
                     align: 'center',
                     width: 80

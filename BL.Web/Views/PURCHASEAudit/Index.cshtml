@@ -8,8 +8,8 @@
     <input type="text" id="txtPerson_conIn" size="15" />
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
-        <option value="1" selected="selected">未提交</option>
-        <option value="2">已提交</option>
+        <option value="4" selected="selected">退回</option>
+        <option value="3">通过</option>
     </select>
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
@@ -18,8 +18,8 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/PURCHASEAudit/GetAllPURCHASEJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/PURCHASEAudit/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
 
@@ -30,7 +30,7 @@
                 wareHouseLst = json;
             }
         });
-        maingrid = $("#tabPURCHASEAudit").datagrid({
+        maingrid = $.CurrentNavtab.find("#tabPURCHASEAudit").datagrid({
             gridTitle: '采购入库审核',
             showToolbar: true,
             addLocation: 'first',

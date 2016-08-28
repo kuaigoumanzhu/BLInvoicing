@@ -16,8 +16,8 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btnSearch").click(function () {
-            var url = '/PURCHASEBACK/GetAllPURCHASEBACKJson?FDate=' + $("#startdateTime").val() + "&FCode=" + $("#txtNo").val() + "&FStatus=" + $("#selState").val();
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/PURCHASEBACK/GetAllPURCHASEBACKJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
 
