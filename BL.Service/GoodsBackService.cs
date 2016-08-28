@@ -272,7 +272,7 @@ namespace BL.Service
                         }
                         var zs = model.FACTUALQUANTITY;
                         var synumber = 0f;
-                        var kcModels = db.Query<T_REPERTORYModel>(repertorysql, new { FGOODSID = model.FGOODSID });
+                        var kcModels = db.Query<T_REPERTORYModel>(repertorysql, new { FGOODSID = model.FGOODSID },transaction);
                         foreach(var kcModel in kcModels)
                         {
                             if ((float)kcModel.FSURPLUS >= zs)//如果可用数量大于实际总数直接减去
