@@ -24,10 +24,6 @@ namespace BL.Service
             {
                 whereStr += string.Format(" and FCode like '%{0}%'", paraDic["FCode"].ToString());
             }
-            if (paraDic.Contains("FPERSONID") && paraDic["FPERSONID"].ToString().Trim() != "")
-            {
-                whereStr += string.Format(" and FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
-            }
             if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
             {
                 whereStr += string.Format(" and FSTATUS='{0}'", paraDic["FStatus"].ToString());
@@ -53,8 +49,8 @@ namespace BL.Service
         public T_PURCHASEBACKModel AddPURCHASEBACK(T_PURCHASEBACKModel model)
         {
 
-            string sql = @"insert into  T_PURCHASEBACK(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME,FCHECKID,FCHECKTIME
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME, @FCHECKID, @FCHECKTIME
+            string sql = @"insert into  T_PURCHASEBACK(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FDATE, @FNUMBER, @FCODE, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME
 )";
             using (IDbConnection db = OpenConnection())
             {

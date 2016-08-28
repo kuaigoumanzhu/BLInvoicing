@@ -23,7 +23,7 @@
 
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
             }
@@ -71,13 +71,6 @@
                     width: 80,
                     render: $.datagrid.renderItem
                 },
-                 {
-                     name: 'FPERSONID',
-                     label: '采购人',
-                     align: 'center',
-                     width: 80,
-                     render: $.datagrid.renderItem
-                 },
                 {
                     name: 'FMEMO',
                     label: '摘要',

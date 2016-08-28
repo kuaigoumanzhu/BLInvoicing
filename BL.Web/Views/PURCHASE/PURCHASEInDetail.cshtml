@@ -47,21 +47,29 @@
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
+        var gysList;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FCATEGORY=1",
             callback: function (json) {
                 wareHouseLst = json;
             }
         });
-        var gysList = LoadGYSDataForRowSel();
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetSupplierJson?FSTATUS=2",
+            callback: function (json) {
+                gysList = json;
+            }
+        });
+        //var gysList = LoadGYSDataForRowSel();
         var fstatus='@Model.FSTATUS';
         PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
             gridTitle: '采购入库登记明细',
             toolbarCustom:
+           (fstatus=='2'?'':'<button type="button" id="btnPurGoodAdd" data-icon="plus" class="btn btn-blue">添加</button><button type="button" id="btnPurGoodSave" data-icon="save" class="btn btn-default">保存</button>') +
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
            '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '2' ?'':'<button type="button" id="applay" class="btn btn-red">提交</button>'),
             showToolbar: true,
-            toolbarItem: (fstatus == '2' ? '' : 'add,save,|,cancel,del'),
+            toolbarItem: (fstatus == '2' ? '' : 'del'),
             addLocation: 'first',
             dataUrl: '/PURCHASE/GetAllPURCHASEDetailJson?FPARENTID=' + fparentId,
             dataType: 'json',
@@ -152,13 +160,13 @@
         })
         var outWare = '@Model.FWAREHOUSEID';
 
-        $(document).on("click", "#btnAdd,#btnSave,#btnDel", function () {
+        $(document).on("click", "#btnPurGoodAdd,#btnPurGoodSave,#btnDel", function () {
             var btn = $(this).attr("id");
             switch (btn) {
-                case "btnAdd":
-                    Add();
+                case "btnPurGoodAdd":
+                    AddSelGoods();;
                     break;
-                case "btnSave":
+                case "btnPurGoodSave":
                     datas = []
                     PURCHASEInDetailgrid.datagrid("doSaveEditRow");
                     break;
@@ -182,6 +190,65 @@
                 }
             });
         }
+        //var curFGUID = '@Model.FGUID';
+        function AddSelGoods() {
+            delete PURCHASEInDetailgrid.data("bjui.datagrid").options.dataUrl;
+            $(this).dialog({
+                id: 'PURCHASEInDetailgrid',
+                url: '/PURCHASE/selectGoods',
+                title: '选择商品',
+                width: 840,
+                mask: true,
+                beforeClose: function ($dialog) {
+                    datas = [];
+                    var $checked = $dialog.find('input[name="child"]:checked');
+                    if ($checked.length == 0)
+                        return true;
+                    console.log($checked.length);
+                    var currentDatas = PURCHASEInDetailgrid.data("bjui.datagrid").data;
+
+                    for (var i = 0, l = currentDatas.length; i < l; i++) {
+                        datas.push(currentDatas[i]);
+                    }
+                    var bol = false;
+                    var edits = [];
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FID, datas, "FID");
+                        if (index != -1) {
+                            return true;
+                        }
+                        bol = true;
+                        delete goods.FGUID;
+                        //goods.FPARENTID = parentId;
+                        datas.push(goods);
+                        //ConsumablesOutDetailgrid.datagrid("add", 0, goods);
+                    });
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FID, datas, "FID");
+                        if (index != -1) {
+                            edits.push(index);
+                        }
+                    });
+                    if ($checked.length > 0 && bol) {
+                        PURCHASEInDetailgrid.datagrid('reload', { local: 'local', data: datas });
+                    }
+                    PURCHASEInDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        for (var i = 0, l = edits.length; i < l; i++) {
+                            PURCHASEInDetailgrid.datagrid("doEditRow", edits[i]);
+                        }
+                    });
+
+                    //ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
+                    //datas.each(function (i) {
+                    //    ConsumablesOutDetailgrid.datagrid("doEditRow", i);
+                    //});
+                    //trClick();
+                    return true;
+                }
+            })
+        };
     });
 
     $(document).on('keypress', "#tabPURCHASEInDetail input", function (event) {

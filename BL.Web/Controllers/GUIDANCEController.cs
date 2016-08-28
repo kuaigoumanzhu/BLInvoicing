@@ -21,7 +21,7 @@ namespace BL.Web.Controllers
         GUIDANCEDETAILSService GUIDANCEDetailsService = new GUIDANCEDETAILSService();
         GoodsService goodsService = new GoodsService();
         CommonService common = new CommonService();
-        #region 消耗品入库主表
+        #region 日销售价格登记主表
         public ActionResult Index()
         {
             return View();
@@ -63,15 +63,7 @@ namespace BL.Web.Controllers
         [JsonException]
         public string EditGUIDANCE(string json)
         {
-            int id = 3;
-            if (Request.QueryString["FType"] == "1")
-            {
-                id = 3;
-            }
-            else
-            {
-                id = 4;
-            }
+            int id = 7;
             var models = JsonHelper.Instance.Deserialize<List<T_GUIDANCEModel>>(json);
             var model = models[0];
             model.FCREATEID = UserContext.CurrentUser.UserName;
@@ -89,7 +81,7 @@ namespace BL.Web.Controllers
         }
         #endregion
 
-        #region 消耗品入库明细
+        #region 日销售价格明细
         public ActionResult GUIDANCEDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_GUIDANCEModel>(rowData);

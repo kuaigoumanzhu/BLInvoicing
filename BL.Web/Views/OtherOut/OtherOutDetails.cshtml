@@ -106,7 +106,7 @@
             inlineEditMult:false,
             paging: false,
             afterSave:function(){
-                otherOutDetailGrid.datagrid("reload",{dataUrl:url});
+                $("#tabOtherOutDetails").datagrid("reload",{dataUrl:url});
             }
         });
         $(document).on('keypress', "#tabOtherOutDetails input", function (event) {

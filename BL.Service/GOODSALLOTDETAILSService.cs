@@ -156,17 +156,16 @@ where FGUID=@FGUID ";
             }
             if (paraDic.Contains("FDATE") && paraDic["FDATE"].ToString().Trim() != "")
             {
-                //whereStr += " and FWAREHOUSEID=@FDATE";
                 dp.Add("@FDATE", paraDic["FDATE"].ToString());
 
             }
             //string sqlstr = @"select * from T_REPERTORY where FSURPLUS>0";
-            string sqlstr = @"select r.*,a.MARKETPRICE from T_REPERTORY r
+            string sqlstr = @"select r.*,isnull(a.FMARKETPRICE,0) FMARKETPRICE from T_REPERTORY r
 inner join (
 select g.FDATE,g.FWAREHOUSEID,gd.* from T_GUIDANCE g
 inner join T_GUIDANCEDETAILS gd on g.FGUID=gd.FPARENTID
-where g.FDATE=@FDATE
-) a on r.FGOODSID=a.FGOODSID and a.FWAREHOUSEID=r.FWAREHOUSEID  where FSURPLUS>0 "+whereStr;
+where datediff(day,g.FDATE,@FDATE)=0
+) a on r.FGOODSID=a.FGOODSID and a.FWAREHOUSEID=r.FWAREHOUSEID  where FSURPLUS>0 " +whereStr;
 
             using (IDbConnection db = OpenConnection())
             {

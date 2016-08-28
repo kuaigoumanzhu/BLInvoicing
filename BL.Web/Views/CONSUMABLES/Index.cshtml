@@ -5,7 +5,10 @@
     <label class="control-label">单据编号</label>
     <input type="text" id="txtNo_conIn"  size="15"/>
     <label class="control-label">采购人</label>
-    <input type="text" id="txtPerson_conIn"  size="15"/>
+    <select id="txtPerson_conIn">
+
+    </select>
+    @*<input type="text" id="txtPerson_conIn"  size="15"/>*@
     <label class="control-label">表单状态</label>
     <select id="selState_conIn" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
@@ -30,6 +33,8 @@
                 wareHouseLst = json;
             }
         });
+        LoadPerson("txtPerson_conIn");
+        var cgrList = LoadPersonForRowSel();
         CONSUMABLESgrid = $("#tabCONSUMABLES").datagrid({
             gridTitle: '消耗品入库登记列表',
             showToolbar: true,
@@ -76,8 +81,11 @@
                 {
                     name: 'FPERSONID',
                     label: '采购人',
+                    type: 'select',
                     align: 'center',
-                    width: 80
+                    items:function(){return cgrList;},
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FMEMO',

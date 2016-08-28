@@ -46,7 +46,7 @@
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson",
+            url: "/Common/GetWareHoseJson?FSTATUS=2",
             callback: function (json) {
                 wareHouseLst = json;
             }
@@ -104,20 +104,27 @@
                     name: 'FQUANTITY',
                     label: '数量',
                     align: 'center',
+                    rule: 'digits',
+                    messages:'required',
                     width: 80
-                },
-                {
-                    name: 'FPRICE',
-                    label: '单价',
-                    align: 'center',
-                    width: 110
                 },
                 {
                     name: 'FMONEY',
                     label: '金额',
+                    rule: 'number',
                     align: 'center',
+                    messages: 'required',
                     calc: 'sum',
                     calcTit: '金额合计',
+                    width: 110
+                },
+                {
+                    name: 'FPRICE',
+                    label: '单价',
+                    rule: 'number',
+                    messages: 'required',
+                    align: 'center',
+                    eidt:false,
                     width: 110
                 },
                 {
@@ -164,7 +171,7 @@
             var btn = $(this).attr("id");
             switch (btn) {
                 case "btnAdd":
-                    Add();
+                    AddSelGoods();
                     break;
                 case "btnSave":
                     datas = []
@@ -179,8 +186,8 @@
             }
         })
         var curFGUID='@Model.FGUID';
-        function Add() {
-            datas = [];
+        function AddSelGoods() {
+            delete ConsumablesOutDetailgrid.data("bjui.datagrid").options.dataUrl;
             $(this).dialog({
                 id: 'ConsumablesOutDetail',
                 url: '/CONSUMABLES/selectOutGoods?FWAREHOUSEID=' + outWare + "&FGUID=" + curFGUID,
@@ -188,25 +195,94 @@
                 width: 840,
                 mask: true,
                 beforeClose: function ($dialog) {
+                    datas = [];
                     var $checked = $dialog.find('input[name="child"]:checked');
                     if ($checked.length == 0)
                         return true;
+                    console.log($checked.length);
+                    var currentDatas = ConsumablesOutDetailgrid.data("bjui.datagrid").data;
+
+                    
+
+                    for (var i = 0, l = currentDatas.length; i < l; i++) {
+                        datas.push(currentDatas[i]);
+                    }
+                    var bol = false;
+                    var edits = [];
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            return true;
+                        }
+                        bol = true;
                         delete goods.FGUID;
                         //goods.FPARENTID = parentId;
-                        datas.unshift(goods);
-                        ConsumablesOutDetailgrid.datagrid("add", "last", goods);
+                        datas.push(goods);
+                        //ConsumablesOutDetailgrid.datagrid("add", 0, goods);
                     });
-                    ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
-                    $checked.each(function (i) {
-                        ConsumablesOutDetailgrid.datagrid("doEditRow", i);
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            edits.push(index);
+                        }
                     });
+                    if ($checked.length > 0&&bol) {
+                        ConsumablesOutDetailgrid.datagrid('reload', {local:'local',data:datas});
+                    }
+                    ConsumablesOutDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        for (var i = 0, l = edits.length; i < l; i++) {
+                            ConsumablesOutDetailgrid.datagrid("doEditRow", edits[i]);
+                            trClick();
+                        }
+                    });
+
+                    $(document).off('keypress', "#tabGOODSALLOTInDetail input");
+                    //ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
+                    //datas.each(function (i) {
+                    //    ConsumablesOutDetailgrid.datagrid("doEditRow", i);
+                    //});
                     //trClick();
                     return true;
                 }
             })
         };
+        var trdata = null;
+        var clickTR = null;
+        $(document).on('keypress', "#tabConsumablesOutDetail input", function (event) {
+            //改为只监听数字键
+            if (event.keyCode != "13")
+                return;
+            $(this).trigger("keyCodeEnter");
+            if (trdata != null) {
+                if ($(this).attr("name") == "FMONEY" && $(this).val() != "") {
+                    var quant = $(this).parent().prev().find("input").val();
+                    var money = $(this).val();
+                    ConsumablesOutDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FMONEY": $(this).val(), "FQUANTITY": quant, "FPRICE": toDecimal(parseFloat(money) / parseFloat(quant)) });
+                    if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
+                        clickTR.removeClass("datagrid-edit-tr");
+                    ConsumablesOutDetailgrid.datagrid("doEditRow", trdata.gridIndex);
+                    //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                    $($(ConsumablesOutDetailgrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
+                }
+            }
+        })
+        function trClick() {
+            var that = ConsumablesOutDetailgrid.data("bjui.datagrid");
+            //console.log(that.$tbody.find('> tr').length);
+            that.$tbody.find('> tr').on('keyCodeEnter', function () {
+                trdata = that.data[$(this).index()];
+                clickTR = $(this);
+            });
+        }
+        function toDecimal(x) {
+            var f = parseFloat(x);
+            if (isNaN(f))
+                return;
+            f = Math.round(x * 100) / 100;
+            return f;
+        }
     });
     
    

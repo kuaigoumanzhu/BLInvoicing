@@ -132,5 +132,27 @@ where FGUID=@FGUID ";
                 return db.Execute(sql, new { FSTATUS = FSTATUS, time = now, FGUID = FGUID }) > 0;
             }
         }
+
+        public IEnumerable<T_PERSONModel> GetPersonInfo(IDictionary paraDic)
+        {
+
+            string sql = "select * from T_PERSON with(nolock)";
+            string whereStr = " where 1=1";
+            DynamicParameters dp = new DynamicParameters();
+            if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
+            {
+                whereStr += " and FID = @FID";
+                dp.Add("@FID", paraDic["FID"].ToString());
+            }
+            if (paraDic.Contains("FSTATUS") && paraDic["FSTATUS"].ToString().Trim() != "")
+            {
+                whereStr += " and FSTATUS = @FSTATUS";
+                dp.Add("@FSTATUS", paraDic["FSTATUS"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_PERSONModel>(sql + whereStr, dp);
+            }
+        }
     }
 }

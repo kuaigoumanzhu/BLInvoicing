@@ -32,13 +32,9 @@ namespace BL.Models
         /// </summary>
         public string FCODE { get; set; }
         /// <summary>
-        /// 调出仓库 T_WAREHOUSE表中FID
+        /// 仓库ID
         /// </summary>
-        public string FOUTWAREHOUSEID { get; set; }
-        /// <summary>
-        /// 调入仓库 T_WAREHOUSE表中FID
-        /// </summary>
-        public string FINWAREHOUSEID { get; set; }
+        public string FWAREHOUSEID { get; set; }
         /// <summary>
         /// 摘要 T_GOODS表中FID
         /// </summary>

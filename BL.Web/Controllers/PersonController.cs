@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -114,5 +115,34 @@ namespace BL.Web.Controllers
             return JsonHelper.Instance.Serialize(new { result = personService.SetPERSONStatusByGuid(FGUID, FSTATUS, time), data = FSTATUS, time = time });
         }
 
+        [JsonException]
+        public string GetPersonJson()
+        {
+            IDictionary dic = new Hashtable();
+            dic["FSTATUS"] = 2;
+            var lst = personService.GetPersonInfo(dic);
+            string result = "[]";
+            if (lst.Count() > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("[");
+                foreach (T_PERSONModel item in lst)
+                {
+                    sb.Append("{\"" + item.FID + "\":\"" + item.FNAME + "\"},");
+                }
+                result = sb.ToString().Substring(0, sb.ToString().Length - 1) + "]";
+            }
+            return result;
+        }
+
+        [JsonException]
+        public JsonResult GetPersonJsonInfo()
+        {
+            IDictionary dic = new Hashtable();
+            dic["FSTATUS"] = 2;
+            var lst = personService.GetPersonInfo(dic);
+            
+            return Json(lst);
+        }
     }
 }
