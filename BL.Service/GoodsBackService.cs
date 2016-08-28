@@ -232,7 +232,7 @@ namespace BL.Service
             string updatesql = @"update T_REPERTORYCHILD set FSURPLUS=@current where FBARCODE=@FBARCODE and FSURPLUS=@FSURPLUS and FGUID=@FGUID";
             string updateStatus = @"update T_GOODSBACK set FSTATUS='2' where FGUID=@parentId";
             string repertorysql = @"select * from T_REPERTORY where FGOODSID=@FGOODSID";
-            string updateKcSql = @"update T_REPERTORY set FSURPLUS=@current,FENABLE=@current1 where FBARCODE=@FBARCODE and FSURPLUS=@FSURPLUS and FENABLE=@FENABLE and FGUID=@FGUID";
+            string updateKcSql = @"update T_REPERTORY set FSURPLUS=@current,FENABLE=@current1 where FSURPLUS=@FSURPLUS and FENABLE=@FENABLE and FGUID=@FGUID";
             //分仓库存表（T_ REPERTORYCHILD）调入仓库=商品回库调出仓库
 
             //库存表（T_ REPERTORY）FWAREHOUSEID仓库=分仓库存表的调出仓库（FOUTWAREHOUSEID）
@@ -272,14 +272,14 @@ namespace BL.Service
                         }
                         var zs = model.FACTUALQUANTITY;
                         var synumber = 0f;
-                        var kcModels = db.Query<T_REPERTORYModel>(repertorysql, new { FGOODSID = model.FGOODSID });
+                        var kcModels = db.Query<T_REPERTORYModel>(repertorysql, new { FGOODSID = model.FGOODSID },transaction);
                         foreach(var kcModel in kcModels)
                         {
                             if ((float)kcModel.FSURPLUS >= zs)//如果可用数量大于实际总数直接减去
                             {
                                 synumber = (float)kcModel.FSURPLUS - zs;
                                 zs = 0;
-                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = synumber, current1= synumber, FSURPLUS = kcModel.FSURPLUS, FENABLE=kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
+                                if (db.Execute(updateKcSql, new { current = synumber, current1= synumber, FSURPLUS = kcModel.FSURPLUS, FENABLE=kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
                                 {
                                     //transaction.Rollback();
                                     throw new Exception("数量已被其他人修改过！请重新保存");
@@ -288,7 +288,7 @@ namespace BL.Service
                             else
                             {
                                 zs = zs - (float)kcModel.FSURPLUS;//总数减去当前批次可用数量
-                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = 0, current1 = 0, FSURPLUS = kcModel.FSURPLUS, FENABLE = kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
+                                if (db.Execute(updateKcSql, new { current = 0, current1 = 0, FSURPLUS = kcModel.FSURPLUS, FENABLE = kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
                                 {
                                     //transaction.Rollback();
                                     throw new Exception("数量已被其他人修改过！请重新保存");
