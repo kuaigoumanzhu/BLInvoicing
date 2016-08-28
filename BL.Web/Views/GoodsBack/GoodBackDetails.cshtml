@@ -240,17 +240,17 @@
             })
         };
         function GoodsApplay(){
-            var bgdAllDatas = $("#tabGoodsBackDetails").data("bjui.datagrid").allData;
+            var bgdAllDatas = $("#tabGoodsBackDetails").data("bjui.datagrid").data;
             $(this).bjuiajax("doAjax",{
                 url: "/GoodsBack/ApplayGoodsBackDetailJson",
-                data: { json:JSON.stringify(bgdAllDatas),parentId:parentId },
+                data: { json: JSON.stringify(bgdAllDatas), parentId: parentId, outWare: outWare },
                 confirmMsg: "确认提交？",
                 callback: function (json) {
                     if (json.statusCode!="200") {
                         //maingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME:json.time});
                         $(this).alertmsg("warn", json.message);
                     } else {
-                        $(this).alertmsg("ok", "禁用失败");
+                        $(this).alertmsg("ok", json.message);
                     }
                 }
             });

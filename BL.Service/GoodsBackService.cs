@@ -211,13 +211,101 @@ namespace BL.Service
                 return db.Query<int>(sql,new { FGUID=parentId}).Single() > 0;
             }
         }
+        /// <summary>
+        /// 获取状态
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        public string GetGoodsBackStatusByParentId(string parentId)
+        {
+            string sql = "select FSTATUS from T_GOODSBACK  with(nolock) where FGUID=@FGUID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<string>(sql, new { FGUID = parentId }).Single();
+            }
+        }
 
-        public void ApplayGoodsBackDetail(IList<T_GOODSBACKDETAILSModel> lst,string parentId)
+        public bool ApplayGoodsBackDetail(IList<T_GOODSBACKDETAILSModel> lst,string parentId, string outWare)
         {
             string goodsBacksql = "select * from T_GOODSBACK with(nolock) where FGUID=@parentId";//获取调出仓库FOUTWAREHOUSEID
+            string getChildSql = @"select * from T_REPERTORYCHILD where FBARCODE=@FBARCODE and FINWAREHOUSEID=@outWare";
+            string updatesql = @"update T_REPERTORYCHILD set FSURPLUS=@current where FBARCODE=@FBARCODE and FSURPLUS=@FSURPLUS and FGUID=@FGUID";
+            string updateStatus = @"update T_GOODSBACK set FSTATUS='2' where FGUID=@parentId";
+            string repertorysql = @"select * from T_REPERTORY where FGOODSID=@FGOODSID";
+            string updateKcSql = @"update T_REPERTORY set FSURPLUS=@current,FENABLE=@current1 where FBARCODE=@FBARCODE and FSURPLUS=@FSURPLUS and FENABLE=@FENABLE and FGUID=@FGUID";
             //分仓库存表（T_ REPERTORYCHILD）调入仓库=商品回库调出仓库
 
             //库存表（T_ REPERTORY）FWAREHOUSEID仓库=分仓库存表的调出仓库（FOUTWAREHOUSEID）
+
+            using (IDbConnection db = OpenConnection())
+            {
+                IDbTransaction transaction = db.BeginTransaction();
+                try
+                {
+                    foreach (var model in lst)
+                    {
+                        //获取分仓库存可用数量
+                        var childModels = db.Query<T_REPERTORYCHILDModel>(getChildSql, new { FBARCODE = model.FBARCODE, outWare = outWare }, transaction);
+                        var fenables = model.FACTUALQUANTITY;
+                        var number = 0f;
+                        foreach (var childModel in childModels)
+                        {
+                            if (childModel.FSURPLUS >= fenables)//如果可用数量大于实际总数直接减去
+                            {
+                                number = childModel.FSURPLUS - fenables;
+                                fenables = 0;
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = number, FSURPLUS = childModel.FSURPLUS, FGUID = childModel.FGUID }, transaction) <= 0)
+                                {
+                                    //transaction.Rollback();
+                                    throw new Exception("可用数量已被其他人修改过！请重新保存");
+                                }
+                            }
+                            else
+                            {
+                                fenables = fenables - childModel.FSURPLUS;//总数减去当前批次可用数量
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = 0, FSURPLUS = childModel.FSURPLUS, FGUID = childModel.FGUID }, transaction) <= 0)
+                                {
+                                    //transaction.Rollback();
+                                    throw new Exception("可用数量已被其他人修改过！请重新保存");
+                                }
+                            }
+                        }
+                        var zs = model.FACTUALQUANTITY;
+                        var synumber = 0f;
+                        var kcModels = db.Query<T_REPERTORYModel>(repertorysql, new { FGOODSID = model.FGOODSID });
+                        foreach(var kcModel in kcModels)
+                        {
+                            if ((float)kcModel.FSURPLUS >= zs)//如果可用数量大于实际总数直接减去
+                            {
+                                synumber = (float)kcModel.FSURPLUS - zs;
+                                zs = 0;
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = synumber, current1= synumber, FSURPLUS = kcModel.FSURPLUS, FENABLE=kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
+                                {
+                                    //transaction.Rollback();
+                                    throw new Exception("数量已被其他人修改过！请重新保存");
+                                }
+                            }
+                            else
+                            {
+                                zs = zs - (float)kcModel.FSURPLUS;//总数减去当前批次可用数量
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = 0, current1 = 0, FSURPLUS = kcModel.FSURPLUS, FENABLE = kcModel.FENABLE, FGUID = kcModel.FGUID }, transaction) <= 0)
+                                {
+                                    //transaction.Rollback();
+                                    throw new Exception("数量已被其他人修改过！请重新保存");
+                                }
+                            }
+                        }
+                    }
+                    db.Execute(updateStatus, new { parentId = parentId }, transaction);
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
         }
     }
 }

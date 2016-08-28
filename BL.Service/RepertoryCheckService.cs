@@ -124,7 +124,7 @@ namespace BL.Service
                         }
                         db.Execute(updateSql, new { FSURPLUS = model.FREALQUANTITY, FGOODSID=model.FGOODSID, FWAREHOUSEID = wareId }, transaction);
                     }
-                    db.Execute(updateParent, new { FAPPLYID = userId, FAPPLYTIME = DateTime.Now });
+                    db.Execute(updateParent, new { FAPPLYID = userId, FAPPLYTIME = DateTime.Now },transaction);
                     transaction.Commit();
                     return new UiResponse { statusCode = "200", message = "保存成功", closeCurrent = true };
                 }

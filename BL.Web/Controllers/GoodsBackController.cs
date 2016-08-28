@@ -104,12 +104,18 @@ namespace BL.Web.Controllers
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "删除失败！" });
             }
         }
-        public string ApplayGoodsBackDetailJson(string json,string parentId)
+        public string ApplayGoodsBackDetailJson(string json,string parentId, string outWare)
         {
-            if (!goodsBack.GetGoodsBackByParentId(parentId))
+            var status = goodsBack.GetGoodsBackStatusByParentId(parentId);
+            if (status== "2")
             {
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "已提交！" });
             }
+            if (status == "1")
+            {
+                return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "请保存后再提交！" });
+            }
+
             var models = JsonHelper.Instance.Deserialize<List<T_GOODSBACKDETAILSModel>>(json);
             return "";
 
