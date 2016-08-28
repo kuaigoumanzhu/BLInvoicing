@@ -87,7 +87,7 @@ namespace BL.Service
          /// <returns></returns>
         public T_WAREHOUSEModel AddWareHoseInfo(T_WAREHOUSEModel model)
         {
-            string sql = "insert into T_WAREHOUSE(FGUID,FID,FNAME,FCATEGORY,FPARENTID,FPROVINCE,FSTATUS) values(@FGUID,@FID,@FNAME,@FCATEGORY,@FPARENTID,@FPROVINCE,@FSTATUS)";
+            string sql = "insert into T_WAREHOUSE(FGUID,FID,FNAME,FCATEGORY,FPARENTID,FPROVINCE,FSTATUS,FSTARTTIME) values(@FGUID,@FID,@FNAME,@FCATEGORY,@FPARENTID,@FPROVINCE,@FSTATUS,@FSTARTTIME)";
             using (IDbConnection db = OpenConnection())
             {
                 if (db.Execute(sql, model) > 0)
