@@ -12,6 +12,7 @@
                 <th data-order-field="FGOODSID">商品编号</th>
                 <th data-order-field="FGOODSNAME">商品名称</th>
                 <th data-order-field="FUNIT">计量单位</th>
+                <th data-order-field="FCALCTYPE">计量方式</th>
                 <th width="28"><input type="checkbox" class="checkboxCtrl" data-group="child" data-toggle="icheck"></th>
             </tr>
         </thead>
@@ -28,6 +29,7 @@
                         <td>@jarray["FGOODSID"]</td>
                         <td>@jarray["FGOODSNAME"]</td>
                         <td>@jarray["FUNIT"]</td>
+                        <td>@jarray["FCALCTYPE"]</td>
                         <td><input type="checkbox" name="child" data-toggle="icheck" value="@Json"></td>
                     </tr>
                 }
