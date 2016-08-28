@@ -198,6 +198,8 @@
         var datas = [];
         var trdata = null;
         var clickTR = null;
+
+        $(document).off('keypress', "#tabConsumablesInDetail input");
         $(document).on('keypress', "#tabConsumablesInDetail input", function (event) {
             //改为只监听数字键
             if (event.keyCode != "13")

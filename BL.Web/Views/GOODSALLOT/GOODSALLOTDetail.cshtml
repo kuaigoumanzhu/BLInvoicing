@@ -153,7 +153,8 @@
                     name: 'FBARCODE',
                     label: '条码',
                     align: 'center',
-                    hide:true,
+                    edit: false,
+                    add:false,
                     width: 110
                 },
                 {
@@ -278,6 +279,7 @@
                             trClick();
                         }
                     });
+                    $(document).off('keypress', "#tabGOODSALLOTInDetail input");
                     //var $checked = $dialog.find('input[name="child"]:checked');
                     //if ($checked.length == 0)
                     //    return true;
@@ -298,7 +300,7 @@
                 }
             })
         };
-
+        $(document).off('keypress', "#tabGOODSALLOTInDetail input");
         $(document).on('keypress', "#tabGOODSALLOTInDetail input", function (event) {
             //改为只监听数字键
             if (event.keyCode != "13")
