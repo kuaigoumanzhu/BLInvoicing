@@ -71,20 +71,21 @@ namespace BL.Web.Controllers
         /// 商品回库明细列表
         /// </summary>
         /// <param name="parentId"></param>
+        /// <param name="wareHouse">总仓</param>
         /// <returns></returns>
         [JsonException]
-        public string GetGoodsBackDetailsList(string parentId, string inWareHouse)
+        public string GetGoodsBackDetailsList(string parentId, string inWareHouse,string wareHouse)
         {
-            var lst = goodsBack.GetAllGoodsBackDetailsInfo(parentId,inWareHouse);
+            var lst = goodsBack.GetAllGoodsBackDetailsInfo(parentId,inWareHouse, wareHouse);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = lst.Count() });
         }
 
         [JsonException]
-        public string EditGoodsBackDetailsJson(string json)
+        public string EditGoodsBackDetailsJson(string json,string parentId,string outWare)
         {
             var models = JsonHelper.Instance.Deserialize<List<T_GOODSBACKDETAILSModel>>(json);
             string userId = UserContext.CurrentUser.UserName;
-            var lst=goodsBack.AddGoodsBackDetailUpdateChild(models, userId);
+            var lst=goodsBack.AddGoodsBackDetailUpdateChild(models, userId, parentId,outWare);
             return JsonHelper.Instance.Serialize(new { list = lst, statusCode = "200", message = "保存成功！" });
         }
 

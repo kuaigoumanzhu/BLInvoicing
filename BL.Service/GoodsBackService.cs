@@ -77,13 +77,17 @@ namespace BL.Service
         /// <param name="parentId">商品回库主表</param>
         /// <param name="inWareHouse">商品分仓库</param>
         /// <returns></returns>
-        public IEnumerable<T_GOODSBACKDETAILSModel> GetAllGoodsBackDetailsInfo(string parentId,string inWareHouse)
+        public IEnumerable<T_GOODSBACKDETAILSModel> GetAllGoodsBackDetailsInfo(string parentId,string inWareHouse, string wareHouse)
         {
             string sql = "select * from T_GOODSBACKDETAILS where FPARENTID=@parentId";
-            string sqlWareHouse = "select * from T_REPERTORYCHILD with(nolock) where FINWAREHOUSEID=@inWareHouse";
+            string sqlWareHouse = @"select min(FOUTWAREHOUSEID) as FOUTWAREHOUSEID,min(FINWAREHOUSEID) FINWAREHOUSEID,min(FBARCODE) as FBARCODE,
+            min(FGOODSID) as FGOODSID,min(FGOODSNAME) as FGOODSNAME,min(FUNIT) as FUNIT,SUM(FQUANTITY) as FQUANTITY,SUM(FSURPLUS) as FSURPLUS,
+            SUM(FENABLE) as FENABLE,min(FPRICE) as FPRICE,
+            (select b.FMARKETPRICE from T_GUIDANCE a with(nolock) left join T_GUIDANCEDETAILS b with(nolock) on a.FGUID=b.FPARENTID where a.FWAREHOUSEID=@wareHouse and a.FDATE=convert(varchar(10),getdate(),120) and b.FGOODSID=min(c.FGOODSID)) as FMARKETPRICE
+            from T_REPERTORYCHILD c with(nolock) where FINWAREHOUSEID=@inWareHouse group by FBARCODE";
             using (IDbConnection db = OpenConnection())
             {
-                var goodsWareHouse = db.Query<T_REPERTORYCHILDModel>(sqlWareHouse, new { inWareHouse = inWareHouse });
+                var goodsWareHouse = db.Query<T_REPERTORYCHILDModel>(sqlWareHouse, new { inWareHouse = inWareHouse,wareHouse=wareHouse });
                 IList<T_GOODSBACKDETAILSModel> details = new List<T_GOODSBACKDETAILSModel>();
                 foreach(var model in goodsWareHouse)
                 {
@@ -91,7 +95,7 @@ namespace BL.Service
                     detail.FACTUALQUANTITY = 0;
                     detail.FBARCODE = model.FBARCODE;
                     detail.FBATCH = model.FBATCH;
-                    detail.FDIFFERMONEY = model.FSURPLUS*model.FPRICE;//差异金额
+                    detail.FDIFFERMONEY = float.Parse((model.FSURPLUS*model.FPRICE).ToString("f2"));//差异金额
                     detail.FDIFFERQUANTITY = model.FSURPLUS;//差异数量
                     detail.FGOODSID = model.FGOODSID;
                     detail.FGOODSNAME = model.FGOODSNAME;
@@ -108,15 +112,16 @@ namespace BL.Service
         /// <summary>
         /// 保存商品回库信息，修改分仓库存表可用数量
         /// </summary>
-        public IEnumerable<T_GOODSBACKDETAILSModel> AddGoodsBackDetailUpdateChild(IList<T_GOODSBACKDETAILSModel> lst,string userId)
+        public IEnumerable<T_GOODSBACKDETAILSModel> AddGoodsBackDetailUpdateChild(IList<T_GOODSBACKDETAILSModel> lst,string userId, string parentId, string outWare)
         {
-            string sql = @"insert into T_GOODSBACKDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FGOODSID,FGOODSNAME,FUNIT,FBATCH,
-                            FQUANTITY,FACTUALQUANTITY,FPRICE,FMARKETPRICE,FDIFFERQUANTITY,FDIFFERMONEY,FBARCODE,FMEMO) values(@FGUID,
-                            @FCREATEID,@FCREATETIME,@FPARENTID,@FGOODSID,@FGOODSNAME,@FUNIT,@FBATCH,
-                            @FQUANTITY,@FACTUALQUANTITY,@FPRICE,@FMARKETPRICE,@FDIFFERQUANTITY,@FDIFFERMONEY,@FBARCODE,@FMEMO)";
+            string sql = @"insert into T_GOODSBACKDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FGOODSID,FGOODSNAME,FUNIT,
+                            FQUANTITY,FPRICE,FMARKETPRICE,FDIFFERQUANTITY,FDIFFERMONEY,FBARCODE,FMEMO) values(@FGUID,
+                            @FCREATEID,@FCREATETIME,@FPARENTID,@FGOODSID,@FGOODSNAME,@FUNIT,
+                            @FQUANTITY,@FPRICE,@FMARKETPRICE,@FDIFFERQUANTITY,@FDIFFERMONEY,@FBARCODE,@FMEMO)";
             string getsql = @"select * from T_GOODSBACKDETAILS with(nolock) where FGUID=@FGUID";
-            string getChildSql = @"select * from T_REPERTORYCHILD where FBARCODE=@FBARCODE";
-            string updatesql = @"update T_REPERTORYCHILD set FENABLE=@current where FBARCODE=@FBARCODE and FENABLE=@FENABLE";
+            string getChildSql = @"select * from T_REPERTORYCHILD where FBARCODE=@FBARCODE and FINWAREHOUSEID=@outWare";
+            string updatesql = @"update T_REPERTORYCHILD set FENABLE=@current where FBARCODE=@FBARCODE and FENABLE=@FENABLE and FGUID=@FGUID";
+            string updateStatus = @"update T_GOODSBACK set FSTATUS='3' where FGUID=@parentId";
             var now = DateTime.Now;
             IList<T_GOODSBACKDETAILSModel> models = new List<T_GOODSBACKDETAILSModel>();
             using (IDbConnection db = OpenConnection())
@@ -132,19 +137,32 @@ namespace BL.Service
                         db.Execute(sql, model, transaction);
                         models.Add(db.QuerySingle<T_GOODSBACKDETAILSModel>(getsql, new { FGUID = model.FGUID },transaction));
                         //获取分仓库存可用数量
-                        var childModel = db.QuerySingle<T_REPERTORYCHILDModel>(getChildSql, new { FBARCODE = model.FBARCODE },transaction);
-                        var number = childModel.FENABLE - model.FACTUALQUANTITY;
-                        if (number < 0)
+                        var childModels = db.Query<T_REPERTORYCHILDModel>(getChildSql, new { FBARCODE = model.FBARCODE, outWare= outWare },transaction);
+                        var fenables = model.FACTUALQUANTITY;
+                        var number = 0f;
+                        foreach(var childModel in childModels)
                         {
-                            transaction.Rollback();
-                            throw new Exception("可用数量小于0！");
-                        }
-                        if(db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current=number, FENABLE = childModel.FENABLE },transaction)<=0)
-                        {
-                            transaction.Rollback();
-                            throw new Exception("可用数量已被其他人修改过！请重新保存");
+                            if (childModel.FENABLE >= fenables)//如果可用数量大于实际总数直接减去
+                            {
+                                number = childModel.FENABLE - fenables;
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = number, FENABLE = childModel.FENABLE, FGUID=childModel.FGUID }, transaction) <= 0)
+                                {
+                                    transaction.Rollback();
+                                    throw new Exception("可用数量已被其他人修改过！请重新保存");
+                                }
+                            }
+                            else
+                            {
+                                fenables = fenables - childModel.FENABLE;//总数减去当前批次可用数量
+                                if (db.Execute(updatesql, new { FBARCODE = model.FBARCODE, current = 0, FENABLE = childModel.FENABLE, FGUID = childModel.FGUID }, transaction) <= 0)
+                                {
+                                    transaction.Rollback();
+                                    throw new Exception("可用数量已被其他人修改过！请重新保存");
+                                }
+                            }
                         }
                     }
+                    db.Execute(updateStatus, new { parentId = parentId }, transaction);
                     transaction.Commit();
                     return models;
                 }
