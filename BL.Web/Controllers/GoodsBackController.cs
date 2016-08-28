@@ -115,9 +115,17 @@ namespace BL.Web.Controllers
             {
                 return JsonHelper.Instance.Serialize(new Models.UiResponse { statusCode = "300", closeCurrent = true, message = "请保存后再提交！" });
             }
-
+            
             var models = JsonHelper.Instance.Deserialize<List<T_GOODSBACKDETAILSModel>>(json);
-            return "";
+            var bol= goodsBack.ApplayGoodsBackDetail(models, parentId, outWare);
+            if (bol)
+            {
+                return JsonHelper.Instance.Serialize(new BL.Models.UiResponse { message = "提交成功！", statusCode = "200" });
+            }
+            else
+            {
+                return JsonHelper.Instance.Serialize(new BL.Models.UiResponse { message = "提交失败！", statusCode = "300" });
+            }
 
         }
     }
