@@ -104,7 +104,7 @@ where FGUID=@FGUID ";
         public IEnumerable<Object> GetSelectGoods(IDictionary paraDic)
         {
             DynamicParameters dp = new DynamicParameters();
-            string sqlstr = @"select FID,FNAME,FUNIT from T_goods where FSTATUS='2' and FISCONSUMABLES='0'";
+            string sqlstr = @"select FID as FGOODSID,FNAME as FGOODSNAME,FUNIT from T_goods where FSTATUS='2' and FISCONSUMABLES='0'";
 
             using (IDbConnection db = OpenConnection())
             {

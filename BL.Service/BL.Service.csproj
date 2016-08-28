@@ -86,6 +86,7 @@
     <Compile Include="REPERTORYService.cs" />
     <Compile Include="SALEDAYBOOKService.cs" />
     <Compile Include="SUPPLIERService.cs" />
+    <Compile Include="VIPINFOService.cs" />
     <Compile Include="WareHoseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WARNINGService.cs" />
