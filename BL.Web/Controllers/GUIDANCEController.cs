@@ -85,6 +85,13 @@ namespace BL.Web.Controllers
         public ActionResult GUIDANCEDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_GUIDANCEModel>(rowData);
+            IDictionary dicGuidance = new Hashtable();
+            dicGuidance["FGUID"] = model.FGUID;
+            var guidanceModes = GUIDANCE.GetGuidanceModes(dicGuidance).ToList();
+            if (guidanceModes.Count() > 0)
+            {
+                model = guidanceModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);
@@ -98,7 +105,7 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATETIME = DateTime.Now;
             model.FPARENTID = Request.QueryString["FPARENTID"];
-            return JsonHelper.Instance.Serialize(GUIDANCEDetailsService.AddFNCBALANCEDETAILS(model));
+            return JsonHelper.Instance.Serialize(GUIDANCEDetailsService.AddFNCBALANCEDETAILS(models));
 
         }
 
@@ -165,7 +172,7 @@ namespace BL.Web.Controllers
             }
         }
 
-        public ActionResult selectOutGoods()
+        public ActionResult selectGoods()
         {
             IDictionary dic = new Hashtable();
 
@@ -173,7 +180,7 @@ namespace BL.Web.Controllers
             {
                 dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
             }
-            var lst = GUIDANCEDetailsService.GetSelectOutGoods(dic);
+            var lst = GUIDANCEDetailsService.getSelGoods(dic);
             ViewBag.list = lst;
             return View();
         }

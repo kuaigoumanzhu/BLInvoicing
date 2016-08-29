@@ -51,6 +51,7 @@
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson",
+            async: false,
             callback: function (json) {
                 wareHouseLst = json;
             }

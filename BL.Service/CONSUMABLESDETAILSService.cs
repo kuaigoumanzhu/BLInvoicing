@@ -194,8 +194,10 @@ where FGUID=@FGUID ";
                 dp.Add("@FGUID", paraDic["FGUID"].ToString());
 
             }
-            string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum from T_CONSUMABLES c
- inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID where c.FSTATUS='2' " + whereStr + "  group by c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT having SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end)>0";
+            string sqlstr = @"select c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end) goodsNum,dic.FNAME FUnitName from T_CONSUMABLES c
+ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID
+inner join T_DATADICT dic on d.FUNIT=dic.FID and dic.FCATEGORY='Unit'
+where c.FSTATUS='2' " + whereStr + "  group by c.FWAREHOUSEID,d.FGOODSID,d.FGOODSNAME,d.FUNIT,dic.FNAME having SUM(case when c.FTYPE='1' then d.FQUANTITY else 0 end)-SUM(case when c.FTYPE='2' then d.FQUANTITY else 0 end)>0";
 
             using (IDbConnection db = OpenConnection())
             {

@@ -24,6 +24,7 @@
         var fenwareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson?FCATEGORY=2",
+            async: false,
             callback: function (json) {
                 fenwareHouseLst = json;
             }
@@ -31,6 +32,7 @@
         var zhuwareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson?FCATEGORY=1",
+            async: false,
             callback: function (json) {
                 zhuwareHouseLst = json;
             }

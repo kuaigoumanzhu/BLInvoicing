@@ -86,6 +86,13 @@ namespace BL.Web.Controllers
         public ActionResult GOODSALLOTDetail(string rowData, string outWare, string inWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_GOODSALLOTModel>(rowData);
+            IDictionary dicGoodsallot = new Hashtable();
+            dicGoodsallot["FGUID"] = model.FGUID;
+            var GoodsallotModes = GOODSALLOTService.GetGoodsallotModes(dicGoodsallot).ToList();
+            if (GoodsallotModes.Count() > 0)
+            {
+                model = GoodsallotModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.inWare = inWare;
             ViewBag.userName = common.GetNameById(model.FCREATEID);

@@ -20,6 +20,7 @@ namespace BL.Web.Controllers
         // GET: /PURCHASE/
         PURCHASEService PURCHASEService = new PURCHASEService();
         PURCHASEDETAILSService PURCHASEDetailsService = new PURCHASEDETAILSService();
+        PersonService personService = new PersonService();
         GoodsService goodsService = new GoodsService();
         CommonService common = new CommonService();
 
@@ -83,8 +84,24 @@ namespace BL.Web.Controllers
         public ActionResult PURCHASEAuditDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_PURCHASEModel>(rowData);
+            IDictionary dicPurchase = new Hashtable();
+            dicPurchase["FGUID"] = model.FGUID;
+            var purchaseModes = PURCHASEService.GetPurchaseModes(dicPurchase).ToList();
+            if (purchaseModes.Count() > 0)
+            {
+                model = purchaseModes.First();
+            }
             ViewBag.outWare = outWare;
-            ViewBag.userName = common.GetNameById(model.FCREATEID);
+            ViewBag.userName = common.GetNameById(model.FCREATEID); 
+            IDictionary dic = new Hashtable();
+            dic["FID"] = model.FPERSONID;
+            List<T_PERSONModel> personList = personService.GetPersonInfo(dic).ToList();
+            string personName = "";
+            if (personList.Count > 0)
+            {
+                personName = personList.First().FNAME;
+            }
+            ViewBag.FPersonName = personName;
             return View(model);
         }
         [JsonException]
@@ -158,9 +175,9 @@ namespace BL.Web.Controllers
         }
         #endregion
 
-        public string SubmitConsumable(string fguid)
+        public string SubmitConsumable(string fguid,string fstatus)
         {
-            if (PURCHASEService.submitPURCHASE(fguid, UserContext.CurrentUser.UserName,DateTime.Now))
+            if (PURCHASEService.submitPURCHASE(fguid, UserContext.CurrentUser.UserName,DateTime.Now,fstatus))
             {
                 return "1";
             }

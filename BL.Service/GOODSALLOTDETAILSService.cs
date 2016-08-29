@@ -160,12 +160,14 @@ where FGUID=@FGUID ";
 
             }
             //string sqlstr = @"select * from T_REPERTORY where FSURPLUS>0";
-            string sqlstr = @"select r.*,isnull(a.FMARKETPRICE,0) FMARKETPRICE from T_REPERTORY r
+            string sqlstr = @"select r.*,isnull(a.FMARKETPRICE,0) FMARKETPRICE,d.FNAME FUnitName from T_REPERTORY r
 inner join (
 select g.FDATE,g.FWAREHOUSEID,gd.* from T_GUIDANCE g
 inner join T_GUIDANCEDETAILS gd on g.FGUID=gd.FPARENTID
 where datediff(day,g.FDATE,@FDATE)=0
-) a on r.FGOODSID=a.FGOODSID and a.FWAREHOUSEID=r.FWAREHOUSEID  where FSURPLUS>0 " +whereStr;
+) a on r.FGOODSID=a.FGOODSID and a.FWAREHOUSEID=r.FWAREHOUSEID
+inner join T_DATADICT d on d.FID=r.FUNIT and d.FCATEGORY='Unit'
+where FSURPLUS>0 " + whereStr;
 
             using (IDbConnection db = OpenConnection())
             {

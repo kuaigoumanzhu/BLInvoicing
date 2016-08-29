@@ -73,6 +73,13 @@ namespace BL.Web.Controllers
         public ActionResult FncbalanceDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_FNCBALANCEModel>(rowData);
+            IDictionary dicFncbalance = new Hashtable();
+            dicFncbalance["FGUID"] = model.FGUID;
+            var FncbalanceModes = fncbalanceService.GetFncbalanceModes(dicFncbalance).ToList();
+            if (FncbalanceModes.Count() > 0)
+            {
+                model = FncbalanceModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = UserContext.CurrentUser.TrueName;
             return View(model);

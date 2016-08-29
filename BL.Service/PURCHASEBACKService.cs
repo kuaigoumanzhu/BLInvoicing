@@ -164,5 +164,21 @@ where FGUID=@FGUID ";
                 }
             }
         }
+
+        public IEnumerable<T_PURCHASEBACKModel> GetPurchaseBackModes(IDictionary dic)
+        {
+            string sqlstr = "select * from T_PURCHASEBACK where 1=1 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (dic.Contains("FGUID"))
+            {
+                sqlstr += " and FGUID=@FGUID";
+                dp.Add("@FGUID", dic["FGUID"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<T_PURCHASEBACKModel>(sqlstr, dp).AsList();
+                return result;
+            }
+        }
     }
 }

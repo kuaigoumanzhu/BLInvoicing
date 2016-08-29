@@ -26,7 +26,7 @@ namespace BL.Service
             }
             if (paraDic.Contains("FPERSONID") && paraDic["FPERSONID"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
+                whereStr += string.Format(" and FPERSONID='{0}'", paraDic["FPERSONID"].ToString());
             }
             if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
             {
@@ -152,9 +152,9 @@ inner join T_PURCHASEDETAILS d on c.FGUID=d.FPARENTID");
             }
         }
 
-        public bool submitPURCHASE(string FGUID,string userName,DateTime dt)
+        public bool submitPURCHASE(string FGUID,string userName,DateTime dt,string FStatus)
         {
-            string sql = @"update  T_PURCHASE set   FSTATUS='3',FCHECKID=@FCHECKID,FCHECKTIME=@FCHECKTIME
+            string sql = @"update  T_PURCHASE set   FSTATUS=@FSTATUS,FCHECKID=@FCHECKID,FCHECKTIME=@FCHECKTIME
 where FGUID=@FGUID ";
             sql += @"insert into T_REPERTORY(
        [FCREATEID]
@@ -202,6 +202,7 @@ where FGUID=@FGUID ";
                 var trans = db.BeginTransaction();
                 if (db.Execute(sql, new
                 {
+                    FSTATUS = FStatus,
                     FCHECKID = userName,
                     FCHECKTIME = dt,
                     FGUID = FGUID
@@ -264,6 +265,22 @@ where FGUID=@FGUID; ";
                     trans.Rollback();
                     return false;
                 }
+            }
+        }
+
+        public IEnumerable<T_PURCHASEModel> GetPurchaseModes(IDictionary dic)
+        {
+            string sqlstr = "select * from T_PURCHASE where 1=1 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (dic.Contains("FGUID"))
+            {
+                sqlstr += " and FGUID=@FGUID";
+                dp.Add("@FGUID", dic["FGUID"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<T_PURCHASEModel>(sqlstr, dp).AsList();
+                return result;
             }
         }
     }

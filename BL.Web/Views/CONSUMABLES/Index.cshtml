@@ -29,6 +29,7 @@
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson?FCATEGORY=1",
+            async: false,
             callback: function (json) {
                 wareHouseLst = json;
             }

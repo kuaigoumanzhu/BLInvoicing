@@ -192,5 +192,21 @@ and t.FBATCH=gd.FBATCH and t.FGOODSID=gd.FGOODSID) ";
                 }
             }
         }
+
+        public IEnumerable<T_GOODSALLOTModel> GetGoodsallotModes(IDictionary dic)
+        {
+            string sqlstr = "select * from T_GOODSALLOT where 1=1 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (dic.Contains("FGUID"))
+            {
+                sqlstr += " and FGUID=@FGUID";
+                dp.Add("@FGUID", dic["FGUID"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<T_GOODSALLOTModel>(sqlstr, dp).AsList();
+                return result;
+            }
+        }
     }
 }

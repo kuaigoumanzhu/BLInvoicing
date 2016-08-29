@@ -21,6 +21,7 @@ namespace BL.Web.Controllers
         CONSUMABLESService consumablesService = new CONSUMABLESService();
         CONSUMABLESDETAILSService consumablesDetailsService = new CONSUMABLESDETAILSService();
         GoodsService goodsService = new GoodsService();
+        PersonService personService = new PersonService();
         CommonService common = new CommonService();
 
         DATADICTService dictService = new DATADICTService();
@@ -99,8 +100,25 @@ namespace BL.Web.Controllers
         public ActionResult ConsumablesInDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
+            IDictionary dicConsumables = new Hashtable();
+            dicConsumables["FGUID"] = model.FGUID;
+            var ConsumablesModes = consumablesService.GetConsumablesModes(dicConsumables).ToList();
+            if (ConsumablesModes.Count() > 0)
+            {
+                model = ConsumablesModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = common.GetNameById(model.FCREATEID);
+
+            IDictionary dic = new Hashtable();
+            dic["FID"] = model.FPERSONID;
+            List<T_PERSONModel> personList = personService.GetPersonInfo(dic).ToList();
+            string personName = "";
+            if (personList.Count > 0)
+            {
+                personName = personList.First().FNAME;
+            }
+            ViewBag.FPersonName = personName;
             return View(model);
         }
         [JsonException]
@@ -141,8 +159,25 @@ namespace BL.Web.Controllers
         public ActionResult ConsumablesOutDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_CONSUMABLESModel>(rowData);
+            IDictionary dicConsumables = new Hashtable();
+            dicConsumables["FGUID"] = model.FGUID;
+            var ConsumablesModes = consumablesService.GetConsumablesModes(dicConsumables).ToList();
+            if (ConsumablesModes.Count() > 0)
+            {
+                model = ConsumablesModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = model.FCREATEID;
+
+            IDictionary dic = new Hashtable();
+            dic["FID"] = model.FPERSONID;
+            List<T_PERSONModel> personList = personService.GetPersonInfo(dic).ToList();
+            string personName = "";
+            if (personList.Count > 0)
+            {
+                personName = personList.First().FNAME;
+            }
+            ViewBag.FPersonName = personName;
             return View(model);
         }
         [JsonException]

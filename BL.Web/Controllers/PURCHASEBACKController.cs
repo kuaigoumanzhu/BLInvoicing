@@ -79,6 +79,13 @@ namespace BL.Web.Controllers
         public ActionResult PURCHASEBACKDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_PURCHASEBACKModel>(rowData);
+            IDictionary dicpurchaseBack = new Hashtable();
+            dicpurchaseBack["FGUID"] = model.FGUID;
+            var purchaseBackModes = PURCHASEBACKService.GetPurchaseBackModes(dicpurchaseBack).ToList();
+            if (purchaseBackModes.Count() > 0)
+            {
+                model = purchaseBackModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = common.GetNameById(model.FCREATEID);
             return View(model);

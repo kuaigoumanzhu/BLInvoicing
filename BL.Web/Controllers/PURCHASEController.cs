@@ -21,6 +21,7 @@ namespace BL.Web.Controllers
         PURCHASEService PURCHASEService = new PURCHASEService();
         PURCHASEDETAILSService PURCHASEDetailsService = new PURCHASEDETAILSService();
         GoodsService goodsService = new GoodsService();
+        PersonService personService = new PersonService();
         CommonService common = new CommonService();
 
         DATADICTService dictService = new DATADICTService();
@@ -83,8 +84,24 @@ namespace BL.Web.Controllers
         public ActionResult PURCHASEInDetail(string rowData, string outWare)
         {
             var model = JsonHelper.Instance.Deserialize<T_PURCHASEModel>(rowData);
+            IDictionary dicPurchase=new Hashtable();
+            dicPurchase["FGUID"]=model.FGUID;
+            var purchaseModes = PURCHASEService.GetPurchaseModes(dicPurchase).ToList();
+            if (purchaseModes.Count() > 0)
+            {
+                model = purchaseModes.First();
+            }
             ViewBag.outWare = outWare;
             ViewBag.userName = common.GetNameById(model.FCREATEID);
+            IDictionary dic = new Hashtable();
+            dic["FID"] = model.FPERSONID;
+            List<T_PERSONModel> personList = personService.GetPersonInfo(dic).ToList();
+            string personName = "";
+            if (personList.Count > 0)
+            {
+                personName = personList.First().FNAME;
+            }
+            ViewBag.FPersonName = personName;
             return View(model);
         }
         [JsonException]

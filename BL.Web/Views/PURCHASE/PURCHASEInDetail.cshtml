@@ -9,7 +9,7 @@
                 <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
             </tr>
             <tr>
-                <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
+                <td><label>采购人：</label><label id="FPERSONID">@ViewBag.FPersonName</label></td>
                 <td></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
             </tr>
@@ -46,21 +46,13 @@
         var FINWAREHOUSEID = '@Model.FWAREHOUSEID';
         var jldw = LoadUnitDataForRowSel();
         var Fdate = '@Convert.ToDateTime(Model.FDATE).ToString("yyyy-MM-dd")';
-        var wareHouseLst;
-        var gysList;
-        $(this).bjuiajax("doAjax", {
-            url: "/Common/GetWareHoseJson?FCATEGORY=1",
-            callback: function (json) {
-                wareHouseLst = json;
-            }
-        });
-        $(this).bjuiajax("doAjax", {
-            url: "/Common/GetSupplierJson?FSTATUS=2",
-            callback: function (json) {
-                gysList = json;
-            }
-        });
-        //var gysList = LoadGYSDataForRowSel();
+        //$(this).bjuiajax("doAjax", {
+        //    url: "/Common/GetSupplierJson?FSTATUS=2",
+        //    callback: function (json) {
+        //        gysList = json;
+        //    }
+        //});
+        var gysList = LoadSupplierForRowSel();
         var fstatus='@Model.FSTATUS';
         PURCHASEInDetailgrid = $("#tabPURCHASEInDetail").datagrid({
             gridTitle: '采购入库登记明细',
@@ -103,7 +95,8 @@
                     items: function () {
                         return jldw;
                     },
-                    width: 80
+                    width: 80,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FCALCTYPE',
@@ -137,7 +130,8 @@
                     items: function () {
                         return gysList;
                     },
-                    width: 110
+                    width: 110,
+                    render: $.datagrid.renderItem
                 },
                 {
                     name: 'FMEMO',
@@ -243,6 +237,7 @@
                     PURCHASEInDetailgrid.data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
                         for (var i = 0, l = edits.length; i < l; i++) {
                             PURCHASEInDetailgrid.datagrid("doEditRow", edits[i]);
+                            $(document).off('keypress', "#tabPURCHASEInDetail input");
                         }
                     });
 
@@ -257,6 +252,7 @@
         };
     });
 
+    $(document).off('keypress', "#tabPURCHASEInDetail input");
     $(document).on('keypress', "#tabPURCHASEInDetail input", function (event) {
         //改为只监听数字键
         if (event.keyCode != "13")

@@ -85,5 +85,21 @@ where FGUID=@FGUID ";
                 }
             }
         }
+
+        public IEnumerable<T_FNCBALANCEModel> GetFncbalanceModes(IDictionary dic)
+        {
+            string sqlstr = "select * from T_FNCBALANCE where 1=1 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (dic.Contains("FGUID"))
+            {
+                sqlstr += " and FGUID=@FGUID";
+                dp.Add("@FGUID", dic["FGUID"].ToString());
+            }
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<T_FNCBALANCEModel>(sqlstr, dp).AsList();
+                return result;
+            }
+        }
     }
 }

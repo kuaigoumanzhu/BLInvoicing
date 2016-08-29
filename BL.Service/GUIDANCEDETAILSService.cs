@@ -99,8 +99,8 @@ group by FINWAREHOUSEID";
             DynamicParameters dp = new DynamicParameters();
             for (int i = 0; i < list.Count(); i++)
             {
-                sql += @"insert into  T_GUIDANCEDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FQUANTITY, FPRICE, FMONEY, FSUPPLIERID, FMEMO
-) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FQUANTITY" + i + ", @FPRICE" + i + ", @FMONEY" + i + ", @FSUPPLIERID" + i + ", @FMEMO" + i + ");";
+                sql += @"insert into  T_GUIDANCEDETAILS(FGUID, FCREATEID, FCREATETIME, FPARENTID, FGOODSID, FGOODSNAME, FUNIT, FMARKETPRICE, FMEMO
+) values(@FGUID" + i + ", @FCREATEID" + i + ", @FCREATETIME" + i + ", @FPARENTID" + i + ", @FGOODSID" + i + ", @FGOODSNAME" + i + ", @FUNIT" + i + ", @FMARKETPRICE" + i +  ", @FMEMO" + i + ");";
                 dp.Add("@FGUID" + i, Guid.NewGuid().ToString());
                 dp.Add("@FCREATEID" + i, list[0].FCREATEID);
                 dp.Add("@FCREATETIME" + i, list[0].FCREATETIME);
@@ -108,7 +108,7 @@ group by FINWAREHOUSEID";
                 dp.Add("@FGOODSID" + i, list[i].FGOODSID);
                 dp.Add("@FGOODSNAME" + i, list[i].FGOODSNAME);
                 dp.Add("@FUNIT" + i, list[i].FUNIT);
-                //dp.Add("@FQUANTITY" + i, list[i].FQUANTITY);
+                dp.Add("@FMARKETPRICE" + i, list[i].FMARKETPRICE);
                 //dp.Add("@FPRICE" + i, list[i].FPRICE);
                 //dp.Add("@FMONEY" + i, list[i].FMONEY);
                 //dp.Add("@FSUPPLIERID" + i, list[i].FSUPPLIERID);
@@ -203,6 +203,24 @@ where FGUID=@FGUID ";
                 return result;
             }
 
+        }
+
+        public IEnumerable<Object> getSelGoods(IDictionary dic)
+        {
+            string sqlstr = @"select pd.FGOODSID,pd.FGOODSNAME from T_PURCHASEDETAILS pd inner join T_PURCHASE p on pd.FPARENTID=p.FGUID where p.FSTATUS='3' and pd.FQUANTITY>0 ";
+            DynamicParameters dp = new DynamicParameters();
+            if (dic.Contains("FWAREHOUSEID"))
+            {
+                sqlstr += " and p.FWAREHOUSEID=@FWAREHOUSEID";
+                dp.Add("@FWAREHOUSEID", dic["FWAREHOUSEID"].ToString());
+
+            }
+            sqlstr += " group by pd.FGOODSID,pd.FGOODSNAME";
+            using (IDbConnection db = OpenConnection())
+            {
+                var result = db.Query<Object>(sqlstr, dp).AsList();
+                return result;
+            }
         }
     }
 }

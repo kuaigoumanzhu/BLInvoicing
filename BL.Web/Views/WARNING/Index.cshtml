@@ -19,6 +19,14 @@
             reLoadWarning();
         });
         LoadWareHose('selWareHouse', '');
+        var wareHouseLst;
+        $(this).bjuiajax("doAjax", {
+            url: "/Common/GetWareHoseJson",
+            async: false,
+            callback: function (json) {
+                wareHouseLst = json;
+            }
+        });
         setInterval(reLoadWarning, 5 * 60 * 1000);
 
         Warningmaingrid = $("#tabWarning").datagrid({
@@ -52,6 +60,10 @@
                 {
                     name: 'FWAREHOUSEID',
                     label: '仓库',
+                    type: 'select',
+                    items: function () {
+                        return wareHouseLst;
+                    },
                     align: 'center',
                     width: 80
                 },

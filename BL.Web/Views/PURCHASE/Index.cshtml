@@ -5,11 +5,14 @@
     <label class="control-label">单据编号</label>
     <input type="text" id="txtNo" size="15" />
     <label class="control-label">采购人</label>
-    <input type="text" id="txtPerson_conIn" size="15" />
+    <select id="txtPerson_conIn">
+
+    </select>
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
         <option value="2">已提交</option>
+        <option value="4">已退回</option>
     </select>
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
@@ -19,24 +22,26 @@
 <script type="text/javascript">
     $(function () {
         $.CurrentNavtab.find("#btnSearch").click(function () {
-            var url = '/PURCHASE/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
+            var url = '/PURCHASE/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val() + "&FPERSONID=" + $.CurrentNavtab.find("#txtPerson_conIn").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
 
         var wareHouseLst;
-        var personlst;
+        var personlst = LoadPersonForRowSel();
+        LoadPerson('txtPerson_conIn');
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson?FCATEGORY=1",
+            async: false,
             callback: function (json) {
                 wareHouseLst = json;
             }
         });
-        $(this).bjuiajax("doAjax", {
-            url: "/Common/GetPersonJson?FSTATUS=2",
-            callback: function (json) {
-                personlst = json;
-            }
-        });
+        //$(this).bjuiajax("doAjax", {
+        //    url: "/Common/GetPersonJson?FSTATUS=2",
+        //    callback: function (json) {
+        //        personlst = json;
+        //    }
+        //});
         maingrid = $.CurrentNavtab.find("#tabPURCHASE").datagrid({
             gridTitle: '采购入库登记列表',
             showToolbar: true,

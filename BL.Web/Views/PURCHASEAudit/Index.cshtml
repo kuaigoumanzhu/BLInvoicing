@@ -5,10 +5,13 @@
     <label class="control-label">单据编号</label>
     <input type="text" id="txtNo" size="15" />
     <label class="control-label">采购人</label>
-    <input type="text" id="txtPerson_conIn" size="15" />
+    <select id="txtPerson_conIn">
+
+    </select>
     <label class="control-label">表单状态</label>
     <select id="selState" data-toggle="selectpicker">
-        <option value="4" selected="selected">退回</option>
+        <option value="2" selected="selected">未审核</option>
+        <option value="4" >退回</option>
         <option value="3">通过</option>
     </select>
     <button type="button" id="btnSearch" class="btn btn-success">查询</button>
@@ -19,13 +22,15 @@
 <script type="text/javascript">
     $(function () {
         $.CurrentNavtab.find("#btnSearch").click(function () {
-            var url = '/PURCHASEAudit/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
+            var url = '/PURCHASEAudit/GetAllPURCHASEJson?FDate=' + $.CurrentNavtab.find("#startdateTime").val() + "&FCode=" + $.CurrentNavtab.find("#txtNo").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val() + "&FPERSONID=" + $.CurrentNavtab.find("#txtPerson_conIn").val();
             maingrid.datagrid("reload", { dataUrl: url });
         });
-
+        LoadPerson('txtPerson_conIn');
+        var personlst = LoadPersonForRowSel();
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson",
+            async: false,
             callback: function (json) {
                 wareHouseLst = json;
             }
@@ -75,6 +80,10 @@
                  {
                      name: 'FPERSONID',
                      label: '采购人',
+                     type: 'select',
+                     items: function () {
+                         return personlst   ;
+                     },
                      align: 'center',
                      width: 80,
                      render: $.datagrid.renderItem

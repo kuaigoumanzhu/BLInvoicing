@@ -9,7 +9,7 @@
                 <td><label>单据编号：</label><label id="fcode">@Model.FCODE</label></td>
             </tr>
             <tr>
-                <td><label>采购人：</label><label id="FPERSONID">@Model.FPERSONID</label></td>
+                <td><label>采购人：</label><label id="FPERSONID">@ViewBag.FPersonName</label></td>
                 <td><label>审核人：</label><label id="FCHECKID">@Model.FCHECKID</label></td>
                 <td><label>制单人：</label><label id="userName">@ViewBag.userName</label></td>
             </tr>
@@ -53,13 +53,13 @@
                 wareHouseLst = json;
             }
         });
-        var gysList = LoadGYSDataForRowSel();
+        var gysList = LoadSupplierForRowSel();
         var fstatus='@Model.FSTATUS';
         PURCHASEInDetailgrid = $("#tabPURCHASEAuditInDetail").datagrid({
             gridTitle: '采购入库审核明细',
             toolbarCustom:
            '<button type="button" id="print" class="btn btn-green">打印</button><button type="button" id="preview" class="btn btn-red">预览</button>' +
-           '<button id="export" type="button" class="btn btn-red">导出</button>'+(fstatus == '3' ?'':'<button type="button" id="applay" class="btn btn-red">通过</button>'),
+           '<button id="export" type="button" class="btn btn-red">导出</button>' + (fstatus == '3' || fstatus == '4' ? '' : '<button type="button" id="applay" class="btn btn-red">通过</button><button type="button" id="btnBack" class="btn btn-red">退回</button>'),
             showToolbar: true,
             toolbarItem: (fstatus == '2' ? '' : ''),
             addLocation: 'first',
@@ -168,11 +168,14 @@
             }
         })
         $.CurrentNavtab.find("#applay").click(function () {
-            submitConsumable();
+            submitConsumable(3);
         });
-        function submitConsumable() {
+        $.CurrentNavtab.find("#btnBack").click(function () {
+            submitConsumable(4);
+        });
+        function submitConsumable(fstatus) {
             $(this).bjuiajax("doAjax", {
-                url: "/PURCHASEAudit/SubmitConsumable?fguid=" + fparentId,
+                url: "/PURCHASEAudit/SubmitConsumable?fguid=" + fparentId + "&fstatus="+fstatus,
                 callback: function (json) {
                     if (json == '1')
                     {
