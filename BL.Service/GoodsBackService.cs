@@ -205,7 +205,7 @@ namespace BL.Service
         }
         public bool GetGoodsBackByParentId(string parentId)
         {
-            string sql = "select count(*) from T_GOODSBACK  with(nolock) where FGUID=@FGUID and FSTATUS='1'";
+            string sql = "select count(*) from T_GOODSBACK  with(nolock) where FGUID=@FGUID and FSTATUS='2'";
             using (IDbConnection db = OpenConnection())
             {
                 return db.Query<int>(sql,new { FGUID=parentId}).Single() > 0;

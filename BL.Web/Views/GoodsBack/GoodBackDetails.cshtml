@@ -34,9 +34,9 @@
         var goodsBackDetailGrid = $("#tabGoodsBackDetails").datagrid({
             gridTitle: '商品回库明细',
             toolbarCustom: '<button type="button" id="btnGBDSave" data-icon="save" class="btn btn-default">保存</button>'+
-            '<button id="btnGBDExport" type="button" class="btn btn-red">导出</button><button type="button" id="btnGBDApplay" class="btn btn-red">提交</button>',
+            '<button id="btnGBDExport" type="button" class="btn btn-red">导出</button><button type="button" id="btnGBDApplay" class="btn btn-red">提交</button>'+
+            '<button id="btnGBDDel" type="button" class="btn btn-red" data-icon="times">删除</button>',
             showToolbar: true,
-            toolbarItem: 'del',
             addLocation: 'first',
             dataUrl: url,
             dataType: 'json',
@@ -164,7 +164,6 @@
                 var sumMoney=0;
                 var newData = grid.data("bjui.datagrid").data;
                 for(var i=0,l=newData.length;i<l;i++){
-                    console.log(newData[i]);
                     sumMoney+=newData[i].FDIFFERMONEY;
                 }
                 $(ths[10]).html('<div><div class="datagrid-calcbox">合计</div>' + sumMoney + '</div>');
@@ -177,8 +176,8 @@
             f=Math.round(x*100)/100;
             return f;
         }
-        $(document).off("click", "#btnGBDSave,#btnGBDApplay,#btnGBDPrint");
-        $(document).on("click","#btnGBDSave,#btnGBDApplay,#btnGBDPrint",function(){
+        $(document).off("click", "#btnGBDSave,#btnGBDApplay,#btnGBDDel");
+        $(document).on("click", "#btnGBDSave,#btnGBDApplay,#btnGBDDel", function () {
             var btn = $(this).attr("id");
             switch(btn){
                 case "btnGBDSave":
@@ -194,6 +193,32 @@
                         $(".dialogContent").printArea();
                     });
                     break;
+                case "btnGBDDel":
+                    var selectedDatas = $("#tabGoodsBackDetails").data('selectedDatas');
+                    if (selectedDatas == undefined || selectedDatas.length == 0) {
+                        $(this).alertmsg('warn', '请选择一个对象');
+                        return false;
+                    }
+                    var data = selectedDatas[0];
+                    var fguid = data.FGUID;
+                    if (fguid == null) {
+                        $("#tabGoodsBackDetails").datagrid("delRows", data.gridIndex);
+                    } else {
+                        $(this).bjuiajax("doAjax", {
+                            url: "/GoodsBack/DelGoodsBackDetailJson",
+                            data: { guid: fguid, parentId:parentId},
+                            confirmMsg: "确认删除？",
+                            callback: function (json) {
+                                if (json.statusCode != "200") {
+                                    $(this).alertmsg("warn", json.message);
+                                } else {
+                                    $("#tabGoodsBackDetails").datagrid("reload", { dataUrl: url });
+                                    $(this).alertmsg("ok", json.message);
+                                }
+                            }
+                        });
+                    }
+                    break;
             }
         })
         function Save() {
@@ -206,6 +231,7 @@
                     if (json.statusCode != "200") {
                         $(this).alertmsg("warn", json.message);
                     } else {
+                        $("#tabGoodsBackDetails").datagrid("reload", {dataUrl:url});
                         $(this).alertmsg("ok", json.message);
                     }
                 }
