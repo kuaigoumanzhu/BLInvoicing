@@ -30,7 +30,7 @@ namespace BL.Web
     public class WebServiceInvoicing : System.Web.Services.WebService
     {
         GoodsService goodsService = new GoodsService();
-        VIPINFOOService vipInfoService = new VIPINFOOService();
+        VIPINFOService vipInfoService = new VIPINFOService();
 
         [WebMethod]
         public string HelloWorld()
