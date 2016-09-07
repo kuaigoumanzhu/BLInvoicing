@@ -201,7 +201,6 @@
                     var $checked = $dialog.find('input[name="child"]:checked');
                     if ($checked.length == 0)
                         return true;
-                    console.log($checked.length);
                     var currentDatas = ConsumablesOutDetailgrid.data("bjui.datagrid").data;
 
                     
@@ -240,7 +239,7 @@
                         }
                     });
 
-                    $(document).off('keypress', "#tabGOODSALLOTInDetail input");
+
                     //ConsumablesOutDetailgrid.data("bjui.datagrid").tools.createTrs(datas, true);
                     //datas.each(function (i) {
                     //    ConsumablesOutDetailgrid.datagrid("doEditRow", i);
@@ -252,6 +251,7 @@
         };
         var trdata = null;
         var clickTR = null;
+        $(document).off('keypress', "#tabConsumablesOutDetail input");
         $(document).on('keypress', "#tabConsumablesOutDetail input", function (event) {
             //改为只监听数字键
             if (event.keyCode != "13")
@@ -264,12 +264,14 @@
                     ConsumablesOutDetailgrid.datagrid("updateRow", trdata.gridIndex, { "FMONEY": $(this).val(), "FQUANTITY": quant, "FPRICE": toDecimal(parseFloat(money) / parseFloat(quant)) });
                     if (clickTR != null && clickTR.hasClass("datagrid-edit-tr"))
                         clickTR.removeClass("datagrid-edit-tr");
+                    SumCalc();
                     ConsumablesOutDetailgrid.datagrid("doEditRow", trdata.gridIndex);
                     //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
                     $($(ConsumablesOutDetailgrid.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input')).focus();
-                }
+                } 
             }
         })
+        
         function trClick() {
             var that = ConsumablesOutDetailgrid.data("bjui.datagrid");
             //console.log(that.$tbody.find('> tr').length);
@@ -284,6 +286,24 @@
                 return;
             f = Math.round(x * 100) / 100;
             return f;
+        }
+
+        function SumCalc()
+        {
+            var xsjeSum = 0;
+            $("#tabConsumablesOutDetail tbody tr").each(function (i) {
+                var tds = $(this).find("td");
+                var xsje = 0;
+                if ($(tds[6]).find("div").length > 0) {
+                    xsje = $($(tds[6]).find("div")[0]).html();
+                } else {
+                    xsje = $(tds[6]).html();
+                }
+                xsjeSum += parseFloat(xsje);
+            })
+            var ths = $("div.datagrid-box-f").find("table").find("th");
+            
+            $(ths[6]).html('<div><div class="datagrid-calcbox">金额合计</div>' + xsjeSum + '</div>');
         }
     });
     
