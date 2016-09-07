@@ -97,6 +97,25 @@ namespace BL.Service
                 }
             }
         }
+        public bool AddGoodsInfo(T_GOODSModel model)
+        {
+
+            string sql = @"insert into  T_GOODS(FGUID, FCREATEID, FCREATETIME, FID, FNAME, FSTANDARD, FUNIT, FCALCTYPE, FCATEGORY, FISCONSUMABLES, FSTATUS, FSTARTTIME, FENDTIME, FMEMO
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FID, @FNAME, @FSTANDARD, @FUNIT, @FCALCTYPE, @FCATEGORY, @FISCONSUMABLES, @FSTATUS, @FSTARTTIME, @FENDTIME, @FMEMO
+)";
+            using (IDbConnection db = OpenConnection())
+            {
+                if (db.Execute(sql, model) > 0)
+                {
+                    
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         public T_GOODSModel EditGoods(T_GOODSModel model)
         {
@@ -118,6 +137,24 @@ where FGUID=@FGUID ";
                     model.statusCode = "300";
                     model.message = "修改失败";
                     return model;
+                }
+            }
+        }
+        public bool EditGoodsInfo(T_GOODSModel model)
+        {
+
+            string sql = @"update  T_GOODS set  FID=@FID, FNAME=@FNAME, FSTANDARD=@FSTANDARD, FUNIT=@FUNIT, FCALCTYPE=@FCALCTYPE, FCATEGORY=@FCATEGORY, FISCONSUMABLES=@FISCONSUMABLES,  FMEMO=@FMEMO
+where FGUID=@FGUID ";
+            using (IDbConnection db = OpenConnection())
+            {
+                if (db.Execute(sql, model) > 0)
+                {
+                    return true;
+                }
+                else
+                {
+
+                    return false;
                 }
             }
         }

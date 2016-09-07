@@ -57,8 +57,8 @@ namespace BL.Service
         public T_SALEDAYBOOKModel AddSALEDAYBOOK(T_SALEDAYBOOKModel model)
         {
 
-            string sql = @"insert into  T_SALEDAYBOOK(FGUID, FCREATEID, FCREATETIME, FTYPE, FDATE, FNUMBER, FCODE, FPERSONID, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
-) values(@FGUID, @FCREATEID, @FCREATETIME, @FTYPE, @FDATE, @FNUMBER, @FCODE, @FPERSONID, @FWAREHOUSEID, @FMEMO, @FSTATUS, @FAPPLYID, @FAPPLYTIME
+            string sql = @"insert into  T_SALEDAYBOOK(FGUID, FCREATEID, FCREATETIME, FDATE, FVIPCARD, FVIPNAME, FEXPENDNUMBER, FGOODSID, FNAME, FUNIT, FBATCH, FQUANTITY,FPRICE,FMONEY,FMARKETPRICE,FMARKETMONEY,FINTEGRAL,FPROFIT,FPROFITRATE
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FTYPE, @FDATE, @FVIPCARD, @FVIPNAME, @FEXPENDNUMBER, @FGOODSID, @FNAME, @FUNIT, @FBATCH, @FQUANTITY, @FPRICE, @FMONEY, @FMARKETPRICE, @FMARKETMONEY, @FINTEGRAL, @FPROFIT, @FPROFITRATE
 )";
             using (IDbConnection db = OpenConnection())
             {
@@ -75,6 +75,29 @@ namespace BL.Service
                     model.statusCode = "300";
                     model.message = "添加失败";
                     return model;
+                }
+            }
+        }
+
+        public int AddSALEDAYBOOKInfo(T_SALEDAYBOOKModel model)
+        {
+
+            string sql = @"insert into  T_SALEDAYBOOK(FGUID, FCREATEID, FCREATETIME, FPARENTID, FINWAREHOUSEID, FOUTWAREHOUSEID, FDATE, FVIPCARD, FVIPNAME, FEXPENDNUMBER, FGOODSID, FNAME, FUNIT, FBATCH, FQUANTITY,FPRICE,FMONEY,FMARKETPRICE,FMARKETMONEY,FINTEGRAL,FPROFIT,FPROFITRATE
+) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FINWAREHOUSEID, @FOUTWAREHOUSEID, @FDATE, @FVIPCARD, @FVIPNAME, @FEXPENDNUMBER, @FGOODSID, @FNAME, @FUNIT, @FBATCH, @FQUANTITY, @FPRICE, @FMONEY, @FMARKETPRICE, @FMARKETMONEY, @FINTEGRAL, @FPROFIT, @FPROFITRATE
+)";
+            sql += @"update T_REPERTORYCHILD set FQUANTITY=FQUANTITY-@FQUANTITY where FGUID=(select top 1 FGUID from T_REPERTORYCHILD where FINWAREHOUSEID=@FINWAREHOUSEID and FGOODSID=@FGOODSID)";
+            using (IDbConnection db = OpenConnection())
+            {
+                var trans = db.BeginTransaction();
+                if (db.Execute(sql, model) > 0)
+                {
+                    trans.Commit();
+                    return 1;
+                }
+                else
+                {
+                    trans.Rollback();
+                    return 0;
                 }
             }
         }
