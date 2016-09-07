@@ -30,7 +30,7 @@ namespace BL.Web
     public class WebServiceInvoicing : System.Web.Services.WebService
     {
         GoodsService goodsService = new GoodsService();
-        VIPINFOOService vipInfoService = new VIPINFOOService();
+        VIPINFOService vipInfoService = new VIPINFOService();
         WareHoseService wareHouseService = new WareHoseService();
         GoodsService goodService = new GoodsService();
         SALEDAYBOOKService saledayBookService = new SALEDAYBOOKService();
@@ -99,12 +99,12 @@ namespace BL.Web
 
             if (vipInfoService.IsExistsFID(model.FGUID,model.FID))
             {
-                return vipInfoService.EditVIPINFOO(model);
+                return vipInfoService.EditVIPINFO(model);
             }
 
             else
             {
-                return vipInfoService.AddVIPINFOO(model);
+                return vipInfoService.AddVIPINFO(model);
             }
         }
         /// <summary>
