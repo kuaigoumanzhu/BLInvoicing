@@ -50,7 +50,7 @@ namespace BL.Service
             }
         }
 
-        public T_PURCHASEModel AddPURCHASE(T_PURCHASEModel model)
+        public T_PURCHASEModel AddPURCHASE(T_PURCHASEModel model,int id, int number, CommonService service)
         {
 
             string sql = @"insert into  T_PURCHASE(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID,FPERSONID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME,FCHECKID,FCHECKTIME
@@ -58,19 +58,29 @@ namespace BL.Service
 )";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, model) > 0)
+                IDbTransaction transaction = db.BeginTransaction();
+                try { 
+                if (service.UpdateNumberById(db, transaction, id, number))
                 {
-                    var res = db.QuerySingle<T_PURCHASEModel>("select * from T_PURCHASE with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
+                    db.Execute(sql, model, transaction);
+                    var res = db.QuerySingle<T_PURCHASEModel>("select * from T_PURCHASE with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID },transaction);
+                    transaction.Commit();
                     res.closeCurrent = true;
                     res.message = "添加成功";
                     return res;
                 }
                 else
                 {
+                    transaction.Rollback();
                     model.closeCurrent = true;
                     model.statusCode = "300";
-                    model.message = "添加失败";
+                    model.message = "新增流水号已被占用，请重新保存！";
                     return model;
+                }
+                }catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
                 }
             }
         }

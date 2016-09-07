@@ -331,6 +331,9 @@
             //    GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
             //}
         })
+        $(document).on('change', "#tabGOODSALLOTInDetail input[name=FQUANTITY]", function () {
+            alert($(this).val());
+        })
         var trdata = null;
         var clickTR = null;
         function trClick() {

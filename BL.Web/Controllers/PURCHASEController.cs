@@ -69,13 +69,14 @@ namespace BL.Web.Controllers
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FGUID = Guid.NewGuid().ToString();
             int number = 0;
-            model.FCODE = common.GetNumberAndCodeById(id, out number);
             model.FNUMBER = number;
             model.FCREATETIME = DateTime.Now;
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(PURCHASEService.AddPURCHASE(model));
+            model.FCODE = common.GetNumberAndCodeById(id, out number);
+            var result = PURCHASEService.AddPURCHASE(model, id, number, common);
+            return JsonHelper.Instance.Serialize(result);
 
         }
         #endregion
