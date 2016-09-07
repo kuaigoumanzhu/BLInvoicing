@@ -146,8 +146,8 @@
                         if (trdata.length > 0) {
                             var xsje = trdata[0].FMARKETMONEY;
                             var hkje = $(this).val();
-                            var differMoney = trdata[0].FMARKETMONEY - parseFloat($(this).val());
-                            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": differMoney });                            
+                            var differMoney = parseFloat(trdata[0].FMARKETMONEY) - parseFloat($(this).val());
+                            FNCBALANCEDetailgrid.datagrid("updateRow", trdata[0].gridIndex, { "FBACKTMONEY": $(this).val(), "FDIFFERMONEY": toDecimal(differMoney) });
                             FNCBALANCEDetailgrid.datagrid("doCancelEditRow", trdata[0].gridIndex);
                             FNCBALANCEDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
                             SumCalc();
@@ -211,6 +211,14 @@
             $(ths[3]).html('<div><div class="datagrid-calcbox">合计</div>' + xsjeSum + '</div>');
             $(ths[4]).html('<div><div class="datagrid-calcbox">合计</div>' + hkjeSum + '</div>');
             $(ths[5]).html('<div><div class="datagrid-calcbox">合计</div>' + cyjeSum + '</div>');
+        }
+
+        function toDecimal(x) {
+            var f = parseFloat(x);
+            if (isNaN(f))
+                return;
+            f = Math.round(x * 100) / 100;
+            return f;
         }
     });
     //$(document).on('keypress', "#tabFNCBALANCEDetail input", function (event) {
