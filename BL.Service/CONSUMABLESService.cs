@@ -54,7 +54,7 @@ namespace BL.Service
             }
         }
 
-        public T_CONSUMABLESModel AddCONSUMABLES(T_CONSUMABLESModel model)
+        public T_CONSUMABLESModel AddCONSUMABLES(T_CONSUMABLESModel model, int id, int number, CommonService service)
         {
 
             string sql = @"insert into  T_CONSUMABLES(FGUID, FCREATEID, FCREATETIME, FTYPE, FDATE, FNUMBER, FCODE, FPERSONID, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
@@ -62,19 +62,30 @@ namespace BL.Service
 )";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, model) > 0)
+                IDbTransaction transaction = db.BeginTransaction();
+                try
                 {
-                    var res = db.QuerySingle<T_CONSUMABLESModel>("select * from T_CONSUMABLES with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
-                    res.closeCurrent = true;
-                    res.message = "添加成功";
-                    return res;
+                    if (service.UpdateNumberById(db, transaction, id, number))
+                    {
+                        db.Execute(sql, model, transaction);
+                        var res = db.QuerySingle<T_CONSUMABLESModel>("select * from T_CONSUMABLES with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID },transaction);
+                        res.closeCurrent = true;
+                        res.message = "添加成功";
+                        return res;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        model.closeCurrent = true;
+                        model.statusCode = "300";
+                        model.message = "添加失败";
+                        return model;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    model.closeCurrent = true;
-                    model.statusCode = "300";
-                    model.message = "添加失败";
-                    return model;
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
                 }
             }
         }

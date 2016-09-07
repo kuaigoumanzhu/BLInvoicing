@@ -91,7 +91,7 @@ namespace BL.Web.Controllers
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(consumablesService.AddCONSUMABLES(model));
+            return JsonHelper.Instance.Serialize(consumablesService.AddCONSUMABLES(model,id,number,common));
 
         }
         #endregion
