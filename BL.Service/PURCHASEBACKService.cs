@@ -46,7 +46,7 @@ namespace BL.Service
             }
         }
 
-        public T_PURCHASEBACKModel AddPURCHASEBACK(T_PURCHASEBACKModel model)
+        public T_PURCHASEBACKModel AddPURCHASEBACK(T_PURCHASEBACKModel model, int id, int number, CommonService service)
         {
 
             string sql = @"insert into  T_PURCHASEBACK(FGUID, FCREATEID, FCREATETIME, FDATE, FNUMBER, FCODE, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
@@ -54,19 +54,31 @@ namespace BL.Service
 )";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, model) > 0)
+                IDbTransaction transaction = db.BeginTransaction();
+                try
                 {
-                    var res = db.QuerySingle<T_PURCHASEBACKModel>("select * from T_PURCHASEBACK with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
-                    res.closeCurrent = true;
-                    res.message = "添加成功";
-                    return res;
-                }
-                else
+                    if (service.UpdateNumberById(db, transaction, id, number))
+                    {
+                        db.Execute(sql, model, transaction);
+                        var res = db.QuerySingle<T_PURCHASEBACKModel>("select * from T_PURCHASEBACK with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID }, transaction);
+                        transaction.Commit();
+                        res.closeCurrent = true;
+                        res.message = "添加成功";
+                        return res;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        model.closeCurrent = true;
+                        model.statusCode = "300";
+                        model.message = "新增流水号已被占用，请重新保存！";
+                        return model;
+                    }
+                }catch(Exception ex)
                 {
-                    model.closeCurrent = true;
-                    model.statusCode = "300";
-                    model.message = "添加失败";
-                    return model;
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+
                 }
             }
         }
