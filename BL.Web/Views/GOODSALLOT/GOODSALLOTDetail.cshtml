@@ -255,8 +255,8 @@
                     var edits = [];
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
-                        if (index != -1) {
+                        var index = $.IndexOfMore(goods.FGOODSID, goods.FBATCH, datas, "FGOODSID", "FBATCH");
+                        if (index != -1 ) {
                             return true;
                         }
                         bol = true;
@@ -267,7 +267,7 @@
                     });
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        var index = $.IndexOfMore(goods.FGOODSID, goods.FBATCH, datas, "FGOODSID", "FBATCH"); //$.IndexOf(goods.FGOODSID, datas, "FGOODSID");
                         if (index != -1) {
                             edits.push(index);
                         }
@@ -284,9 +284,7 @@
                     });
                     $(document).off('keypress', "#tabGOODSALLOTInDetail input");
 
-                    $("#tabGUIDANCEDetail input[name='FQUANTITY']").change(function () {
-                        alert($(this).val());
-                    })
+                
                     //var $checked = $dialog.find('input[name="child"]:checked');
                     //if ($checked.length == 0)
                     //    return true;
@@ -336,7 +334,11 @@
             //}
         })
         $(document).on('change', "#tabGOODSALLOTInDetail input[name=FQUANTITY]", function () {
-            alert($(this).val());
+            $(this).trigger("keyCodeEnter");
+            var obj = {};
+            obj.BarCode = FINWAREHOUSEID + ' ' + trdata.FGOODSID + ' ' + trdata.FMARKETPRICE + ' ' + trdata.FQUANTITY;
+            obj.GoodsName = trdata.FGOODSNAME;
+            window.location.href = "BLPrint:" + encodeURIComponent(JSON.stringify(obj));
         })
         var trdata = null;
         var clickTR = null;
