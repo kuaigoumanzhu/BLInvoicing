@@ -283,6 +283,10 @@
                         }
                     });
                     $(document).off('keypress', "#tabGOODSALLOTInDetail input");
+
+                    $("#tabGUIDANCEDetail input[name='FQUANTITY']").change(function () {
+                        alert($(this).val());
+                    })
                     //var $checked = $dialog.find('input[name="child"]:checked');
                     //if ($checked.length == 0)
                     //    return true;

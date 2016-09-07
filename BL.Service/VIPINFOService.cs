@@ -35,7 +35,7 @@ namespace BL.Service
         }
         public IEnumerable<T_VIPINFOModel> GetAllVIPINFO(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)
         {
-            //string sql = "select * from T_GOODS";
+            //string sql = "select * from T_GOODS"; 
             string whereStr = " 1=1 ";
             if (paraDic.Contains("FID") && paraDic["FID"].ToString().Trim() != "")
             {

@@ -12,7 +12,7 @@
     $(function () {
         $.CurrentNavtab.find("#btnSearch").click(function () {
             var url = '/SUPPLIER/GetAllSupplierJson?FID=' + $.CurrentNavtab.find("#txtFID").val() + "&FNAME=" + $.CurrentNavtab.find("#txtFNAME").val();
-            VIPInfomaingrid.datagrid("reload", { dataUrl: url });
+            VIPInfomaingrid.datagrid("reload", { dataUrl: url }); 
         });
 
         $(document).on("click", "#SUPPLIER_qiyong,#SUPPLIER_jinyong", function () {
