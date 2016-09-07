@@ -101,11 +101,11 @@ namespace BL.Service
             }
             if (paraDic.Contains("FType") && paraDic["FType"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and d.FType='{0}'", paraDic["FType"].ToString());
+                whereStr += string.Format(" and c.FType='{0}'", paraDic["FType"].ToString());
             }
             if (paraDic.Contains("FPERSONID") && paraDic["FPERSONID"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
+                whereStr += string.Format(" and c.FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
             }
             if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
             {
@@ -136,11 +136,19 @@ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID");
             string whereStr = " c.FSTATUS='2' ";
             if (paraDic.Contains("FGoodsCode") && paraDic["FGoodsCode"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and c.FGOODSID like '%{0}%'", paraDic["FCode"].ToString());
+                whereStr += string.Format(" and d.FGOODSID like '%{0}%'", paraDic["FGoodsCode"].ToString());
             }
             if (paraDic.Contains("FGoodsName") && paraDic["FGoodsName"].ToString().Trim() != "")
             {
                 whereStr += string.Format(" and d.FGOODSNAME like '%{0}%'", paraDic["FGoodsName"].ToString());
+            }
+            if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and c.FWAREHOUSEID ='{0}'", paraDic["FWAREHOUSEID"].ToString());
+            }
+            if (paraDic.Contains("FDATE") && paraDic["FDATE"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and datediff(day,c.FDATE,'{0}')=0", paraDic["FDATE"].ToString());
             }
 
             using (IDbConnection db = OpenConnection())

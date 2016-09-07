@@ -318,6 +318,14 @@ namespace BL.Web.Controllers
             {
                 dic["FGoodsName"] = Request.QueryString["FGoodsName"];
             }
+            if (!string.IsNullOrEmpty(Request.QueryString["FWAREHOUSEID"]))
+            {
+                dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FDATE"]))
+            {
+                dic["FDATE"] = Request.QueryString["FDATE"];
+            }
 
             int totalPage = 0;
             var lst = consumablesService.SearchCONSUMABLESHourse(dic, ref totalPage, pageCurrent, pageSize);

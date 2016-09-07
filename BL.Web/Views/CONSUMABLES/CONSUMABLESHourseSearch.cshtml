@@ -1,5 +1,10 @@
 ﻿<div class="bjui-pageHeader" style="background:#FFF;">
     
+    <label class="control-label">日期</label>
+    <input type="text" name="dateTime" id="dtFdate" value="" data-toggle="datepicker" size="13" /> 
+    <label class="control-label">仓库</label>
+    <select id="selWareHose" data-toggle="selectpicker">
+    </select>
     <label class="control-label">商品编号</label>
     <input type="text" id="txtNo"  size="15"/>
     <label class="control-label">商品名称</label>
@@ -12,10 +17,10 @@
 <script type="text/javascript">
     $(function () {
         $.CurrentNavtab.find("#btnSearchConsubablesHourse").click(function () {
-            var url = '/CONSUMABLES/GetCONSUMABLESHourseJson?FGoodsCode=' + $.CurrentNavtab.find("#txtNo").val() + "&FGoodsName=" + $.CurrentNavtab.find("#txtFGoodsName").val();
+            var url = '/CONSUMABLES/GetCONSUMABLESHourseJson?FGoodsCode=' + $.CurrentNavtab.find("#txtNo").val() + "&FGoodsName=" + $.CurrentNavtab.find("#txtFGoodsName").val() + "&FDATE=" + $.CurrentNavtab.find("#dtFdate").val() + "&FWAREHOUSEID=" + $.CurrentNavtab.find("#selWareHose").val();
             CONSUMABLEHoursegrid.datagrid("reload", { dataUrl: url });
         });
-
+        LoadWareHose('selWareHose','1');
         var wareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson",
