@@ -88,6 +88,15 @@ namespace BL.Service
             }
         }
 
+        public IEnumerable<T_REPERTORYModel> GetGoodsInfoByWare(string ware)
+        {
+            string sql = @"select * from T_REPERTORY with(nolock) where FWAREHOUSEID=@FWAREHOUSEID";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_REPERTORYModel>(sql, new { FWAREHOUSEID = ware });
+            }
+        }
+
         public UiResponse AddOtherOutDetailInfo(T_OTHEROUTDETAILSModel model,string wareId)
         {
             string sql = @"insert into T_OTHEROUTDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FBATCH,FGOODSID,FGOODSNAME,FUNIT,FQUANTITY,FPRICE,FMONEY,FMEMO)

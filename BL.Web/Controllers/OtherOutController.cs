@@ -75,6 +75,13 @@ namespace BL.Web.Controllers
         {
             return JsonHelper.Instance.Serialize(otherOut.GetGoodsInfoByIdAndBatchWare(goodsId, batch, wareId));
         }
+
+        public ActionResult SelOtherOutGoods(string wareId)
+        {
+            return View(otherOut.GetGoodsInfoByWare(wareId));
+        }
+
+
         [JsonException]
         public string EditOtherOutDetailsJson(string json,string wareId)
         {

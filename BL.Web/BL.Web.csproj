@@ -744,6 +744,7 @@
     <Content Include="Views\RepertoryCheck\RepertoryCheckDetails.cshtml" />
     <Content Include="Views\PURCHASE\selectGoods.cshtml" />
     <Content Include="Views\GUIDANCE\selectGoods.cshtml" />
+    <Content Include="Views\OtherOut\SelOtherOutGoods.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

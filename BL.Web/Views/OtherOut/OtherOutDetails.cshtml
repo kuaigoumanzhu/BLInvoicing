@@ -26,9 +26,11 @@
         var url = "/OtherOut/GetAllOtherOutDetailsJson?parentId=" + parentId;
         var otherOutDetailGrid = $("#tabOtherOutDetails").datagrid({
             gridTitle: '其他出库单明细',
+            toolbarCustom:'<button id="btnOtherOutAdd" type="button" class="btn btn-blue" data-icon="plus">添加</button>'+
+                '<button id="btnOtherOutSave" type="button" class="btn btn-default" data-icon="save">保存</button>'+
+                '<button id="btnOtherOutCancel" type="button" class="btn btn-default" data-icon="save">取消</button>'+
+                '<button id="btnOtherOutDel" type="button" class="btn btn-red" data-icon="times">删除</button>',
             showToolbar: true,
-            toolbarItem: 'add,save,cancel',
-            addLocation: 'first',
             local:'local',
             data: [],
             dataType: 'json',
@@ -39,14 +41,16 @@
                     label: '商品编号',
                     align: 'center',
                     width: 100,
-                    rule: "required"
+                    edit: false,
+                    add: false
                 },
                 {
                     name: 'FBATCH',
                     label: '批次号',
                     align: 'center',
                     width: 200,
-                    rule: "required"
+                    edit: false,
+                    add: false
                 },
                 {
                     name: 'FGOODSNAME',
@@ -71,6 +75,12 @@
                     width: 80,
                     edit: false,
                     add: false
+                },
+                {
+                    name: 'OutQuantity',
+                    label: '出库数量',
+                    align: 'center',
+                    width: 80
                 },
                 {
                     name: 'FMONEY',
@@ -123,8 +133,74 @@
                 }
             });
         }
+        $(document).on('click','#btnOtherOutAdd,#btnOtherOutSave,#btnOtherOutCancel,#btnOtherOutDel',function(){
+            switch($(this).attr("id")){
+                case 'btnOtherOutAdd':
+                    Add();
+                    break;
+                case 'btnOtherOutSave':
+                    break;
+                case 'btnOtherOutCancel':
+                    break;
+                case 'btnOtherOutDel':
+                    break;
+            }
+        });
+        function Add(){
+            $(this).dialog({
+                id: 'OtherOutDetailDlg',
+                url:'/OtherOut/SelOtherOutGoods?wareId='+wareId,
+                title: '选择商品',
+                width: 840,
+                mask: true,
+                beforeClose:function($dialog){
+                    datas = [];
+                    var $checked = $dialog.find('input[name="child"]:checked');
+                    if ($checked.length == 0)
+                        return true;
+                    var currentDatas = $('#tabOtherOutDetails').data("bjui.datagrid").data;
+                    for (var i = 0, l = currentDatas.length; i < l; i++) {
+                        datas.push(currentDatas[i]);
+                    }
+                    var bol = false;
+                    var edits = [];
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            return true;
+                        }
+                        bol = true;
+                        delete goods.FGUID;
+                        datas.push(goods);
+                    });
+                    $checked.each(function () {
+                        var goods = JSON.parse($(this).val());
+                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        if (index != -1) {
+                            edits.push(index);
+                        }
+                    });
+                    if ($checked.length > 0 && bol) {
+                        $('#tabOtherOutDetails').datagrid('reload', { local: 'local', data: datas });
+                    }
+                    $('#tabOtherOutDetails').data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
+                        for (var i = 0, l = edits.length; i < l; i++) {
+                            $('#tabOtherOutDetails').datagrid("doEditRow", edits[i]);
+                            //trClick();
+                        }
+                    });
+                    return true;
+                }
+            });
+        }
+        var doEdit=false;
         $("#tabOtherOutDetails").data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
-            var ths = $("div.datagrid-box-f").find("table").find("th");
+            if(doEdit){
+                $("#tabOtherOutDetails").datagrid("doEditRow",0);
+            }
+            doEdit=false;
+            var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
             var sumMoney=0;
             var newData = $("#tabOtherOutDetails").data("bjui.datagrid").data;
             for(var i=0,l=newData.length;i<l;i++){
@@ -146,7 +222,8 @@
             if (batch == "") {
                  $(this).alertmsg("warn", "请输入批次号");
                  return false;
-             }
+            }
+            var fmemo=$("#tabOtherOutDetails").find("input[name=FMEMO]").val();
              //var differQuantity = trdata.FQUANTITY - $(this).val();
              //RepertoryCheckDetailGrid.datagrid("updateRow", trdata.gridIndex, { "FREALQUANTITY": $(this).val(), "FDIFFERQUANTITY": differQuantity });
 
@@ -169,9 +246,9 @@
                         otherOutInfo.FQUANTITY=info.FQUANTITY;
                         otherOutInfo.FPRICE=info.FPRICE;
                         otherOutInfo.FMONEY=toDecimal(info.FPRICE*info.FQUANTITY);
-                        console.log(allDatas);
-                        allDatas.push(otherOutInfo);
-                        console.log(allDatas);
+                        otherOutInfo.FMEMO=fmemo;
+                        allDatas.unshift(otherOutInfo);
+                        doEdit=true;
                         $("#tabOtherOutDetails").datagrid("reload",{data:allDatas});
                         //otherOutDetailGrid.datagrid("add",0,otherOutInfo);  
                         //var trs=[];
