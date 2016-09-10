@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using BL.Models;
+using System.Collections;
 
 namespace BL.Web.Controllers
 {
@@ -21,8 +22,17 @@ namespace BL.Web.Controllers
         [JsonException]
         public string GetOtherOutList(int pageCurrent = 1, int pageSize = 10)
         {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FDate"]))
+            {
+                dic["FDate"] = Request.QueryString["FDate"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
+            {
+                dic["FCode"] = Request.QueryString["FCode"];
+            }
             var total = 0;
-            var lst = otherOut.GetAllOtherOutInfo(pageCurrent, pageSize, out total);
+            var lst = otherOut.GetAllOtherOutInfo(dic,pageCurrent, pageSize, out total);
             return JsonHelper.Instance.Serialize(new { list = lst, pageSize = pageSize, pageCurrent = pageCurrent, total = total });
         }
         /// <summary>
@@ -40,7 +50,6 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATEID = userId;
             model.FCREATETIME = now;
-            model.FDATE = now;
             model.FAPPLYID = userId;
             model.FAPPLYTIME = now;
             int number = 0;
@@ -81,16 +90,24 @@ namespace BL.Web.Controllers
             return View(otherOut.GetGoodsInfoByWare(wareId));
         }
 
-
+        /// <summary>
+        /// 保存及修改其他出单
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="wareId"></param>
+        /// <returns></returns>
         [JsonException]
         public string EditOtherOutDetailsJson(string json,string wareId)
         {
             var models = JsonHelper.Instance.Deserialize<List<T_OTHEROUTDETAILSModel>>(json);
-            var model = models[0];
-            model.FGUID = Guid.NewGuid().ToString();
-            model.FCREATEID = UserContext.CurrentUser.UserName;
-            model.FCREATETIME = DateTime.Now;
-            var res= otherOut.AddOtherOutDetailInfo(model,wareId);
+            var res= otherOut.AddOtherOutDetailInfo(models, wareId, UserContext.CurrentUser.UserName);
+            return JsonHelper.Instance.Serialize(res);
+        }
+
+        [JsonException]
+        public string DelGoodsBackDetailJson(string fguid)
+        {
+            var res = otherOut.DelGoodsBackDetail(fguid);
             return JsonHelper.Instance.Serialize(res);
         }
     }

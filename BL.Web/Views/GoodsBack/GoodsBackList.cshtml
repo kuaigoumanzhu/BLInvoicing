@@ -4,17 +4,22 @@
     <label class="control-label">单据编号</label>
     <input type="text" id="fCode" size="15" />
     <label class="control-label">表单状态</label>
-    <select name="fStatus" data-toggle="selectpicker">
+    <select name="fStatus" id="selState" data-toggle="selectpicker">
         <option value="1" selected="selected">未提交</option>
         <option value="2">已提交</option>
+        <option value="3">已保存</option>
     </select>
-    <button type="button" id="searchCodeName" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabGoodsBack" data-height="100%" class="table table-bordered table-striped"></table>
 </div>
 <script type="text/javascript">
     $(function () {
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/GoodsBack/GetGoodsBackList?FDate=' + $.CurrentNavtab.find("#dateTime").val() + "&FCode=" + $.CurrentNavtab.find("#fCode").val() + "&FStatus=" + $.CurrentNavtab.find("#selState").val();
+            goodsBackGrid.datagrid("reload", { dataUrl: url });
+        });
         var wareHouseLst,inWareHouseLst;
         $(this).bjuiajax("doAjax", {
             url: "/Common/GetWareHoseJson?FCATEGORY=2",
@@ -47,8 +52,8 @@
                     label: '日期',
                     type: 'date',
                     align: 'center',
-                    add: false,
-                    width: 170
+                    width: 170,
+                    rule: 'required'
                 },
                 {
                     name: 'FCODE',
@@ -104,7 +109,7 @@
                     items: [{ '1': '未提交' }, { '2': '已提交' }, {'3':'已保存'}],
                     align: 'center',
                     width: 80,
-                    render: $.datagrid.renderItem
+                    add:false
                 },
                 {
                     name: 'FSTARTTIME',

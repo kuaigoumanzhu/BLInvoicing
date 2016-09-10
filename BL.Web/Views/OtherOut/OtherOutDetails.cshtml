@@ -80,7 +80,8 @@
                     name: 'OutQuantity',
                     label: '出库数量',
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    rule:'number'
                 },
                 {
                     name: 'FMONEY',
@@ -109,17 +110,17 @@
                 }
             ],
             editUrl: '/OtherOut/EditOtherOutDetailsJson?wareId='+wareId,
-            delUrl: '/GoodsBack/DelGoodsBackDetailJson',
-            contextMenuB: true,
+            ///delUrl: '/GoodsBack/DelGoodsBackDetailJson',
             editMode: 'inline',
             height: '100%',
             showTfoot: true,
-            inlineEditMult:false,
+            inlineEditMult:true,
             paging: false,
-            afterSave:function(){
-                //$("#tabOtherOutDetails").datagrid("reload",{dataUrl:url});
-                LoadData();
-            }
+            showCheckboxcol:true
+            //afterSave:function(){
+            //    //$("#tabOtherOutDetails").datagrid("reload",{dataUrl:url});
+            //    LoadData();
+            //}
         });
         var allDatas=null;
         LoadData();
@@ -139,13 +140,107 @@
                     Add();
                     break;
                 case 'btnOtherOutSave':
+                    Save();
                     break;
                 case 'btnOtherOutCancel':
+                    Cancel();
                     break;
                 case 'btnOtherOutDel':
+                    DelRows();
                     break;
             }
         });
+        function DelRows(){
+            var delRows=$("#tabOtherOutDetails").data("selectedDatas");
+            if(delRows.length>1){
+                $(this).alertmsg('warn', "不支持同时删除多条！");
+                return false;
+            }
+            if (delRows == undefined || delRows.length == 0) {
+                $(this).alertmsg('warn', "请勾选需要删除的行！");
+                return false;
+            }
+            var $girddata=$("#tabOtherOutDetails").data("bjui.datagrid");
+            for(var i=0,l=delRows.length;i<l;i++){
+                var fguid = delRows[i].FGUID;
+                var grid=$("#tabOtherOutDetails");
+                //var index=delRows[i].gridIndex;
+                if (fguid == null||fguid==undefined) {
+                    var dataIndex=$.IndexOf(delRows[i].FGOODSID, $girddata.data, "FGOODSID");
+                    $girddata.data.splice(dataIndex, 1);
+                    $girddata.allData.splice(dataIndex, 1);
+                    $($girddata.$tbody.find('> tr')[dataIndex]).remove();
+                }else{
+                    //从数据库删除
+                    var dataIndex=$.IndexOf(delRows[i].FGUID, $girddata.data, "FGUID");
+                    $(this).bjuiajax("doAjax", {
+                        url: "/OtherOut/DelGoodsBackDetailJson",
+                        data: { fguid:delRows[i].FGUID },
+                        callback: function (json) {
+                            if(json.statusCode=="300"){
+                                $(this).alertmsg("warn", json.message);
+                            }else{
+                                $girddata.data.splice(dataIndex, 1);
+                                $girddata.allData.splice(dataIndex, 1);
+                                $($girddata.$tbody.find('> tr')[dataIndex]).remove();
+                                $(this).alertmsg("ok", json.message);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        function Cancel(){
+            var alldatas=$("#tabOtherOutDetails").data("bjui.datagrid").data;
+            var cancelDatas=[];
+            var removeDatas=[];
+            for(var i=0,l=alldatas.length;i<l;i++){//获取未保存的数据
+                if(alldatas[i].FGUID!=undefined){
+                    cancelDatas.push(alldatas[i]);
+                }else{
+                    removeDatas.push(alldatas[i]);
+                }
+            }
+            //console.log(cancelDatas);
+            if(cancelDatas.length>0){
+                $("#tabOtherOutDetails").data("bjui.datagrid").options.data=[];
+                $("#tabOtherOutDetails").datagrid('reload',{data:cancelDatas});
+            }else{
+                var $gird=$("#tabOtherOutDetails").data("bjui.datagrid");
+                $gird.data=[];
+                $gird.allData=[];
+                for(var i=0,l=removeDatas.length;i<l;i++){
+                    $($gird.$tbody.find('> tr')[removeDatas[i].gridIndex]).remove();
+                }
+            }
+            //LoadData();
+        }
+        function Save(){
+            var alldatas=$("#tabOtherOutDetails").data("bjui.datagrid").data;
+            var saveDatas=[];
+            for(var i=0,l=alldatas.length;i<l;i++){//获取未保存的数据
+                if(alldatas[i].FGUID==undefined){
+                    saveDatas.push(alldatas[i]);
+                }
+            }
+            if(saveDatas.length>0){
+                $(this).bjuiajax("doAjax", {
+                    url: "/OtherOut/GetGoodsInfoByIdAndBatchWareJson",
+                    data: { json:JSON.stringify(saveDatas), wareId: wareId },
+                    callback: function (json) {
+                        if(json.statusCode=="300"){
+                            $(this).alertmsg("warn", "保存失败！");
+                        }else{
+                            LoadData();
+                            $(this).alertmsg("ok", "保存成功！");
+                        }
+                    }
+                });
+            }else{
+                $(this).alertmsg("warn", "没有需要保存的数据！");
+                return false;
+            }
+        }
         function Add(){
             $(this).dialog({
                 id: 'OtherOutDetailDlg',
@@ -180,6 +275,15 @@
                         if (index != -1) {
                             edits.push(index);
                         }
+                        var alldatas=$("#tabOtherOutDetails").data("bjui.datagrid").data;
+                        for(var i=0,l=alldatas.length;i<l;i++){//添加未保存的修改
+                            if(alldatas[i].FGUID==undefined){
+                                var location=$.IndexOf(alldatas[i].FGOODSID, datas, "FGOODSID");
+                                if (location != -1) {
+                                    edits.push(location);
+                                }
+                            }
+                        }
                     });
                     if ($checked.length > 0 && bol) {
                         $('#tabOtherOutDetails').datagrid('reload', { local: 'local', data: datas });
@@ -187,90 +291,98 @@
                     $('#tabOtherOutDetails').data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
                         for (var i = 0, l = edits.length; i < l; i++) {
                             $('#tabOtherOutDetails').datagrid("doEditRow", edits[i]);
-                            //trClick();
                         }
+                        trClick();
                     });
                     return true;
                 }
             });
         }
-        var doEdit=false;
+        //var doEdit=false;
         $("#tabOtherOutDetails").data("bjui.datagrid").$tbody.on("han.reload.loaded", function () {
-            if(doEdit){
-                $("#tabOtherOutDetails").datagrid("doEditRow",0);
-            }
-            doEdit=false;
+            //if(doEdit){
+            //    $("#tabOtherOutDetails").datagrid("doEditRow",0);
+            //}
+            //doEdit=false;
             var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
             var sumMoney=0;
             var newData = $("#tabOtherOutDetails").data("bjui.datagrid").data;
             for(var i=0,l=newData.length;i<l;i++){
-                sumMoney+=newData[i].FMONEY;
+                sumMoney+=newData[i].FMONEY==undefined?0:newData[i].FMONEY;
             }
-            $(ths[6]).html('<div><div class="datagrid-calcbox">合计</div>' + toDecimal(sumMoney) + '</div>');
+            $(ths[8]).html('<div><div class="datagrid-calcbox">合计</div>' + toDecimal(sumMoney) + '</div>');
         });
-        $(document).off('keypress', "#tabOtherOutDetails input");
-        $(document).on('keypress', "#tabOtherOutDetails input", function (event) {
+        var clickTR=null,trdata=null;
+        $(document).off('keypress', "#tabOtherOutDetails input[name=OutQuantity]");
+        $(document).on('keypress', "#tabOtherOutDetails input[name=OutQuantity]", function (event) {
             //改为只监听数字键
             if (event.keyCode != "13")
                 return;
-            var goodsId = $("#tabOtherOutDetails").find("input[name=FGOODSID]").val();
-            if (goodsId == "") {
-                $(this).alertmsg("warn", "请输入商品编号");
+            trClick();
+            $(this).trigger("keyCodeEnter");
+            var OutQuantity =$(this).val();
+            if(isNaN(OutQuantity)){
+                $(this).alertmsg("warn", "请输入数字！");
                 return false;
             }
-            var batch = $("#tabOtherOutDetails").find("input[name=FBATCH]").val();
-            if (batch == "") {
-                 $(this).alertmsg("warn", "请输入批次号");
-                 return false;
+            if(trdata!=null){
+                var fMoney=toDecimal(trdata.FPRICE*$(this).val());
+                var gird = $("#tabOtherOutDetails");
+                gird.datagrid("updateRow", trdata.gridIndex, { "OutQuantity": $(this).val(), "FMONEY": fMoney });
+                if(clickTR!=null&&clickTR.hasClass("datagrid-edit-tr"))
+                    clickTR.removeClass("datagrid-edit-tr");
+                gird.datagrid("doEditRow", trdata.gridIndex);
+                //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
+                $($(gird.data("bjui.datagrid").$tbody.find('> tr')[trdata.gridIndex]).find('input[name=OutQuantity]')).focus();
             }
-            var fmemo=$("#tabOtherOutDetails").find("input[name=FMEMO]").val();
+            //var fmemo=$("#tabOtherOutDetails").find("input[name=FMEMO]").val();
+                
              //var differQuantity = trdata.FQUANTITY - $(this).val();
              //RepertoryCheckDetailGrid.datagrid("updateRow", trdata.gridIndex, { "FREALQUANTITY": $(this).val(), "FDIFFERQUANTITY": differQuantity });
 
-            $(this).bjuiajax("doAjax", {
-                url: "/OtherOut/GetGoodsInfoByIdAndBatchWareJson",
-                data: { goodsId: goodsId, batch: batch, wareId: wareId },
-                callback: function (json) {
-                    if(json.length==0){
-                        $(this).alertmsg("warn", "没有商品信息！");
-                    }else{
-                        var info=json[0];
-                        var otherOutInfo={};
-                        otherOutInfo.FPARENTID=parentId;
-                        //otherOutInfo.wareId=wareId;
-                        otherOutInfo.FGOODSID=info.FGOODSID;
-                        otherOutInfo.FBATCH=batch;
-                        otherOutInfo.FGOODSNAME=info.FGOODSNAME;
-                        otherOutInfo.FSURPLUS=info.FSURPLUS;
-                        otherOutInfo.FUNIT=info.FUNIT;
-                        otherOutInfo.FQUANTITY=info.FQUANTITY;
-                        otherOutInfo.FPRICE=info.FPRICE;
-                        otherOutInfo.FMONEY=toDecimal(info.FPRICE*info.FQUANTITY);
-                        otherOutInfo.FMEMO=fmemo;
-                        allDatas.unshift(otherOutInfo);
-                        doEdit=true;
-                        $("#tabOtherOutDetails").datagrid("reload",{data:allDatas});
-                        //otherOutDetailGrid.datagrid("add",0,otherOutInfo);  
-                        //var trs=[];
-                        //trs.push(otherOutInfo);
-                        //otherOutDetailGrid.data("bjui.datagrid").tools.createTrs(trs,true);
-                        //otherOutDetailGrid.datagrid("doEditRow",0);
-                        //$("#tabOtherOutDetails").find("input[name=FGOODSID]").val(goodsId);
-                        //$("#tabOtherOutDetails").find("input[name=FBATCH]").val(batch);
-                    }
-                }
-            });
+            //$(this).bjuiajax("doAjax", {
+            //    url: "/OtherOut/GetGoodsInfoByIdAndBatchWareJson",
+            //    data: { goodsId: goodsId, batch: batch, wareId: wareId },
+            //    callback: function (json) {
+            //        if(json.length==0){
+            //            $(this).alertmsg("warn", "没有商品信息！");
+            //        }else{
+            //            var info=json[0];
+            //            var otherOutInfo={};
+            //            otherOutInfo.FPARENTID=parentId;
+            //            //otherOutInfo.wareId=wareId;
+            //            otherOutInfo.FGOODSID=info.FGOODSID;
+            //            otherOutInfo.FBATCH=batch;
+            //            otherOutInfo.FGOODSNAME=info.FGOODSNAME;
+            //            otherOutInfo.FSURPLUS=info.FSURPLUS;
+            //            otherOutInfo.FUNIT=info.FUNIT;
+            //            otherOutInfo.FQUANTITY=info.FQUANTITY;
+            //            otherOutInfo.FPRICE=info.FPRICE;
+            //            otherOutInfo.FMONEY=toDecimal(info.FPRICE*info.FQUANTITY);
+            //            otherOutInfo.FMEMO=fmemo;
+            //            allDatas.unshift(otherOutInfo);
+            //            doEdit=true;
+            //            $("#tabOtherOutDetails").datagrid("reload",{data:allDatas});
+            //            //otherOutDetailGrid.datagrid("add",0,otherOutInfo);  
+            //            //var trs=[];
+            //            //trs.push(otherOutInfo);
+            //            //otherOutDetailGrid.data("bjui.datagrid").tools.createTrs(trs,true);
+            //            //otherOutDetailGrid.datagrid("doEditRow",0);
+            //            //$("#tabOtherOutDetails").find("input[name=FGOODSID]").val(goodsId);
+            //            //$("#tabOtherOutDetails").find("input[name=FBATCH]").val(batch);
+            //        }
+            //    }
+            //});
             
 
              //console.log(goodsBackDetailGrid.data("bjui.datagrid").$tbody.find('> tr'));
-             //var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
-             //var sumCount = 0;
-             //var newData = otherOutDetailGrid.data("bjui.datagrid").data;
-             //console.log(newData);
-             //for (var i = 0, l = newData.length; i < l; i++) {
-             //    sumCount += newData[i].FMONEY;
-             //}
-             //$(ths[6]).html('<div><div class="datagrid-calcbox">合计</div>' + sumCount + '</div>');
+             var ths = $.CurrentNavtab.find("div.datagrid-box-f").find("table").find("th");
+             var sumCount = 0;
+             var newData = $("#tabOtherOutDetails").data("bjui.datagrid").data;
+             for (var i = 0, l = newData.length; i < l; i++) {
+                 sumCount += newData[i].FMONEY==undefined?0:newData[i].FMONEY;
+             }
+             $(ths[8]).html('<div><div class="datagrid-calcbox">合计</div>' + toDecimal(sumCount) + '</div>');
         })
         function toDecimal(x){
             var f=parseFloat(x);
@@ -278,6 +390,13 @@
                 return;
             f=Math.round(x*100)/100;
             return f;
+        }
+        function trClick(){
+            var that = $("#tabOtherOutDetails").data("bjui.datagrid");
+            that.$tbody.find('> tr').on('keyCodeEnter',function(){
+                trdata=that.data[$(this).index()];
+                clickTR=$(this);
+            });
         }
 
     })

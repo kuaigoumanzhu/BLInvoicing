@@ -113,7 +113,10 @@
                     align: 'center',
                     width: 80,
                     edit: false,
-                    add:false
+                    add: false,
+                    calc: 'sum',
+                    calcTit: '合计',
+                    calcDecimal: 2
                 },
                 {
                     name: 'FDIFFERMONEY',
@@ -161,11 +164,13 @@
                 var differMoney=toDecimal(differQuantity*rowData.FPRICE);
                 grid.datagrid("updateRow", rindex, { "FACTUALQUANTITY": quantity, "FDIFFERQUANTITY": differQuantity, "FDIFFERMONEY": differMoney });
                 var ths = $("div.datagrid-box-f").find("table").find("th");
-                var sumMoney=0;
+                var sumMoney = 0, sumDifferQuantity= 0;;
                 var newData = grid.data("bjui.datagrid").data;
                 for(var i=0,l=newData.length;i<l;i++){
-                    sumMoney+=newData[i].FDIFFERMONEY;
+                    sumMoney += newData[i].FDIFFERMONEY;
+                    sumDifferQuantity += newData[i].FDIFFERQUANTITY;
                 }
+                $(ths[9]).html('<div><div class="datagrid-calcbox">合计</div>' + sumDifferQuantity + '</div>');
                 $(ths[10]).html('<div><div class="datagrid-calcbox">合计</div>' + sumMoney + '</div>');
             }
         })

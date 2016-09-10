@@ -3,7 +3,7 @@
     <input type="text" name="dateTime" id="dateTime" value="" data-toggle="datepicker" size="13" />
     <label class="control-label">单据编号</label>
     <input type="text" id="fCode" size="15" />
-    <button type="button" id="searchCodeName" class="btn btn-success">查询</button>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
 </div>
 <div class="bjui-pageContent">
     <table id="tabOhterOut" data-height="100%" class="table table-bordered table-striped"></table>
@@ -18,7 +18,11 @@
                 wareHouseLst = json;
             }
         });
-        otherOutGrid = $("#tabOhterOut").datagrid({
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/OtherOut/GetOtherOutList?FDate=' + $.CurrentNavtab.find("#dateTime").val() + "&FCode=" + $.CurrentNavtab.find("#fCode").val();
+            otherOutGrid.datagrid("reload", { dataUrl: url });
+        });
+        var otherOutGrid = $("#tabOhterOut").datagrid({
             gridTitle: '其他出库单',
             showToolbar: true,
             toolbarItem: 'add,save,cancel',
@@ -32,8 +36,8 @@
                     label: '日期',
                     type: 'date',
                     align: 'center',
-                    add: false,
-                    width: 170
+                    width: 170,
+                    rule: 'required'
                 },
                 {
                     name: 'FCODE',
@@ -69,7 +73,7 @@
                     name: 'FAPPLYTIME',
                     label: '填表日期',
                     align: 'center',
-                    width: 100,
+                    width: 170,
                     add: false
                 }
             ],

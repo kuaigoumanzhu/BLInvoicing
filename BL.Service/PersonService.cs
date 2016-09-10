@@ -154,5 +154,14 @@ where FGUID=@FGUID ";
                 return db.Query<T_PERSONModel>(sql + whereStr, dp);
             }
         }
+
+        public T_PERSONModel GetPersonByUserId(string fId)
+        {
+            string sql = @"select * from T_PERSON with(nolock) where FID=@fId";
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.QuerySingle<T_PERSONModel>(sql, new { fId = fId });
+            }
+        }
     }
 }

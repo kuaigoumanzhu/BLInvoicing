@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using BL.Service;
 using BL.Models;
 using System.Data;
+using System.Collections;
 
 namespace BL.Web.Controllers
 {
@@ -27,8 +28,25 @@ namespace BL.Web.Controllers
         [JsonException]
         public string GetGoodsBackList(int pageCurrent = 1, int pageSize = 10)
         {
+            IDictionary dic = new Hashtable();
+            if (!string.IsNullOrEmpty(Request.QueryString["FDate"]))
+            {
+                dic["FDate"] = Request.QueryString["FDate"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FCode"]))
+            {
+                dic["FCode"] = Request.QueryString["FCode"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FStatus"]))
+            {
+                dic["FStatus"] = Request.QueryString["FStatus"];
+            }
+            else
+            {
+                dic["FStatus"] = "1";
+            }
             var total = 0;
-            var lst = goodsBack.GetAllGoodsBackInfo(pageCurrent,pageSize,out total);
+            var lst = goodsBack.GetAllGoodsBackInfo(dic,pageCurrent,pageSize,out total);
             return JsonHelper.Instance.Serialize(new { list=lst,pageSize= pageSize, pageCurrent = pageCurrent, total = total });
         }
         /// <summary>
@@ -46,7 +64,6 @@ namespace BL.Web.Controllers
             model.FGUID = Guid.NewGuid().ToString();
             model.FCREATEID = UserContext.CurrentUser.UserName;
             model.FCREATETIME = now;
-            model.FDATE = now;
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = now;
             int number=0;

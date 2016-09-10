@@ -6,16 +6,26 @@ using BL.Models;
 using Dapper;
 using System.Data;
 using BL.Framework.Orm;
+using System.Collections;
 
 namespace BL.Service
 {
     public class OtherOutService: DBContext
     {
-        public IEnumerable<ViewOTHEROUTModel> GetAllOtherOutInfo(int pageIndex, int pageSize, out int total)
+        public IEnumerable<ViewOTHEROUTModel> GetAllOtherOutInfo(IDictionary paraDic,int pageIndex, int pageSize, out int total)
         {
+            string whereStr = " 1=1 ";
+            if (paraDic.Contains("FDate") && paraDic["FDate"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and datediff(day,FDATE,'{0}')=0", paraDic["FDate"].ToString());
+            }
+            if (paraDic.Contains("FCode") && paraDic["FCode"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and FCode like '%{0}%'", paraDic["FCode"].ToString());
+            }
             DynamicParameters dp = new DynamicParameters();
             dp.Add("@tblName", "T_OTHEROUT a with(nolock) left join T_Person b with(nolock) on a.FAPPLYID = b.FID");
-            dp.Add("@strWhere", " 1=1 ");
+            dp.Add("@strWhere", whereStr);
             dp.Add("@fldName", "a.*,b.FNAME as FAPPLYName");
             dp.Add("@strOrder", "a.FCREATETIME desc");
             dp.Add("@PageSize", pageSize);
@@ -97,7 +107,7 @@ namespace BL.Service
             }
         }
 
-        public UiResponse AddOtherOutDetailInfo(T_OTHEROUTDETAILSModel model,string wareId)
+        public UiResponse AddOtherOutDetailInfo(List<T_OTHEROUTDETAILSModel> models,string wareId,string userName)
         {
             string sql = @"insert into T_OTHEROUTDETAILS(FGUID,FCREATEID,FCREATETIME,FPARENTID,FBATCH,FGOODSID,FGOODSNAME,FUNIT,FQUANTITY,FPRICE,FMONEY,FMEMO)
                         values(@FGUID,@FCREATEID,@FCREATETIME,@FPARENTID,@FBATCH,@FGOODSID,@FGOODSNAME,@FUNIT,@FQUANTITY,@FPRICE,@FMONEY,@FMEMO)";
@@ -107,22 +117,50 @@ namespace BL.Service
                 IDbTransaction transaction = db.BeginTransaction();
                 try
                 {
-                    db.Execute(updateSql, new { FSURPLUS = 0, FENABLE = 0, FGOODSID = model.FGOODSID, FWAREHOUSEID = wareId, FBATCH = model.FBATCH },transaction);
-                    if (db.Execute(sql, model,transaction) > 0)
+                    var now = DateTime.Now;
+                    foreach(var model in models)
                     {
-                        transaction.Commit();
-                        return new UiResponse { statusCode = "200", message = "添加成功" };
+                        db.Execute(updateSql, new { FSURPLUS = 0, FENABLE = 0, FGOODSID = model.FGOODSID, FWAREHOUSEID = wareId, FBATCH = model.FBATCH }, transaction);
+                        model.FGUID = Guid.NewGuid().ToString();
+                        model.FCREATEID = userName;
+                        model.FCREATETIME = now;
+                        if (db.Execute(sql, model, transaction) > 0)
+                        {
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            return new UiResponse { statusCode = "300", message = "添加失败" };
+                        }
                     }
-                    else
-                    {
-                        transaction.Rollback();
-                        return new UiResponse { statusCode = "300", message = "添加失败" };
-                    }
+                    transaction.Commit();
+                    return new UiResponse { statusCode = "200", message = "添加成功" };
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
                     throw new Exception(ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public UiResponse DelGoodsBackDetail(string guid)
+        {
+            string sql = @"delete from T_OTHEROUTDETAILS where FGUID=@FGUID";
+            using (IDbConnection db = OpenConnection())
+            {
+                if(db.Execute(sql, new { FGUID = guid }) > 0)
+                {
+                    return new UiResponse { statusCode = "200", message = "删除成功" };
+                }
+                else
+                {
+                    return new UiResponse { statusCode = "300", message = "删除失败！" };
                 }
             }
         }

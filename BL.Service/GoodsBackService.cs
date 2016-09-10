@@ -6,18 +6,32 @@ using System.Text;
 using BL.Models;
 using Dapper;
 using System.Data;
+using System.Collections;
 
 namespace BL.Service
 {
     public class GoodsBackService: DBContext
     {
-        public IEnumerable<ViewGOODSBACKModel> GetAllGoodsBackInfo(int pageIndex, int pageSize,out int total)
+        public IEnumerable<ViewGOODSBACKModel> GetAllGoodsBackInfo(IDictionary paraDic,int pageIndex, int pageSize,out int total)
         {
             //string sql = @"select a.*,b.FNAME as FAPPLYName from T_GOODSBACK a with(nolock)
             //                left join T_Person b with(nolock) on a.FAPPLYID=b.FID";
+            string whereStr = " 1=1 ";
+            if (paraDic.Contains("FDate") && paraDic["FDate"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and datediff(day,FDATE,'{0}')=0", paraDic["FDate"].ToString());
+            }
+            if (paraDic.Contains("FCode") && paraDic["FCode"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and FCode like '%{0}%'", paraDic["FCode"].ToString());
+            }
+            if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and a.FSTATUS='{0}'", paraDic["FStatus"].ToString());
+            }
             DynamicParameters dp = new DynamicParameters();
             dp.Add("@tblName", "T_GOODSBACK a with(nolock) left join T_Person b with(nolock) on a.FAPPLYID = b.FID");
-            dp.Add("@strWhere", " 1=1 ");
+            dp.Add("@strWhere", whereStr);
             dp.Add("@fldName", "a.*,b.FNAME as FAPPLYName");
             dp.Add("@strOrder", "a.FCREATETIME desc");
             dp.Add("@PageSize", pageSize);
