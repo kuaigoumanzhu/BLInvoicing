@@ -156,6 +156,23 @@ function LoadPerson(selectID) {
         }
         return -1;
     }
+    //sxj 2016 09 用来查找菜单数据item要查找字段值，lst菜单数据，name要查找字段名字
+    $.IndexOfMore = function (item,item1, lst, name,name1) {
+        if (!lst)
+            return -1;
+        var isObj = typeof (item) == "object";
+        var isObj1 = typeof (item1) == "object";
+        for (var i = 0, l = lst.length; i < l; i++) {
+            if (isObj && isObj1) {
+                if (lst[i] == item)
+                    return i;
+            } else {
+                if (lst[i][name] && lst[i][name1] && lst[i][name].toString().toUpperCase() == item.toString().toUpperCase() && lst[i][name1].toString().toUpperCase() == item1.toString().toUpperCase())
+                    return i;
+            }
+        }
+        return -1;
+    }
 })(jQuery);
 //hpf 局部打印
 (function ($) {

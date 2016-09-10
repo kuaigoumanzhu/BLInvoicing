@@ -33,7 +33,7 @@ namespace BL.Web.Controllers
         [JsonException]
         public string EditRepertoryCheckJson(string json)
         {
-            var id = 1;
+            var id = 10;
             var models = JsonHelper.Instance.Deserialize<List<ViewREPERTORYCHECK>>(json);
             var model = models[0];
             var now = DateTime.Now;

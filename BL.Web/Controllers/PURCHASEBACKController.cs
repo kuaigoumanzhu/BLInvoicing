@@ -70,7 +70,7 @@ namespace BL.Web.Controllers
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(PURCHASEBACKService.AddPURCHASEBACK(model));
+            return JsonHelper.Instance.Serialize(PURCHASEBACKService.AddPURCHASEBACK(model,id,number,common));
 
         }
         #endregion

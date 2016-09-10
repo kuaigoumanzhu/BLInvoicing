@@ -162,6 +162,7 @@
     <Compile Include="Controllers\RepertoryCheckController.cs" />
     <Compile Include="Controllers\GUIDANCEController.cs" />
     <Compile Include="Controllers\SUPPLIERController.cs" />
+    <Compile Include="Controllers\VIPInfoController.cs" />
     <Compile Include="Controllers\WareHoseController.cs" />
     <Compile Include="Controllers\WARNINGController.cs" />
     <Compile Include="Global.asax.cs">
@@ -744,6 +745,7 @@
     <Content Include="Views\RepertoryCheck\RepertoryCheckDetails.cshtml" />
     <Content Include="Views\PURCHASE\selectGoods.cshtml" />
     <Content Include="Views\GUIDANCE\selectGoods.cshtml" />
+    <Content Include="Views\VIPInfo\Index.cshtml" />
     <Content Include="Views\OtherOut\SelOtherOutGoods.cshtml" />
   </ItemGroup>
   <PropertyGroup>

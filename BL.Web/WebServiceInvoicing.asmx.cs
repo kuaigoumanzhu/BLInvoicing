@@ -30,7 +30,10 @@ namespace BL.Web
     public class WebServiceInvoicing : System.Web.Services.WebService
     {
         GoodsService goodsService = new GoodsService();
-        VIPINFOOService vipInfoService = new VIPINFOOService();
+        VIPINFOService vipInfoService = new VIPINFOService();
+        WareHoseService wareHouseService = new WareHoseService();
+        GoodsService goodService = new GoodsService();
+        SALEDAYBOOKService saledayBookService = new SALEDAYBOOKService();
 
         [WebMethod]
         public string HelloWorld()
@@ -53,83 +56,72 @@ namespace BL.Web
         /// 获取所有会员信息
         /// </summary>
         /// <returns></returns>s
-        //[WebMethod]
-        //public List<T_VIPINFOModel> GetMemberInfo()
-        //{
-        //    IDictionary dic = new Hashtable();
-        //    return vipInfoService.GetVIPINFOInfo(dic).ToList();
-        //}
+        [WebMethod]
+        public List<T_VIPINFOModel> GetMemberInfo()
+        {
+            IDictionary dic = new Hashtable();
+            return vipInfoService.GetVIPINFOInfo(dic).ToList();
+        }
         /// <summary>
         /// 获取所有场所信息
         /// </summary>
         /// <returns></returns>
-        //[WebMethod]
-        //public List<Maticsoft.Model.PlaceInfo> GetPlaceInfo()
-        //{
-        //    return place.GetModelList("");
-        //}
-        ///// <summary>
-        ///// 录入商品信息
-        ///// </summary>
-        ///// <returns></returns>
-        //[WebMethod]
-        //public bool AddCommodity(Maticsoft.Model.CommodityInfo model)
-        //{
-        //    if (commodity.Exists(model.commodityNumber))
-        //    {
-        //        return commodity.Update(model);
-        //    }
+        [WebMethod]
+        public List<T_WAREHOUSEModel> GetPlaceInfo()
+        {
+            return wareHouseService.GetAllWareHoseInfo().ToList();
+        }
+        /// <summary>
+        /// 录入商品信息
+        /// </summary>
+        /// <returns></returns>
+        [WebMethod]
+        public bool AddCommodity(T_GOODSModel model)
+        {
+            if (goodService.IsExistsFID(model.FGUID,model.FID))
+            {
+                return goodService.EditGoodsInfo(model);
+            }
 
-        //    else
-        //    {
-        //        return commodity.Add(model) > 0;
-        //    }
+            else
+            {
+                return goodService.AddGoodsInfo(model);
+            }
 
-        //}
-        ///// <summary>
-        ///// 录入会员信息
-        ///// </summary>
-        ///// <returns></returns>
-        //[WebMethod]
-        //public bool AddMember(Maticsoft.Model.MemberInfo model)
-        //{
+        }
+        /// <summary>
+        /// 录入会员信息
+        /// </summary>
+        /// <returns></returns>
+        [WebMethod]
+        public bool AddMember(T_VIPINFOModel model)
+        {
 
-        //    if (member.Exists(model.cardNumber))
-        //    {
-        //        return member.Update(model);
-        //    }
+            if (vipInfoService.IsExistsFID(model.FGUID,model.FID))
+            {
+                return vipInfoService.EditVIPINFO(model);
+            }
 
-        //    else
-        //    {
-        //        return member.Add(model) > 0;
-        //    }
-        //}
-        ///// <summary>
-        ///// 更新会员信息
-        ///// </summary>
-        ///// <returns></returns>
-        //[WebMethod]
-        //public bool UpdateMember(Maticsoft.Model.MemberInfo model)
-        //{
+            else
+            {
+                return vipInfoService.AddVIPINFO(model);
+            }
+        }
+        /// <summary>
+        /// 录入交易信息
+        /// </summary>
+        /// <returns></returns>
+        [WebMethod]
+        public int AddDeal(List<T_SALEDAYBOOKModel> listModel)
+        {
+            int result = 0;
+            for (int i = 0; i < listModel.Count; i++)
+            {
+                result += saledayBookService.AddSALEDAYBOOKInfo(listModel[i]);
+            }
 
-        //    return member.Update(model);
-
-        //}
-        ///// <summary>
-        ///// 录入交易信息
-        ///// </summary>
-        ///// <returns></returns>
-        //[WebMethod]
-        //public int AddDeal(List<Maticsoft.Model.DealInfo> listModel)
-        //{
-        //    int result = 0;
-        //    for (int i = 0; i < listModel.Count; i++)
-        //    {
-        //        result += deal.Add(listModel[i]);
-        //    }
-
-        //    return result;
-        //}
+            return result;
+        }
     }
 }
 

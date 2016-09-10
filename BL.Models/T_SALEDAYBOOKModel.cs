@@ -21,9 +21,17 @@ namespace BL.Models
         /// </summary>
         public DateTime? FCREATETIME { get; set; }
         /// <summary>
-        /// 批次 按商品编码和仓库 计数从1开始
+        /// 
         /// </summary>
-        public string FBATCH { get; set; }
+        public string FPARENTID { get; set; }
+        /// <summary>
+        /// 入库
+        /// </summary>
+        public string FINWAREHOUSEID { get; set; }
+        /// <summary>
+        /// 出库
+        /// </summary>
+        public string FOUTWAREHOUSEID { get; set; }
         /// <summary>
         /// 交易时间
         /// </summary>
@@ -55,7 +63,7 @@ namespace BL.Models
         /// <summary>
         /// 批次 T_PURCHASE 中FCODE
         /// </summary>
-        public string FBATCH2 { get; set; }
+        public string FBATCH { get; set; }
         /// <summary>
         /// 数量
         /// </summary>

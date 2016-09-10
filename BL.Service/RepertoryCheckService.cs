@@ -58,7 +58,7 @@ namespace BL.Service
                         model.closeCurrent = true;
                         model.statusCode = "300";
                         model.message = "新增流水号已被占用，请重新保存！";
-                        return null;
+                        return model;
                     }
                 }
                 catch (Exception ex)

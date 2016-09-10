@@ -91,7 +91,7 @@ namespace BL.Web.Controllers
             model.FSTATUS = "1";
             model.FAPPLYID = UserContext.CurrentUser.UserName;
             model.FAPPLYTIME = DateTime.Now;
-            return JsonHelper.Instance.Serialize(consumablesService.AddCONSUMABLES(model));
+            return JsonHelper.Instance.Serialize(consumablesService.AddCONSUMABLES(model,id,number,common));
 
         }
         #endregion
@@ -317,6 +317,14 @@ namespace BL.Web.Controllers
             if (!string.IsNullOrEmpty(Request.QueryString["FGoodsName"]))
             {
                 dic["FGoodsName"] = Request.QueryString["FGoodsName"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FWAREHOUSEID"]))
+            {
+                dic["FWAREHOUSEID"] = Request.QueryString["FWAREHOUSEID"];
+            }
+            if (!string.IsNullOrEmpty(Request.QueryString["FDATE"]))
+            {
+                dic["FDATE"] = Request.QueryString["FDATE"];
             }
 
             int totalPage = 0;

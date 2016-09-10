@@ -1,0 +1,139 @@
+﻿<div class="bjui-pageHeader" style="background:#FFF;">
+    <label class="control-label">编号</label>
+    <input type="text" id="txtFID" size="15" />
+    <label class="control-label">姓名</label>
+    <input type="text" id="txtFNAME"  size="15"/>
+    <button type="button" id="btnSearch" class="btn btn-success">查询</button>
+</div>
+<div class="bjui-pageContent">
+    <table id="tabVIPInfo" data-height="100%" class="table table-bordered table-striped"></table>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $.CurrentNavtab.find("#btnSearch").click(function () {
+            var url = '/SUPPLIER/GetAllSupplierJson?FID=' + $.CurrentNavtab.find("#txtFID").val() + "&FNAME=" + $.CurrentNavtab.find("#txtFNAME").val();
+            VIPInfomaingrid.datagrid("reload", { dataUrl: url }); 
+        });
+
+        $(document).on("click", "#SUPPLIER_qiyong,#SUPPLIER_jinyong", function () {
+            var selectedDatas = VIPInfomaingrid.data('selectedDatas');
+            if (selectedDatas == undefined || selectedDatas.length == 0) {
+                $(this).alertmsg('warn', '未选中任何行');
+                return false;
+            }
+            var btn = $(this).attr("id");
+            var data = selectedDatas[0];
+            switch (btn) {
+                case "SUPPLIER_qiyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/SUPPLIER/SetSupplierStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "2" },
+                        confirmMsg: "确认启用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                VIPInfomaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "2", FSTARTTIME: json.time });
+                                $(this).alertmsg("ok", "已启用");
+                            } else {
+                                $(this).alertmsg("warn", "启用失败");
+                            }
+                        }
+                    })
+                    break;
+                case "SUPPLIER_jinyong":
+                    $(this).bjuiajax("doAjax", {
+                        url: "/SUPPLIER/SetSupplierStatus",
+                        data: { FGUID: data.FGUID, FSTATUS: "3" },
+                        confirmMsg: "确认禁用？",
+                        callback: function (json) {
+                            if (json.result) {
+                                VIPInfomaingrid.datagrid("updateRow", data.gridIndex, { FSTATUS: "3", FENDTIME: json.time });
+                                $(this).alertmsg("ok", "已禁用");
+                            } else {
+                                $(this).alertmsg("warn", "禁用失败");
+                            }
+                        }
+                    })
+                    break;
+            }
+        });
+
+        VIPInfomaingrid = $("#tabVIPInfo").datagrid({
+            gridTitle: '会员信息',
+            showToolbar: false,
+            addLocation: 'first',
+            dataUrl: '/VIPInfo/GetAllVIPInfoJson',
+            dataType: 'json',
+            filterThead: false,
+            columns: [
+                {
+                    name: 'FGUID',
+                    label: 'FGUID',
+                    align: 'center',
+                    hide:false,
+                    width: 50
+
+                },
+                {
+                    name: 'FID',
+                    label: '编号（卡号）',
+                    align: 'center',
+                    width: 100,
+                },
+                {
+                    name: 'FNAME',
+                    label: '名称',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FSEX',
+                    label: '性别',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FAGE',
+                    label: '年龄',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FTEL',
+                    label: '住宅电话',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FMOBILE',
+                    label: '手机号码',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FPLACE',
+                    label: '办卡地址',
+                    align: 'center',
+                    width: 110
+                },
+                {
+                    name: 'FCONSUMPTION',
+                    label: '消费次数',
+                    align: 'center',
+                    width: 80
+                },
+                {
+                    name: 'FINTEGRAL',
+                    label: '累计积分',
+                    width: 80
+                }
+            ],
+            contextMenuB: true,
+            editMode: 'inline',
+            fullGrid: true,
+            showLinenumber: false,
+            paging: true,
+            height: '100%',
+            showCheckboxcol: false
+        });
+    });
+</script>

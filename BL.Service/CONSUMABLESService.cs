@@ -54,7 +54,7 @@ namespace BL.Service
             }
         }
 
-        public T_CONSUMABLESModel AddCONSUMABLES(T_CONSUMABLESModel model)
+        public T_CONSUMABLESModel AddCONSUMABLES(T_CONSUMABLESModel model, int id, int number, CommonService service)
         {
 
             string sql = @"insert into  T_CONSUMABLES(FGUID, FCREATEID, FCREATETIME, FTYPE, FDATE, FNUMBER, FCODE, FPERSONID, FWAREHOUSEID, FMEMO, FSTATUS, FAPPLYID, FAPPLYTIME
@@ -62,19 +62,30 @@ namespace BL.Service
 )";
             using (IDbConnection db = OpenConnection())
             {
-                if (db.Execute(sql, model) > 0)
+                IDbTransaction transaction = db.BeginTransaction();
+                try
                 {
-                    var res = db.QuerySingle<T_CONSUMABLESModel>("select * from T_CONSUMABLES with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID });
-                    res.closeCurrent = true;
-                    res.message = "添加成功";
-                    return res;
+                    if (service.UpdateNumberById(db, transaction, id, number))
+                    {
+                        db.Execute(sql, model, transaction);
+                        var res = db.QuerySingle<T_CONSUMABLESModel>("select * from T_CONSUMABLES with(nolock) where FGUID=@FGUID", new { FGUID = model.FGUID },transaction);
+                        res.closeCurrent = true;
+                        res.message = "添加成功";
+                        return res;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        model.closeCurrent = true;
+                        model.statusCode = "300";
+                        model.message = "添加失败";
+                        return model;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    model.closeCurrent = true;
-                    model.statusCode = "300";
-                    model.message = "添加失败";
-                    return model;
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
                 }
             }
         }
@@ -101,11 +112,11 @@ namespace BL.Service
             }
             if (paraDic.Contains("FType") && paraDic["FType"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and d.FType='{0}'", paraDic["FType"].ToString());
+                whereStr += string.Format(" and c.FType='{0}'", paraDic["FType"].ToString());
             }
             if (paraDic.Contains("FPERSONID") && paraDic["FPERSONID"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
+                whereStr += string.Format(" and c.FPERSONID like '%{0}%'", paraDic["FPERSONID"].ToString());
             }
             if (paraDic.Contains("FStatus") && paraDic["FStatus"].ToString().Trim() != "")
             {
@@ -136,11 +147,19 @@ inner join T_CONSUMABLESDETAILS d on c.FGUID=d.FPARENTID");
             string whereStr = " c.FSTATUS='2' ";
             if (paraDic.Contains("FGoodsCode") && paraDic["FGoodsCode"].ToString().Trim() != "")
             {
-                whereStr += string.Format(" and c.FGOODSID like '%{0}%'", paraDic["FCode"].ToString());
+                whereStr += string.Format(" and d.FGOODSID like '%{0}%'", paraDic["FGoodsCode"].ToString());
             }
             if (paraDic.Contains("FGoodsName") && paraDic["FGoodsName"].ToString().Trim() != "")
             {
                 whereStr += string.Format(" and d.FGOODSNAME like '%{0}%'", paraDic["FGoodsName"].ToString());
+            }
+            if (paraDic.Contains("FWAREHOUSEID") && paraDic["FWAREHOUSEID"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and c.FWAREHOUSEID ='{0}'", paraDic["FWAREHOUSEID"].ToString());
+            }
+            if (paraDic.Contains("FDATE") && paraDic["FDATE"].ToString().Trim() != "")
+            {
+                whereStr += string.Format(" and datediff(day,c.FDATE,'{0}')=0", paraDic["FDATE"].ToString());
             }
 
             using (IDbConnection db = OpenConnection())

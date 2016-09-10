@@ -114,7 +114,8 @@
                     name: 'FQUANTITY',
                     label: '数量',
                     align: 'center',
-                    width: 80
+                    width: 80,
+                    calc: 'sum'
                 },
                 {
                     name: 'FPRICE',
@@ -130,7 +131,8 @@
                     add: false,
                     eidt: false,
                     align: 'center',
-                    width: 110
+                    width: 110,
+                    calc: 'sum'
                 },
                 {
                     name: 'FMARKETPRICE',
@@ -253,8 +255,8 @@
                     var edits = [];
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
-                        if (index != -1) {
+                        var index = $.IndexOfMore(goods.FGOODSID, goods.FBATCH, datas, "FGOODSID", "FBATCH");
+                        if (index != -1 ) {
                             return true;
                         }
                         bol = true;
@@ -265,7 +267,7 @@
                     });
                     $checked.each(function () {
                         var goods = JSON.parse($(this).val());
-                        var index = $.IndexOf(goods.FGOODSID, datas, "FGOODSID");
+                        var index = $.IndexOfMore(goods.FGOODSID, goods.FBATCH, datas, "FGOODSID", "FBATCH"); //$.IndexOf(goods.FGOODSID, datas, "FGOODSID");
                         if (index != -1) {
                             edits.push(index);
                         }
@@ -280,7 +282,9 @@
                             trClick();
                         }
                     });
-                    $(document).off('keypress', "#tabGOODSALLOTInDetail input");
+                    //$(document).off('keypress', "#tabGOODSALLOTInDetail input");
+
+                
                     //var $checked = $dialog.find('input[name="child"]:checked');
                     //if ($checked.length == 0)
                     //    return true;
@@ -328,6 +332,13 @@
             //        $(trdata[0]).removeClass("datagrid-edit-tr");
             //    GOODSALLOTInDetailgrid.datagrid("doEditRow", trdata[0].gridIndex);
             //}
+        })
+        $(document).on('change', "#tabGOODSALLOTInDetail input[name=FQUANTITY]", function () {
+            $(this).trigger("keyCodeEnter");
+            var obj = {};
+            obj.BarCode = FINWAREHOUSEID + ' ' + trdata.FGOODSID + ' ' + trdata.FMARKETPRICE + ' ' + trdata.FQUANTITY;
+            obj.GoodsName = trdata.FGOODSNAME;
+            window.location.href = "BLPrint:" + encodeURIComponent(JSON.stringify(obj));
         })
         var trdata = null;
         var clickTR = null;
