@@ -71,19 +71,19 @@ namespace BL.Models
         /// <summary>
         /// 成本单价
         /// </summary>
-        public decimal? FPRICE { get; set; }
+        public float FPRICE { get; set; }
         /// <summary>
         /// 成本金额
         /// </summary>
-        public decimal? FMONEY { get; set; }
+        public float FMONEY { get; set; }
         /// <summary>
         /// 销售单价
         /// </summary>
-        public decimal? FMARKETPRICE { get; set; }
+        public float FMARKETPRICE { get; set; }
         /// <summary>
         /// 销售金额
         /// </summary>
-        public decimal? FMARKETMONEY { get; set; }
+        public float FMARKETMONEY { get; set; }
         /// <summary>
         /// 积分
         /// </summary>

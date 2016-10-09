@@ -67,6 +67,14 @@
             dataType: 'json',
             filterThead: false,
             columns: [
+                 {
+                     name: 'FGUID',
+                     label: 'FGUID',
+                     align: 'center',
+                     hide: true,
+                     width: 50
+
+                 },
                 {
                     name: 'FSUPPLIERID',
                     label: '供应商',
@@ -77,14 +85,6 @@
                     },
                     width: 110,
                     render: $.datagrid.renderItem
-                },
-                {
-                    name: 'FGUID',
-                    label: 'FGUID',
-                    align: 'center',
-                    hide: true,
-                    width: 50
-
                 },
                 {
                     name: 'FGOODSID',

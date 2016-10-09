@@ -63,7 +63,7 @@ namespace BL.Web
             return vipInfoService.GetVIPINFOInfo(dic).ToList();
         }
         /// <summary>
-        /// 获取所有场所信息
+        /// 获取所有分仓场所信息
         /// </summary>
         /// <returns></returns>
         [WebMethod]
@@ -71,24 +71,24 @@ namespace BL.Web
         {
             return wareHouseService.GetAllWareHoseInfo().ToList();
         }
-        /// <summary>
-        /// 录入商品信息
-        /// </summary>
-        /// <returns></returns>
-        [WebMethod]
-        public bool AddCommodity(T_GOODSModel model)
-        {
-            if (goodService.IsExistsFID(model.FGUID,model.FID))
-            {
-                return goodService.EditGoodsInfo(model);
-            }
+        ///// <summary>
+        ///// 录入商品信息
+        ///// </summary>
+        ///// <returns></returns>
+        //[WebMethod]
+        //public bool AddCommodity(T_GOODSModel model)
+        //{
+        //    if (goodService.IsExistsFID(model.FGUID,model.FID))
+        //    {
+        //        return goodService.EditGoodsInfo(model);
+        //    }
 
-            else
-            {
-                return goodService.AddGoodsInfo(model);
-            }
+        //    else
+        //    {
+        //        return goodService.AddGoodsInfo(model);
+        //    }
 
-        }
+        //}
         /// <summary>
         /// 录入会员信息
         /// </summary>
@@ -117,6 +117,28 @@ namespace BL.Web
             int result = 0;
             for (int i = 0; i < listModel.Count; i++)
             {
+                IDictionary dic = new Hashtable();
+                dic["FBARCODE"] = listModel[i].FOUTWAREHOUSEID.ToString()+" "+listModel[i].FGOODSID.ToString()+" "+ listModel[i].FPRICE.ToString()+" "+ listModel[i].FQUANTITY.ToString();
+                IEnumerable<T_REPERTORYCHILDModel> rcList = saledayBookService.SearchREPERTORYCHILD(dic);
+                if(rcList.Count()>0)
+                {
+                    listModel[i].FPARENTID = rcList.First().FGUID;
+                    listModel[i].FBATCH = rcList.First().FBATCH;
+                    listModel[i].FGUID = Guid.NewGuid().ToString();
+                    listModel[i].FCREATETIME = DateTime.Now;
+                    listModel[i].FINWAREHOUSEID = rcList.First().FINWAREHOUSEID;
+                    listModel[i].FOUTWAREHOUSEID = rcList.First().FOUTWAREHOUSEID;
+                    listModel[i].FDATE = DateTime.Now;
+                    listModel[i].FGOODSID = rcList.First().FGOODSID;
+                    listModel[i].FGOODSNAME = rcList.First().FGOODSNAME;
+                    listModel[i].FUNIT = rcList.First().FUNIT;
+                    listModel[i].FPRICE = rcList.First().FPRICE;
+                    listModel[i].FMONEY = rcList.First().FQUANTITY* rcList.First().FPRICE;
+                    listModel[i].FMARKETPRICE = rcList.First().FMARKETPRICE;
+                    listModel[i].FMARKETMONEY = rcList.First().FQUANTITY * rcList.First().FMARKETPRICE;
+                    listModel[i].FPARENTID = rcList.First().FGUID;
+
+                }
                 result += saledayBookService.AddSALEDAYBOOKInfo(listModel[i]);
             }
 

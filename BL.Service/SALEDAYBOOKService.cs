@@ -85,7 +85,7 @@ namespace BL.Service
             string sql = @"insert into  T_SALEDAYBOOK(FGUID, FCREATEID, FCREATETIME, FPARENTID, FINWAREHOUSEID, FOUTWAREHOUSEID, FDATE, FVIPCARD, FVIPNAME, FEXPENDNUMBER, FGOODSID, FNAME, FUNIT, FBATCH, FQUANTITY,FPRICE,FMONEY,FMARKETPRICE,FMARKETMONEY,FINTEGRAL,FPROFIT,FPROFITRATE
 ) values(@FGUID, @FCREATEID, @FCREATETIME, @FPARENTID, @FINWAREHOUSEID, @FOUTWAREHOUSEID, @FDATE, @FVIPCARD, @FVIPNAME, @FEXPENDNUMBER, @FGOODSID, @FNAME, @FUNIT, @FBATCH, @FQUANTITY, @FPRICE, @FMONEY, @FMARKETPRICE, @FMARKETMONEY, @FINTEGRAL, @FPROFIT, @FPROFITRATE
 )";
-            sql += @"update T_REPERTORYCHILD set FQUANTITY=FQUANTITY-@FQUANTITY where FGUID=(select top 1 FGUID from T_REPERTORYCHILD where FINWAREHOUSEID=@FINWAREHOUSEID and FGOODSID=@FGOODSID)";
+            sql += @"update T_REPERTORYCHILD set FQUANTITY=FQUANTITY-@FQUANTITY where FPARENTID=@FPARENTID";//  FGUID=(select top 1 FGUID from T_REPERTORYCHILD where FINWAREHOUSEID=@FINWAREHOUSEID and FGOODSID=@FGOODSID)";
             using (IDbConnection db = OpenConnection())
             {
                 var trans = db.BeginTransaction();
@@ -203,5 +203,25 @@ where FGUID=@FGUID ";
                 }
             }
         }
+
+        public IEnumerable<T_REPERTORYCHILDModel> SearchREPERTORYCHILD(IDictionary paraDic)
+        {
+            string sql = "select * from T_REPERTORYCHILD where FSURPLUS>0 ";
+            string whereStr = " ";
+            DynamicParameters dp = new DynamicParameters();
+            if (paraDic.Contains("FBARCODE") && paraDic["FBARCODE"].ToString().Trim() != "")
+            {
+                whereStr += " and FBARCODE = @FBARCODE";
+                dp.Add("@FBARCODE", paraDic["FBARCODE"].ToString());
+            }
+
+            using (IDbConnection db = OpenConnection())
+            {
+                return db.Query<T_REPERTORYCHILDModel>(sql, dp);
+                
+            }
+        }
+
+
     }
 }
