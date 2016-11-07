@@ -57,8 +57,8 @@ namespace BL.Service
         public bool EditVIPINFO(T_VIPINFOModel model)
         {
 
-            string sql = @"update  T_VIPINFO set  FID=@FID, FNAME=@FNAME, FSEX=@FSEX, FAGE=@FAGE, FTEL=@FTEL, FMOBILE=@FMOBILE, FPLACE=@FPLACE,  FCONSUMPTION=@FCONSUMPTION,  FINTEGRAL=@FINTEGRAL 
-where FGUID=@FGUID ";
+            string sql = @"update  T_VIPINFO set  FNAME=@FNAME, FSEX=@FSEX, FAGE=@FAGE, FTEL=@FTEL, FMOBILE=@FMOBILE, FPLACE=@FPLACE,  FCONSUMPTION=@FCONSUMPTION,  FINTEGRAL=@FINTEGRAL 
+where FID=@FID ";
             using (IDbConnection db = OpenConnection())
             {
                 if (db.Execute(sql, model) > 0)
@@ -78,12 +78,12 @@ where FGUID=@FGUID ";
         /// <param name="FGUID"></param>
         /// <param name="FID"></param>
         /// <returns></returns>
-        public bool IsExistsFID(string FGUID, string FID)
+        public bool IsExistsFID( string FID)
         {
-            string sql = "select * from T_VIPINFO where FGUID!=@FGUID and FID!=@FID";
+            string sql = "select * from T_VIPINFO where FID=@FID";
             using (IDbConnection db = OpenConnection())
             {
-                return db.Query<T_VIPINFOModel>(sql, new { FGUID = FGUID, FID = FID }).Count() > 0;
+                return db.Query<T_VIPINFOModel>(sql, new { FID = FID }).Count() > 0;
             }
         }
         public IEnumerable<T_VIPINFOModel> GetAllVIPINFO(IDictionary paraDic, ref int totalPage, int pageIndex = 1, int pageSize = 10)

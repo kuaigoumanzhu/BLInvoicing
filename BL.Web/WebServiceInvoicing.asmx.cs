@@ -48,7 +48,7 @@ namespace BL.Web
         public List<T_GOODSModel> GetCommodityInfo()
         {
             IDictionary dic = new Hashtable();
-            dic["FISCONSUMABLES"] = "1";//非消耗品
+            //dic["FISCONSUMABLES"] = "1";//非消耗品
             dic["FSTATUS"] = "2";//启用
             return goodsService.GetGoodsInfo(dic).ToList();
         }
@@ -95,15 +95,14 @@ namespace BL.Web
         /// <returns></returns>
         [WebMethod]
         public bool AddMember(T_VIPINFOModel model)
-        {
-
-            if (vipInfoService.IsExistsFID(model.FGUID,model.FID))
+        { 
+            if (vipInfoService.IsExistsFID(model.FID))
             {
                 return vipInfoService.EditVIPINFO(model);
             }
-
             else
             {
+                model.FGUID = Guid.NewGuid().ToString();
                 return vipInfoService.AddVIPINFO(model);
             }
         }
